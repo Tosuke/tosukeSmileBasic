@@ -2,6 +2,7 @@ module tosuke.smilebasic.parser;
 
 import tosuke.smilebasic.node;
 import tosuke.smilebasic.value;
+import tosuke.smilebasic.operator;
 import pegged.grammar;
 import std.experimental.logger;
 
@@ -12,11 +13,12 @@ class Parser{
 	this(){
 		initialize();
 	}
-
+	//UnaryOperators
   Node negExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
   Node notExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Not, node(tree.children[0]));}
   Node logicalNotExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.LogicalNot, node(tree.children[0]));}
 
+	//BinaryOperators
   Node mulExpr(ParseTree tree){
     return new BinaryOpNode(BinaryOp.Mul, node(tree.children[0]), node(tree.children[1]));
   }
@@ -80,6 +82,7 @@ class Parser{
     return new BinaryOpNode(BinaryOp.LogicalOr, node(tree.children[0]), node(tree.children[1]));
   }
 
+	//Literals
 	Node decimalInteger(ParseTree tree){
 		double k = tree.matches.front.to!double;
 		Value v;
@@ -153,5 +156,5 @@ mixin template ParserMixin(string parserName, string parserSource){
 		return s;
 	}
 
-	mixin(grammar(parserSource));
+	mixin(grammar!(Memoization.yes)(parserSource));
 }

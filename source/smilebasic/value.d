@@ -8,6 +8,10 @@ enum ValueType{
 struct Value{
 	alias data this;
 
+	this(T)(T a){
+		data = a;
+	}
+
 	import std.variant;
 	private Algebraic!(int, double, wstring) data_;
 	@property{

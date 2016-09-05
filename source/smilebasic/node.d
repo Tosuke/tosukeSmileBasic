@@ -1,6 +1,7 @@
 module tosuke.smilebasic.node;
 
 import tosuke.smilebasic.value;
+import tosuke.smilebasic.operator;
 
 import std.conv : to;
 
@@ -30,32 +31,6 @@ abstract class Node{
 	}
 }
 
-enum BinaryOp{
-	Mul,
-	Div,
-  IntDiv,
-  Mod,
-//-------------
-  Add,
-  Sub,
-//-------------
-  LShift,
-  RShift,
-//-------------
-  Eq,
-  NotEq,
-  Less, //<
-  Greater, //>
-  LessEq,
-  GreaterEq,
-//-------------
-  And,
-  Or,
-  Xor,
-//-------------
-  LogicalAnd,
-  LogicalOr,
-}
 class BinaryOpNode : Node{
 	this(BinaryOp _op, Node a, Node b){
     type = NodeType.BinaryOp;
@@ -95,11 +70,6 @@ class BinaryOpNode : Node{
 	BinaryOp op;
 }
 
-enum UnaryOp{
-  Neg,
-  Not,
-  LogicalNot,
-}
 class UnaryOpNode : Node{
   this(UnaryOp _op, Node a){
     type = NodeType.UnaryOp;
@@ -120,6 +90,8 @@ class UnaryOpNode : Node{
 
 class ValueNode : Node{
 	this(T)(T a){
+		type = NodeType.Value;
+		
 		value.data = a;
 		super(value.type == ValueType.String ? `"`~a.to!string~`"` : a.to!string);
 	}
