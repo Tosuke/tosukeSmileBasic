@@ -1,0 +1,50 @@
+Parser:
+  expr < factor8
+
+  factor8 < logicalAndExpr / logicalOrExpr / factor7
+  logicalAndExpr < factor8 "&&" factor8
+  logicalOrExpr < factor8 "||" factor8
+
+  factor7 < andExpr / orExpr / xorExpr / factor6
+  andExpr < factor7 "and "i factor7
+  orExpr < factor7 "or "i factor7
+  xorExpr < factor7 "xor "i factor7
+
+  factor6 < eqExpr / notEqExpr / lessExpr / greaterExpr /
+            lessEqExpr / greaterEqExpr / factor5
+  eqExpr < factor6 "==" factor6
+  notEqExpr < factor6 "!=" factor6
+  lessExpr < factor6 "<" factor6
+  greaterExpr < factor6 ">" factor6
+  lessEqExpr < factor6 "<=" factor6
+  greaterEqExpr < factor6 ">=" factor6
+
+  factor5 < leftShiftExpr / rightShiftExpr / factor4
+  leftShiftExpr < factor5 "<<" factor5
+  rightShiftExpr < factor5 ">>" factor5
+
+  factor4 < addExpr / subExpr / factor3
+  addExpr < factor4 "+" factor4
+  subExpr < factor4 "-" factor4
+
+  factor3 < mulExpr / divExpr / intDivExpr / modExpr / factor2
+  mulExpr < factor3 "*" factor3
+  divExpr < factor3 "/" factor3
+  intDivExpr < factor3 "div "i factor3
+  modExpr < factor3 "mod "i factor3
+
+  factor2 < negExpr / notExpr / logicalNotExpr / primary
+  negExpr < "-" factor2
+  notExpr < "not"i factor2
+  logicalNotExpr < "!" factor2
+
+  primary < parens / value
+  parens < "(" expr ")"
+
+  value < decimalFloater / decimalInteger / hexInteger / binInteger /
+          stringLiteral
+  decimalInteger <~([0-9]+)
+  decimalFloater <~([0-9]+"."[0-9]+)
+  hexInteger <~(:"&h"i [0-9a-fA-F]+)
+  binInteger <~(:"&b"i [01]+)
+  stringLiteral <~(:doublequote (!doublequote .)* :doublequote)

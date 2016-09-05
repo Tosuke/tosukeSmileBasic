@@ -1,0 +1,16 @@
+{
+	"name": "tosukesmilebasic",
+	"authors": [
+		"tosuke"
+	],
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2016, tosuke",
+	"license": "MIT",
+
+	"dependencies":{
+		"pegged":"*"
+	},
+	"targetPath":"bin",
+	"workingDirectory":"bin",
+	"stringImportPaths":["source/grammar"]
+}
