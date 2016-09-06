@@ -8,3 +8,5 @@ dub.selections.json
 
 test.*
 bin
+source/grammar/grammar.d
+peg2d

@@ -9,9 +9,7 @@ import tosuke.smilebasic.ast.node;
 import tosuke.smilebasic.ast.optimize;
 
 void main(){
-	//Parser_ parser;
-	//parser.initialize();
-	//parser.parse("1+1").writeln;
+
 	tosuke.smilebasic.operator.initialize;
 
 	auto parser = new Parser();

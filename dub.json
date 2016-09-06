@@ -12,5 +12,18 @@
 	},
 	"targetPath":"bin",
 	"workingDirectory":"bin",
-	"stringImportPaths":["source/grammar"]
+	"stringImportPaths":["source/grammar"],
+	"excludedSourceFiles":["source/grammar/grammar.d"],
+
+	"configurations":[
+		{
+			"name":"debug",
+			"targetType":"executable"
+		},
+		{
+			"name":"update",
+			"preBuildCommands":["dub run --single peg2d.d -- --source source/grammar/grammar.peg --dest source/grammar/grammar.d"],
+			"targetType":"executable"
+		}
+	]
 }

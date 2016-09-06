@@ -137,11 +137,12 @@ class Parser{
 	}
 
 
-	mixin ParserMixin!("Parser", import("grammar.peg"));
+	mixin ParserMixin!("Parser");
+	mixin(import("grammar.d"));
 }
 
 import pegged.grammar;
-mixin template ParserMixin(string parserName, string parserSource){
+mixin template ParserMixin(string parserName){
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
 		//std.stdio.writeln(tree);
@@ -183,6 +184,4 @@ mixin template ParserMixin(string parserName, string parserSource){
 		}
 		return s;
 	}
-
-	mixin(grammar!(Memoization.yes)(parserSource));
 }
