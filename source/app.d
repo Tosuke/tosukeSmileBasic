@@ -7,6 +7,7 @@ import tosuke.smilebasic.parser;
 import tosuke.smilebasic.operator;
 import tosuke.smilebasic.ast.node;
 import tosuke.smilebasic.ast.optimize;
+import tosuke.smilebasic.ast.genList;
 
 void main(){
 
@@ -17,4 +18,5 @@ void main(){
 	tree.writeln;
 	tree = constantFolding(tree);
 	tree.writeln;
+	tree.genList[].writeln;
 }
