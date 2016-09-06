@@ -91,9 +91,9 @@ class UnaryOpNode : Node{
 class ValueNode : Node{
 	this(T)(T a){
 		type = NodeType.Value;
-		
+
 		value.data = a;
-		super(value.type == ValueType.String ? `"`~a.to!string~`"` : a.to!string);
+		super(value.toString);
 	}
 	Value value;
 }

@@ -1,37 +1,36 @@
 Parser:
   expr < factor8
 
-  factor8 < logicalAndExpr / logicalOrExpr / factor7
-  logicalAndExpr < factor8 "&&" factor8
-  logicalOrExpr < factor8 "||" factor8
+  factor8 < factor7 (logicalAndExpr / logicalOrExpr)*
+  logicalAndExpr < "&&" factor7
+  logicalOrExpr < "||" factor7
 
-  factor7 < andExpr / orExpr / xorExpr / factor6
-  andExpr < factor7 "and "i factor7
-  orExpr < factor7 "or "i factor7
-  xorExpr < factor7 "xor "i factor7
+  factor7 < factor6 (andExpr / orExpr / xorExpr)*
+  andExpr < "and "i factor6
+  orExpr < "or "i factor6
+  xorExpr < "xor "i factor6
 
-  factor6 < eqExpr / notEqExpr / lessExpr / greaterExpr /
-            lessEqExpr / greaterEqExpr / factor5
-  eqExpr < factor6 "==" factor6
-  notEqExpr < factor6 "!=" factor6
-  lessExpr < factor6 "<" factor6
-  greaterExpr < factor6 ">" factor6
-  lessEqExpr < factor6 "<=" factor6
-  greaterEqExpr < factor6 ">=" factor6
+  factor6 < factor5 (eqExpr / notEqExpr / lessExpr / greaterExpr / lessEqExpr / greaterEqExpr)*
+  eqExpr < "==" factor5
+  notEqExpr < "!=" factor5
+  lessExpr < "<" factor5
+  greaterExpr < ">" factor5
+  lessEqExpr < "<=" factor5
+  greaterEqExpr < ">=" factor5
 
-  factor5 < leftShiftExpr / rightShiftExpr / factor4
-  leftShiftExpr < factor5 "<<" factor5
-  rightShiftExpr < factor5 ">>" factor5
+  factor5 < factor4 (leftShiftExpr / rightShiftExpr)*
+  leftShiftExpr < "<<" factor4
+  rightShiftExpr < ">>" factor4
 
-  factor4 < addExpr / subExpr / factor3
-  addExpr < factor4 "+" factor4
-  subExpr < factor4 "-" factor4
+  factor4 < factor3 (addExpr / subExpr)*
+  addExpr < "+" factor3
+  subExpr < "-" factor3
 
-  factor3 < mulExpr / divExpr / intDivExpr / modExpr / factor2
-  mulExpr < factor3 "*" factor3
-  divExpr < factor3 "/" factor3
-  intDivExpr < factor3 "div "i factor3
-  modExpr < factor3 "mod "i factor3
+  factor3 < factor2 (mulExpr / divExpr / intDivExpr / modExpr)*
+  mulExpr < "*" factor2
+  divExpr < "/" factor2
+  intDivExpr < "div "i factor2
+  modExpr < "mod "i factor2
 
   factor2 < negExpr / notExpr / logicalNotExpr / primary
   negExpr < "-" factor2

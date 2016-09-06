@@ -1,6 +1,9 @@
 module tosuke.smilebasic.value;
 
+import std.conv : to;
+
 enum ValueType{
+	Undefined,
 	Integer,
 	Floater,
 	String
@@ -40,5 +43,44 @@ struct Value{
 	@property{
 		public ValueType type(){return type_;}
 		private void type(ValueType a){type_ = a;}
+	}
+
+	string toString(){
+		switch(this.type){
+			case ValueType.Undefined: return "undefined";
+			case ValueType.Integer: return this.get!int.to!string;
+			case ValueType.Floater: return this.get!double.to!string;
+			case ValueType.String: return `"`~this.get!wstring.to!string~`"`;
+			default: assert(0);
+		}
+	}
+}
+
+bool isArithmericValue(Value v){
+	return v.type == ValueType.Integer || v.type == ValueType.Floater;
+}
+
+double toFloater(Value v){
+	if(!isArithmericValue(v)) assert(0, "Type Mismatch");
+	if(v.type == ValueType.Integer){
+		return v.get!int.to!double;
+	}else{
+		return v.get!double;
+	}
+}
+
+int toInteger(Value v){
+	if(!isArithmericValue(v)) assert(0, "Type Mismatch");
+	if(v.type == ValueType.Floater){
+		auto k = v.get!double;
+		if(k > int.max){
+			return int.max;
+		}else if(k < int.min){
+			return int.min;
+		}else{
+			return k.to!int;
+		}
+	}else{
+		return v.get!int;
 	}
 }

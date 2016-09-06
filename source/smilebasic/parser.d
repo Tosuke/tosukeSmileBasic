@@ -19,68 +19,96 @@ class Parser{
   Node logicalNotExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.LogicalNot, node(tree.children[0]));}
 
 	//BinaryOperators
-  Node mulExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Mul, node(tree.children[0]), node(tree.children[1]));
-  }
-  Node divExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Div, node(tree.children[0]), node(tree.children[1]));
-  }
-  Node intDivExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.IntDiv, node(tree.children[0]), node(tree.children[1]));
-  }
-  Node modExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Mod, node(tree.children[0]), node(tree.children[1]));
-  }
-
-	Node addExpr(ParseTree tree){
-		return new BinaryOpNode(BinaryOp.Add, node(tree.children[0]), node(tree.children[1]));
+	Node factor3(ParseTree tree){
+		Node temp = node(tree.children.front);
+		foreach(t; tree.children[1..$]){
+			temp = new BinaryOpNode((name){
+				switch(name){
+					case "Parser.mulExpr": return BinaryOp.Mul;
+					case "Parser.divExpr": return BinaryOp.Div;
+					case "Parser.intDivExpr": return BinaryOp.IntDiv;
+					case "Parser.modExpr": return BinaryOp.Mod;
+					default: assert(0);
+				}
+			}(t.name), temp, node(t));
+		}
+		return temp;
 	}
-  Node subExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Sub, node(tree.children[0]), node(tree.children[1]));
-  }
 
-	Node leftShiftExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.LShift, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node rightShiftExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.RShift, node(tree.children[0]), node(tree.children[1]));
-  }
+	Node factor4(ParseTree tree){
+		Node temp = node(tree.children.front);
+		foreach(t; tree.children[1..$]){
+			temp = new BinaryOpNode((name){
+				switch(name){
+					case "Parser.addExpr": return BinaryOp.Add;
+					case "Parser.subExpr": return BinaryOp.Sub;
+					default: assert(0);
+				}
+			}(t.name), temp, node(t));
+		}
+		return temp;
+	}
 
-	Node eqExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Eq, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node notEqExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.NotEq, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node lessExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Less, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node greaterExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Greater, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node lessEqExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.LessEq, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node greaterEqExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Sub, node(tree.children[0]), node(tree.children[1]));
-  }
+	Node factor5(ParseTree tree){
+		Node temp = node(tree.children.front);
+		foreach(t; tree.children[1..$]){
+			temp = new BinaryOpNode((name){
+				switch(name){
+					case "Parser.leftShiftExpr": return BinaryOp.LShift;
+					case "Parser.rightShiftExpr": return BinaryOp.RShift;
+					default: assert(0);
+				}
+			}(t.name), temp, node(t));
+		}
+		return temp;
+	}
 
-	Node andExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.And, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node orExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Or, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node xorExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.Xor, node(tree.children[0]), node(tree.children[1]));
-  }
+	Node factor6(ParseTree tree){
+		Node temp = node(tree.children.front);
+		foreach(t; tree.children[1..$]){
+			temp = new BinaryOpNode((name){
+				switch(name){
+					case "Parser.eqExpr": return BinaryOp.Eq;
+					case "Parser.notEqExpr": return BinaryOp.NotEq;
+					case "Parser.lessExpr": return BinaryOp.Less;
+					case "Parser.greaterExpr": return BinaryOp.Greater;
+					case "Parser.lessEqExpr": return BinaryOp.LessEq;
+					case "Parser.greaterEqExpr": return BinaryOp.GreaterEq;
+					default: assert(0);
+				}
+			}(t.name), temp, node(t));
+		}
+		return temp;
+	}
 
-	Node logicalAndExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.LogicalAnd, node(tree.children[0]), node(tree.children[1]));
-  }
-	Node logicalOrExpr(ParseTree tree){
-    return new BinaryOpNode(BinaryOp.LogicalOr, node(tree.children[0]), node(tree.children[1]));
-  }
+	Node factor7(ParseTree tree){
+		Node temp = node(tree.children.front);
+		foreach(t; tree.children[1..$]){
+			temp = new BinaryOpNode((name){
+				switch(name){
+					case "Parser.andExpr": return BinaryOp.And;
+					case "Parser.orExpr": return BinaryOp.Or;
+					case "Parser.xorExpr": return BinaryOp.Xor;
+					default: assert(0);
+				}
+			}(t.name), temp, node(t));
+		}
+		return temp;
+	}
+
+	Node factor8(ParseTree tree){
+		Node temp = node(tree.children.front);
+		foreach(t; tree.children[1..$]){
+			temp = new BinaryOpNode((name){
+				switch(name){
+					case "Parser.logicalAndExpr": return BinaryOp.LogicalAnd;
+					case "Parser.logicalOrExpr": return BinaryOp.LogicalOr;
+					default: assert(0);
+				}
+			}(t.name), temp, node(t));
+		}
+		return temp;
+	}
 
 	//Literals
 	Node decimalInteger(ParseTree tree){
@@ -116,7 +144,7 @@ import pegged.grammar;
 mixin template ParserMixin(string parserName, string parserSource){
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
-		//std.stdio.writeln(tree);
+		std.stdio.writeln(tree);
 		return node(tree);
 	}
 
