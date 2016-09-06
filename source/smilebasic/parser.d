@@ -136,6 +136,13 @@ class Parser{
 		return new ValueNode(tree.matches.front.to!wstring);
 	}
 
+	Node printStatement(ParseTree tree){
+		 Node[] temp = tree.children
+									.filter!(a => !(a.name == "Parser.printDelimiter" && a.matches.front == ";"))
+									.map!(a => a.name != "Parser.printDelimiter" ? node(a) : new ValueNode("\t"w))
+									.array;
+		return new PrintStatementNode(temp);
+	}
 
 	mixin ParserMixin!("Parser");
 	mixin(import("grammar.d"));
@@ -145,7 +152,7 @@ import pegged.grammar;
 mixin template ParserMixin(string parserName){
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
-		//std.stdio.writeln(tree);
+		std.stdio.writeln(tree);
 		return node(tree);
 	}
 

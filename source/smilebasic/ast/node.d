@@ -8,7 +8,9 @@ import std.conv : to;
 enum NodeType{
 	BinaryOp,
   UnaryOp,
-	Value
+	Value,
+
+	PrintStatement
 }
 
 abstract class Node{
@@ -106,4 +108,11 @@ Value unaryOp(UnaryOp op, Node a){
 }
 Value binaryOp(BinaryOp op, Node a, Node b){
   return tosuke.smilebasic.operator.binaryOp(op, (cast(ValueNode)a).value, (cast(ValueNode)b).value);
+}
+
+class PrintStatementNode : Node{
+	this(Node[] _children){
+		type = NodeType.PrintStatement;
+		super("Print", _children);
+	}
 }

@@ -1,6 +1,13 @@
 Parser:
+  doc < statement (:":"? statement)*
+
+  statement < printStatement
+  printStatement < :("print "i / "?") expr (printDelimiter expr)*
+  printDelimiter < (";" / ",")
+
   expr < factor8
 
+  #Arithmetic Expression
   factor8 < factor7 (logicalAndExpr / logicalOrExpr)*
   logicalAndExpr < "&&" factor7
   logicalOrExpr < "||" factor7
