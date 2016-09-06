@@ -144,7 +144,7 @@ import pegged.grammar;
 mixin template ParserMixin(string parserName, string parserSource){
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
-		std.stdio.writeln(tree);
+		//std.stdio.writeln(tree);
 		return node(tree);
 	}
 

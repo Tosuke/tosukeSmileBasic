@@ -95,6 +95,9 @@ Value mulOp(Value a, Value b){
     }else{
       return Value(a.toFloater * b.toFloater);
     }
+  }else if(a.type == ValueType.String && isArithmericValue(b)){
+    import std.array;
+    return Value(a.get!wstring.replicate(b.toInteger));
   }else{
     assert(0, "Type Mismatch");
   }
@@ -128,6 +131,8 @@ Value addOp(Value a, Value b){
     }else{
       return Value(a.toFloater + b.toFloater);
     }
+  }else if(a.type == ValueType.String && b.type == ValueType.String){
+    return Value(a.get!wstring ~ b.get!wstring);
   }else{
     assert(0, "Type Mismatch");
   }

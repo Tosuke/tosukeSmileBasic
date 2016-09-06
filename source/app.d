@@ -15,7 +15,7 @@ void main(){
 	initBinaryOpTable();
 
 	auto parser = new Parser();
-	auto tree = parser.parse(`2*3*3-3*3+3*4`);
+	auto tree = parser.parse(`"hoge"*2+"piyo"*2.3`);
 	tree.writeln;
 	eval(tree).writeln;
 }
