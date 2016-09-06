@@ -1,4 +1,4 @@
-module tosuke.smilebasic.node;
+module tosuke.smilebasic.ast.node;
 
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.operator;
@@ -96,4 +96,14 @@ class ValueNode : Node{
 		super(value.toString);
 	}
 	Value value;
+}
+
+import tosuke.smilebasic.operator;
+import tosuke.smilebasic.value;
+
+Value unaryOp(UnaryOp op, Node a){
+  return tosuke.smilebasic.operator.unaryOp(op, (cast(ValueNode)a).value);
+}
+Value binaryOp(BinaryOp op, Node a, Node b){
+  return tosuke.smilebasic.operator.binaryOp(op, (cast(ValueNode)a).value, (cast(ValueNode)b).value);
 }

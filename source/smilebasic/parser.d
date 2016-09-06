@@ -1,6 +1,6 @@
 module tosuke.smilebasic.parser;
 
-import tosuke.smilebasic.node;
+import tosuke.smilebasic.ast.node;
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.operator;
 import pegged.grammar;

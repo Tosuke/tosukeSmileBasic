@@ -23,9 +23,9 @@ struct Value{
 			static if(is(T == Value)){
 				type = a.type;
 				data_ = a.data;
-			}else static if(is(T : int)){
+			}else static if(is(T : int) || is(T : bool)){
 				type = ValueType.Integer;
-				data_ = a;
+				data_ = cast(int)a;
 			}else static if(is(T : double)){
 				type = ValueType.Floater;
 				data_ = a;
@@ -56,12 +56,15 @@ struct Value{
 	}
 }
 
-bool isArithmericValue(Value v){
+bool isArithmeticValue(Value v){
 	return v.type == ValueType.Integer || v.type == ValueType.Floater;
+}
+bool isArrayValue(Value v){
+	return false;
 }
 
 double toFloater(Value v){
-	if(!isArithmericValue(v)) assert(0, "Type Mismatch");
+	if(!isArithmeticValue(v)) assert(0, "Type Mismatch");
 	if(v.type == ValueType.Integer){
 		return v.get!int.to!double;
 	}else{
@@ -70,7 +73,7 @@ double toFloater(Value v){
 }
 
 int toInteger(Value v){
-	if(!isArithmericValue(v)) assert(0, "Type Mismatch");
+	if(!isArithmeticValue(v)) assert(0, "Type Mismatch");
 	if(v.type == ValueType.Floater){
 		auto k = v.get!double;
 		if(k > int.max){
@@ -82,5 +85,14 @@ int toInteger(Value v){
 		}
 	}else{
 		return v.get!int;
+	}
+}
+
+int toBoolean(Value v){
+	switch(v.type){
+		case ValueType.Integer: return cast(int)(v.get!int != 0);
+		case ValueType.Floater: return cast(int)(v.get!double != 0);
+		case ValueType.String: return 3;
+		default: assert(0);
 	}
 }
