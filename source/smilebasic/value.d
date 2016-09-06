@@ -54,6 +54,150 @@ struct Value{
 			default: assert(0);
 		}
 	}
+
+	//Operator Overloadings
+	//negOp
+	Value opUnary(string op : "-")(){
+		switch(type){
+	    case ValueType.Integer: return Value(-(data.get!int));
+	    case ValueType.Floater: return Value(-(data.get!double));
+	    default: assert(0, "Type Mismatch");
+	  }
+	}
+	//notOp
+	Value opUnary(string op : "~")(){
+		return Value(~(this.toInteger));
+	}
+
+	//mulOp
+	Value opBinary(string op : "*")(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
+	      return Value(this.get!int * b.get!int);
+	    }else{
+	      return Value(this.toFloater * b.toFloater);
+	    }
+	  }else if(this.type == ValueType.String && b.isArithmeticValue){
+	    import std.array;
+	    return Value(this.get!wstring.replicate(b.toInteger));
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+
+	//divOp
+	Value opBinary(string op : "/")(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    return Value(this.toFloater / b.toFloater);
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+
+	//modOp
+	Value opBinary(string op : "%")(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    return Value(this.toInteger % b.toInteger);
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+
+	//addOp
+	Value opBinary(string op : "+")(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
+	      return Value(this.get!int + b.get!int);
+	    }else{
+	      return Value(this.toFloater + b.toFloater);
+	    }
+	  }else if(this.type == ValueType.String && b.type == ValueType.String){
+	    return Value(this.get!wstring ~ b.get!wstring);
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+
+	//subOp
+	Value opBinary(string op : "-")(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
+	      return Value(this.get!int - b.get!int);
+	    }else{
+	      return Value(this.toFloater - b.toFloater);
+	    }
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+
+	//shiftOp
+	Value opBinary(string op)(Value b) if(op == "<<" || op == ">>"){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+
+	//bitOp
+	Value opBinary(string op)(Value b) if(op == "&" || op == "|" || op == "^"){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
+	  }else{
+	    assert(0, "Type Mismatch");
+	  }
+	}
+	//eqOp
+	bool opEquals(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+			if(this.type == ValueType.Integer && b.type == ValueType.Integer){
+				return this.get!int == b.get!int;
+			}else{
+				return this.toFloater == b.toFloater;
+			}
+		}else if(this.type == ValueType.String && b.type == ValueType.String){
+			return this.get!wstring == b.get!wstring;
+		}else{
+			assert(0, "Type Mismatch");
+		}
+	}
+	//cmpOp
+	int opCmp(Value b){
+		if(this.isArithmeticValue && b.isArithmeticValue){
+			if(this.type == ValueType.Integer && b.type == ValueType.Integer){
+				int m = this.get!int; int n = b.get!int;
+				if(m <  n){
+					return -1;
+				}else if(m == n){
+					return  0;
+				}else if(m >  n){
+					return +1;
+				}
+			}else{
+				double m = this.toFloater; double n = b.toFloater;
+				if(m <  n){
+					return -1;
+				}else if(m == n){
+					return  0;
+				}else if(m >  n){
+					return +1;
+				}
+			}
+		}else if(this.type == ValueType.String && b.type == ValueType.String){
+			wstring m = this.get!wstring; wstring n = b.get!wstring;
+			if(m <  n){
+				return -1;
+			}else if(m == n){
+				return  0;
+			}else if(m >  n){
+				return +1;
+			}
+		}else{
+			assert(0, "Type Mismatch");
+		}
+		assert(0);
+	}
 }
 
 bool isArithmeticValue(Value v){

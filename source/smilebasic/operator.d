@@ -61,17 +61,13 @@ private void initUnaryOpTable(){
 }
 
 Value negOp(Value a){
-  switch(a.type){
-    case ValueType.Integer: return Value(-(a.data.get!int));
-    case ValueType.Floater: return Value(-(a.data.get!double));
-    default: assert(0, "Type Mismatch");
-  }
+  return -a;
 }
 Value notOp(Value a){
-  return Value(~(a.toInteger));
+  return ~a;
 }
 Value logicalNotOp(Value a){
-  if(isArithmeticValue(a)){
+  if(a.isArithmeticValue){
     return Value(!a.toBoolean);
   }else{
     assert(0, "Type Mismatch");
@@ -108,192 +104,87 @@ private void initBinaryOpTable(){
   binaryOpTable[BinaryOp.LogicalOr] = &logicalOrOp;
 }
 Value mulOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int * b.get!int);
-    }else{
-      return Value(a.toFloater * b.toFloater);
-    }
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
-    import std.array;
-    return Value(a.get!wstring.replicate(b.toInteger));
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a * b;
 }
 Value divOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toFloater / b.toFloater);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a / b;
 }
 Value intDivOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
+  if(a.isArithmeticValue && b.isArithmeticValue){
     return Value(a.toInteger / b.toInteger);
   }else{
     assert(0, "Type Mismatch");
   }
 }
 Value modOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toInteger % b.toInteger);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a % b;
 }
 
 Value addOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int + b.get!int);
-    }else{
-      return Value(a.toFloater + b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring ~ b.get!wstring);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a + b;
 }
 Value subOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int - b.get!int);
-    }else{
-      return Value(a.toFloater - b.toFloater);
-    }
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a - b;
 }
 
 Value leftShiftOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toInteger << b.toInteger);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a << b;
 }
 Value rightShiftOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toInteger >> b.toInteger);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a >> b;
 }
 
 Value eqOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int == b.get!int);
-    }else{
-      return Value(a.toFloater == b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring == b.get!wstring);
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
+  if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    assert(0, "Type Mismatch");
+    return Value(a == b);
   }
 }
 Value notEqOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int != b.get!int);
-    }else{
-      return Value(a.toFloater != b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring != b.get!wstring);
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
+  if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    assert(0, "Type Mismatch");
+    return Value(a != b);
   }
 }
 Value lessOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int < b.get!int);
-    }else{
-      return Value(a.toFloater < b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring < b.get!wstring);
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
+  if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    assert(0, "Type Mismatch");
+    return Value(a < b);
   }
 }
 Value greaterOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int > b.get!int);
-    }else{
-      return Value(a.toFloater > b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring > b.get!wstring);
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
+  if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    assert(0, "Type Mismatch");
+    return Value(a > b);
   }
 }
 Value lessEqOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int <= b.get!int);
-    }else{
-      return Value(a.toFloater <= b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring <= b.get!wstring);
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
+  if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    assert(0, "Type Mismatch");
+    return Value(a <= b);
   }
 }
 Value greaterEqOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    if(a.type == ValueType.Integer && b.type == ValueType.Integer){
-      return Value(a.get!int >= b.get!int);
-    }else{
-      return Value(a.toFloater >= b.toFloater);
-    }
-  }else if(a.type == ValueType.String && b.type == ValueType.String){
-    return Value(a.get!wstring >= b.get!wstring);
-  }else if(a.type == ValueType.String && isArithmeticValue(b)){
+  if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    assert(0, "Type Mismatch");
+    return Value(a >= b);
   }
 }
 
 Value andOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toInteger & b.toInteger);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a & b;
 }
 Value orOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toInteger | b.toInteger);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a | b;
 }
 Value xorOp(Value a, Value b){
-  if(isArithmeticValue(a) && isArithmeticValue(b)){
-    return Value(a.toInteger ^ b.toInteger);
-  }else{
-    assert(0, "Type Mismatch");
-  }
+  return a ^ b;
 }
 
 Value logicalAndOp(Value a, Value b){
