@@ -137,10 +137,13 @@ class Parser{
 	}
 
 	Node printStatement(ParseTree tree){
-		 Node[] temp = tree.children
+		Node[] temp =  tree.children
 									.filter!(a => !(a.name == "Parser.printDelimiter" && a.matches.front == ";"))
 									.map!(a => a.name != "Parser.printDelimiter" ? node(a) : new ValueNode("\t"w))
 									.array;
+		if(tree.children[$-1].name != "Parser.printDelimiter"){
+			temp ~= new ValueNode("\n"w);
+		}
 		return new PrintStatementNode(temp);
 	}
 

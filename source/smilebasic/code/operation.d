@@ -1,5 +1,6 @@
 module tosuke.smilebasic.code.operation;
 
+import tosuke.smilebasic.code.code;
 import std.conv : to;
 import std.container.dlist;
 
@@ -20,12 +21,17 @@ abstract class Operation{
     private void type(OperationType o){type_ = o;}
   }
 
-  abstract string toString();
+  abstract override string toString();
+  abstract int codeSize();
+  abstract VMCode[] code();
 }
 
 //Push
 enum PushType{ //何をPushするか
-  Imm16
+  Imm16,
+  Imm32,
+  Imm64f, //64bit浮動小数
+  String
 }
 abstract class Push : Operation{
   this(PushType _type){
@@ -39,25 +45,94 @@ abstract class Push : Operation{
     private void pushType(PushType p){type_ = p;}
   }
 
-  abstract string toString();
+  abstract override string toString();
+  abstract override int codeSize();
+  abstract override VMCode[] code();
 }
 
 class PushImm16 : Push{
-  this(ushort _imm){
+  this(short _imm){
     super(PushType.Imm16);
     imm = _imm;
   }
 
-  ushort imm;
+  short imm;
 
   override string toString(){
     return "Push(imm16)("~imm.to!string~")";
+  }
+  override int codeSize(){
+    return 1+1;
+  }
+  override VMCode[] code(){
+    return [0x0001, cast(ushort)imm];
+  }
+}
+
+class PushImm32 : Push{
+  this(int _imm){
+    super(PushType.Imm32);
+    imm = _imm;
+  }
+
+  int imm;
+
+  override string toString(){
+    return "Push(Imm32)("~imm.to!string~")";
+  }
+  override int codeSize(){
+    return 1+2;
+  }
+  override VMCode[] code(){
+    uint k = cast(uint)imm;
+    return [0x0011, (k >>> 16) & 0xffff, k & 0xffff];
+  }
+}
+
+class PushImm64f : Push{
+  this(double _imm){
+    super(PushType.Imm64f);
+    imm = _imm;
+  }
+
+  double imm;
+
+  override string toString(){
+    return "Push(Imm64f)("~imm.to!string~")";
+  }
+  override int codeSize(){
+    return 1+4;
+  }
+  override VMCode[] code(){
+    ulong k = cast(ulong)imm;
+    return [0x0021, (k >>> 48) & 0xffff, (k >>> 32) & 0xffff, (k >>> 16) & 0xffff, k & 0xffff];
+  }
+}
+
+class PushString : Push{
+  this(wstring _imm){
+    super(PushType.String);
+    imm = _imm;
+  }
+
+  wstring imm;
+
+  override string toString(){
+    return `Push(String)("`~imm.to!string~`")`;
+  }
+  override int codeSize(){
+    return 1+1+imm.length.to!int;
+  }
+  override VMCode[] code(){
+    return [cast(ushort)0x0031, imm.length.to!ushort] ~ (cast(ushort[])imm);
   }
 }
 
 //Command
 enum CommandType{
-  Print
+  Print,
+  UnaryOp,
+  BinaryOp
 }
 abstract class Command : Operation{
   this(CommandType _type){
@@ -71,7 +146,9 @@ abstract class Command : Operation{
     private void commandType(CommandType p){type_ = p;}
   }
 
-  abstract string toString();
+  abstract override string toString();
+  abstract override int codeSize();
+  abstract override VMCode[] code();
 }
 
 class PrintCommand : Command{
@@ -84,5 +161,90 @@ class PrintCommand : Command{
 
   override string toString(){
     return "Command(Print)("~argNum.to!string~")";
+  }
+  override int codeSize(){
+    return 1+1;
+  }
+  override VMCode[] code(){
+    return [0x0080, argNum];
+  }
+}
+
+import tosuke.smilebasic.operator;
+class UnaryOpCommand : Command{
+  this(UnaryOp _op){
+    super(CommandType.UnaryOp);
+    op = _op;
+  }
+
+  UnaryOp op;
+
+  override string toString(){
+    string temp = (a){
+      switch(a){
+        case UnaryOp.Neg:         return "-";
+        case UnaryOp.Not:         return "not";
+        case UnaryOp.LogicalNot:  return "!";
+        default: assert(0);
+      }
+    }(op);
+    return "Command(UnaryOp("~temp~"))";
+  }
+  override int codeSize(){
+    return 1;
+  }
+  override VMCode[] code(){
+    return [];
+  }
+}
+
+class BinaryOpCommand : Command{
+  this(BinaryOp _op){
+    super(CommandType.BinaryOp);
+    op = _op;
+  }
+
+  BinaryOp op;
+
+  override string toString(){
+    string temp = (a){
+      switch(a){
+        case BinaryOp.Mul:    return "*";
+        case BinaryOp.Div:    return "/";
+        case BinaryOp.IntDiv: return "div";
+        case BinaryOp.Mod:    return "mod";
+        //-----------------------------------
+        case BinaryOp.Add: return "+";
+        case BinaryOp.Sub: return "-";
+        //-----------------------------------
+        case BinaryOp.LShift: return "<<";
+        case BinaryOp.RShift: return ">>";
+        //-----------------------------------
+        case BinaryOp.Eq:         return "==";
+        case BinaryOp.NotEq:      return "!=";
+        case BinaryOp.Less:       return "<";
+        case BinaryOp.Greater:    return ">";
+        case BinaryOp.LessEq:     return "<=";
+        case BinaryOp.GreaterEq:  return ">=";
+        //-----------------------------------
+        case BinaryOp.And:  return "and";
+        case BinaryOp.Or:   return "or";
+        case BinaryOp.Xor:  return "xor";
+        //-----------------------------------
+        case BinaryOp.LogicalAnd: return "&&";
+        case BinaryOp.LogicalOr:  return "||";
+
+        default: assert(0);
+      }
+    }(op);
+
+    return "Command(BinaryOp("~temp~"))";
+  }
+
+  override int codeSize(){
+    return 1;
+  }
+  override VMCode[] code(){
+    return [];
   }
 }

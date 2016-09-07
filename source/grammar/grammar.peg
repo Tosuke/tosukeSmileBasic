@@ -2,7 +2,7 @@ Parser:
   doc < statement (:":"? statement)*
 
   statement < printStatement
-  printStatement < :("print "i / "?") expr (printDelimiter expr)*
+  printStatement < :("print "i / "?") expr (printDelimiter expr)* printDelimiter?
   printDelimiter < (";" / ",")
 
   expr < factor8
