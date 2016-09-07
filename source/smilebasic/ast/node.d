@@ -2,6 +2,7 @@ module tosuke.smilebasic.ast.node;
 
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.operator;
+import tosuke.smilebasic.code.operation;
 
 import std.conv : to;
 
@@ -31,6 +32,8 @@ abstract class Node{
 		import std.algorithm, std.string;
 		return name~":["~children.map!"a.toString".join(", ")~"]";
 	}
+
+	abstract Operation operation();
 }
 
 class BinaryOpNode : Node{
@@ -70,6 +73,10 @@ class BinaryOpNode : Node{
 	}
 
 	BinaryOp op;
+
+	override Operation operation(){
+		return new BinaryOpCommand(op);
+	}
 }
 
 class UnaryOpNode : Node{
@@ -88,6 +95,10 @@ class UnaryOpNode : Node{
   }
 
   UnaryOp op;
+
+	override Operation operation(){
+		return new UnaryOpCommand(op);
+	}
 }
 
 class ValueNode : Node{
@@ -98,6 +109,24 @@ class ValueNode : Node{
 		super(value.toString);
 	}
 	Value value;
+
+	override Operation operation(){
+		switch(value.type){
+			case ValueType.Integer:
+				auto k = value.get!int;
+				if(short.min <= k && k <= short.max){
+					return new PushImm16(k.to!short);
+				}else{
+					return new PushImm32(k);
+				}
+			case ValueType.Floater:
+				return new PushImm64f(value.get!double);
+			case ValueType.String:
+				return new PushString(value.get!wstring);
+
+			default: assert(0);
+		}
+	}
 }
 
 import tosuke.smilebasic.operator;
@@ -114,5 +143,9 @@ class PrintStatementNode : Node{
 	this(Node[] _children){
 		type = NodeType.PrintStatement;
 		super("Print", _children);
+	}
+
+	override Operation operation(){
+		return new PrintCommand(this.children.length.to!ushort);
 	}
 }

@@ -2,47 +2,47 @@ Parser:
   doc < statement (:":"? statement)*
 
   statement < printStatement
-  printStatement < :("print "i / "?") expr (printDelimiter expr)* printDelimiter?
+  printStatement < ("print "i / "?") expr? (printDelimiter expr)* printDelimiter?
   printDelimiter < (";" / ",")
 
   expr < factor8
 
   #Arithmetic Expression
   factor8 < factor7 (logicalAndExpr / logicalOrExpr)*
-  logicalAndExpr < "&&" factor7
-  logicalOrExpr < "||" factor7
+  logicalAndExpr < :"&&" factor7
+  logicalOrExpr < :"||" factor7
 
   factor7 < factor6 (andExpr / orExpr / xorExpr)*
-  andExpr < "and "i factor6
-  orExpr < "or "i factor6
-  xorExpr < "xor "i factor6
+  andExpr < :"and "i factor6
+  orExpr < :"or "i factor6
+  xorExpr < :"xor "i factor6
 
   factor6 < factor5 (eqExpr / notEqExpr / lessExpr / greaterExpr / lessEqExpr / greaterEqExpr)*
-  eqExpr < "==" factor5
-  notEqExpr < "!=" factor5
-  lessExpr < "<" factor5
-  greaterExpr < ">" factor5
-  lessEqExpr < "<=" factor5
-  greaterEqExpr < ">=" factor5
+  eqExpr < :"==" factor5
+  notEqExpr < :"!=" factor5
+  lessExpr < :"<" factor5
+  greaterExpr < :">" factor5
+  lessEqExpr < :"<=" factor5
+  greaterEqExpr < :">=" factor5
 
   factor5 < factor4 (leftShiftExpr / rightShiftExpr)*
-  leftShiftExpr < "<<" factor4
-  rightShiftExpr < ">>" factor4
+  leftShiftExpr < :"<<" factor4
+  rightShiftExpr < :">>" factor4
 
   factor4 < factor3 (addExpr / subExpr)*
-  addExpr < "+" factor3
-  subExpr < "-" factor3
+  addExpr < :"+" factor3
+  subExpr < :"-" factor3
 
   factor3 < factor2 (mulExpr / divExpr / intDivExpr / modExpr)*
-  mulExpr < "*" factor2
-  divExpr < "/" factor2
-  intDivExpr < "div "i factor2
-  modExpr < "mod "i factor2
+  mulExpr < :"*" factor2
+  divExpr < :"/" factor2
+  intDivExpr < :"div "i factor2
+  modExpr < :"mod "i factor2
 
   factor2 < negExpr / notExpr / logicalNotExpr / primary
-  negExpr < "-" factor2
-  notExpr < "not"i factor2
-  logicalNotExpr < "!" factor2
+  negExpr < :"-" factor2
+  notExpr < :"not"i factor2
+  logicalNotExpr < :"!" factor2
 
   primary < parens / value
   parens < "(" expr ")"

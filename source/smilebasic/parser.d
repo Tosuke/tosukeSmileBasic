@@ -141,7 +141,7 @@ class Parser{
 									.filter!(a => !(a.name == "Parser.printDelimiter" && a.matches.front == ";"))
 									.map!(a => a.name != "Parser.printDelimiter" ? node(a) : new ValueNode("\t"w))
 									.array;
-		if(tree.children[$-1].name != "Parser.printDelimiter"){
+		if(tree.children.length == 0 || tree.children[$-1].name != "Parser.printDelimiter"){
 			temp ~= new ValueNode("\n"w);
 		}
 		return new PrintStatementNode(temp);

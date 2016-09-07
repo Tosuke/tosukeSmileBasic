@@ -104,7 +104,7 @@ class PushImm64f : Push{
     return 1+4;
   }
   override VMCode[] code(){
-    ulong k = cast(ulong)imm;
+    ulong k = *(cast(ulong*)&imm);
     return [0x0021, (k >>> 48) & 0xffff, (k >>> 32) & 0xffff, (k >>> 16) & 0xffff, k & 0xffff];
   }
 }
