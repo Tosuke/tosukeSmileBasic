@@ -13,6 +13,13 @@ class Parser{
 	this(){
 		initialize();
 	}
+	//Document
+	Node doc(ParseTree tree){
+		return new DocumentNode(tree.children.map!(a => node(a)).array);
+	}
+	Node statements(ParseTree tree){
+		return new DocumentNode(tree.children.map!(a => node(a)).array);
+	}
 	//UnaryOperators
   Node negExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
   Node notExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Not, node(tree.children[0]));}

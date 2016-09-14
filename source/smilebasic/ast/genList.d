@@ -9,10 +9,21 @@ import std.conv : to;
 OperationList genList(Node node){
   OperationList temp;
 
-  foreach_reverse(a; node.children){
-    temp ~= genList(a)[];
+  switch(node.type){
+    case NodeType.Document:
+      temp ~= node.operation;
+      foreach(a; node.children){
+        temp ~= genList(a)[];
+      }
+      break;
+    default:
+      foreach_reverse(a; node.children){
+        temp ~= genList(a)[];
+      }
+      temp ~= node.operation;
+      break;
   }
-  temp ~= node.operation;
+
 
   return temp;
 }

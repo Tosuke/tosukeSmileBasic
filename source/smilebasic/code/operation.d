@@ -7,6 +7,7 @@ import std.container.dlist;
 alias OperationList = DList!Operation;
 
 enum OperationType{
+  Empty,
   Push, //値とかをPushする
   Command, //値をPopして何かしてPushする(即値読んでなんかする可能性もあり)
 }
@@ -24,6 +25,16 @@ abstract class Operation{
   abstract override string toString();
   abstract int codeSize();
   abstract VMCode[] code();
+}
+
+class EmptyOperation : Operation{
+  this(){
+    super(OperationType.Empty);
+  }
+
+  override string toString(){return "";}
+  override int codeSize(){return 0;}
+  override VMCode[] code(){return [];}
 }
 
 //Push

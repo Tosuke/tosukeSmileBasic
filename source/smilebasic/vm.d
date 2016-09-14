@@ -76,7 +76,7 @@ class VM{
       }(v.type);
     }
     import std.stdio;
-    temp.data.writeln;
+    temp.data.write;
   }
 
   void pushImm16(){

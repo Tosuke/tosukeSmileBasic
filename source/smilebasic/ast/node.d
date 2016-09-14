@@ -7,11 +7,13 @@ import tosuke.smilebasic.code.operation;
 import std.conv : to;
 
 enum NodeType{
+	Document,
+
+	PrintStatement,
+
 	BinaryOp,
   UnaryOp,
 	Value,
-
-	PrintStatement
 }
 
 abstract class Node{
@@ -34,6 +36,29 @@ abstract class Node{
 	}
 
 	abstract Operation operation();
+}
+
+class DocumentNode : Node{
+	this(Node[] _children){
+		type = NodeType.Document;
+		super("Doc", _children);
+	}
+
+	override Operation operation(){
+		return new EmptyOperation();
+	}
+}
+
+
+class PrintStatementNode : Node{
+	this(Node[] _children){
+		type = NodeType.PrintStatement;
+		super("Print", _children);
+	}
+
+	override Operation operation(){
+		return new PrintCommand(this.children.length.to!ushort);
+	}
 }
 
 class BinaryOpNode : Node{
@@ -137,15 +162,4 @@ Value unaryOp(UnaryOp op, Node a){
 }
 Value binaryOp(BinaryOp op, Node a, Node b){
   return tosuke.smilebasic.operator.binaryOp(op, (cast(ValueNode)a).value, (cast(ValueNode)b).value);
-}
-
-class PrintStatementNode : Node{
-	this(Node[] _children){
-		type = NodeType.PrintStatement;
-		super("Print", _children);
-	}
-
-	override Operation operation(){
-		return new PrintCommand(this.children.length.to!ushort);
-	}
 }
