@@ -16,7 +16,7 @@ void main(){
 	tosuke.smilebasic.operator.initialize;
 
 	auto parser = new Parser();
-	auto tree = parser.parse("?1+1 : ?34\n?334\n");
+	auto tree = parser.parse("?(1+1)*4\n");
 	tree.writeln;
 	tree = constantFolding(tree);
 	tree.writeln;
