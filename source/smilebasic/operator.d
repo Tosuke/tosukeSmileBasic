@@ -1,5 +1,6 @@
 module tosuke.smilebasic.operator;
 
+import tosuke.smilebasic.error;
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.ast.node : Node, ValueNode;
 import std.conv : to;
@@ -70,7 +71,7 @@ Value logicalNotOp(Value a){
   if(a.isArithmeticValue){
     return Value(!a.toBoolean);
   }else{
-    assert(0, "Type Mismatch");
+    throw imcompatibleTypeError("!", a);
   }
 }
 
@@ -113,7 +114,7 @@ Value intDivOp(Value a, Value b){
   if(a.isArithmeticValue && b.isArithmeticValue){
     return Value(a.toInteger / b.toInteger);
   }else{
-    assert(0, "Type Mismatch");
+    throw imcompatibleTypeError("div", a, b);
   }
 }
 Value modOp(Value a, Value b){
@@ -138,42 +139,66 @@ Value eqOp(Value a, Value b){
   if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    return Value(a == b);
+    try{
+      return Value(a == b);
+    }catch(TypeMismatchError e){
+      throw imcompatibleTypeError("==", a, b);
+    }
   }
 }
 Value notEqOp(Value a, Value b){
   if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    return Value(a != b);
+    try{
+      return Value(a != b);
+    }catch(TypeMismatchError e){
+      throw imcompatibleTypeError("!=", a, b);
+    }
   }
 }
 Value lessOp(Value a, Value b){
   if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    return Value(a < b);
+    try{
+      return Value(a < b);
+    }catch(TypeMismatchError e){
+      throw imcompatibleTypeError("<", a, b);
+    }
   }
 }
 Value greaterOp(Value a, Value b){
   if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    return Value(a > b);
+    try{
+      return Value(a > b);
+    }catch(TypeMismatchError e){
+      throw imcompatibleTypeError(">", a, b);
+    }
   }
 }
 Value lessEqOp(Value a, Value b){
   if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    return Value(a <= b);
+    try{
+      return Value(a <= b);
+    }catch(TypeMismatchError e){
+      throw imcompatibleTypeError("<=", a, b);
+    }
   }
 }
 Value greaterEqOp(Value a, Value b){
   if(a.type == ValueType.String && b.isArithmeticValue){
     return Value(3);
   }else{
-    return Value(a >= b);
+    try{
+      return Value(a >= b);
+    }catch(TypeMismatchError e){
+      throw imcompatibleTypeError(">=", a, b);
+    }
   }
 }
 
@@ -199,7 +224,7 @@ Value logicalAndOp(Value a, Value b){
       return Value(false);
     }
   }else{
-    assert(0, "Type Mismatch");
+    throw imcompatibleTypeError("&&", a, b);
   }
 }
 Value logicalOrOp(Value a, Value b){
@@ -212,6 +237,6 @@ Value logicalOrOp(Value a, Value b){
       return Value(false);
     }
   }else{
-    assert(0, "Type Mismatch");
+    throw imcompatibleTypeError("||", a, b);
   }
 }

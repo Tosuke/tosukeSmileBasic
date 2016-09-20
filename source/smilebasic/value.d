@@ -1,12 +1,24 @@
 module tosuke.smilebasic.value;
 
+import tosuke.smilebasic.error;
 import std.conv : to;
+import std.format;
 
 enum ValueType{
 	Undefined,
 	Integer,
 	Floater,
 	String
+}
+
+string toString(ValueType t){
+	switch(t){
+		case ValueType.Undefined: return "Undefined";
+		case ValueType.Integer: return "Integer";
+		case ValueType.Floater: return "Floater";
+		case ValueType.String: return "String";
+		default: assert(0);
+	}
 }
 struct Value{
 	alias data this;
@@ -61,12 +73,16 @@ struct Value{
 		switch(type){
 	    case ValueType.Integer: return Value(-(data.get!int));
 	    case ValueType.Floater: return Value(-(data.get!double));
-	    default: assert(0, "Type Mismatch");
+	    default: throw imcompatibleTypeError("-", this);
 	  }
 	}
 	//notOp
 	Value opUnary(string op : "~")(){
-		return Value(~(this.toInteger));
+		if(this.isArithmeticValue){
+			return Value(~(this.toInteger));
+		}else{
+			throw imcompatibleTypeError("not", this);
+		}
 	}
 
 	//mulOp
@@ -81,7 +97,7 @@ struct Value{
 	    import std.array;
 	    return Value(this.get!wstring.replicate(b.toInteger));
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError("*", this, b);
 	  }
 	}
 
@@ -90,7 +106,7 @@ struct Value{
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(this.toFloater / b.toFloater);
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError("/", this, b);
 	  }
 	}
 
@@ -99,7 +115,7 @@ struct Value{
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(this.toInteger % b.toInteger);
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError("%", this, b);
 	  }
 	}
 
@@ -114,7 +130,7 @@ struct Value{
 	  }else if(this.type == ValueType.String && b.type == ValueType.String){
 	    return Value(this.get!wstring ~ b.get!wstring);
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError("+", this, b);
 	  }
 	}
 
@@ -127,7 +143,7 @@ struct Value{
 	      return Value(this.toFloater - b.toFloater);
 	    }
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError("-", this, b);
 	  }
 	}
 
@@ -136,7 +152,7 @@ struct Value{
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError(op, this, b);
 	  }
 	}
 
@@ -145,7 +161,14 @@ struct Value{
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
 	  }else{
-	    assert(0, "Type Mismatch");
+	    throw imcompatibleTypeError((k){
+				switch(k){
+					case "&": return "and";
+					case "|": return "or";
+					case "^": return "xor";
+					default: assert(0);
+				}
+			}(op), this, b);
 	  }
 	}
 	//eqOp
@@ -159,7 +182,7 @@ struct Value{
 		}else if(this.type == ValueType.String && b.type == ValueType.String){
 			return this.get!wstring == b.get!wstring;
 		}else{
-			assert(0, "Type Mismatch");
+			throw new TypeMismatchError();
 		}
 	}
 	//cmpOp
@@ -194,7 +217,7 @@ struct Value{
 				return +1;
 			}
 		}else{
-			assert(0, "Type Mismatch");
+			throw new TypeMismatchError();
 		}
 		assert(0);
 	}
@@ -208,7 +231,7 @@ bool isArrayValue(Value v){
 }
 
 double toFloater(Value v){
-	if(!isArithmeticValue(v)) assert(0, "Type Mismatch");
+	if(!isArithmeticValue(v)) throw new TypeMismatchError();
 	if(v.type == ValueType.Integer){
 		return v.get!int.to!double;
 	}else{
@@ -217,7 +240,7 @@ double toFloater(Value v){
 }
 
 int toInteger(Value v){
-	if(!isArithmeticValue(v)) assert(0, "Type Mismatch");
+	if(!isArithmeticValue(v)) throw new TypeMismatchError();
 	if(v.type == ValueType.Floater){
 		auto k = v.get!double;
 		if(k > int.max){

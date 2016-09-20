@@ -1,11 +1,19 @@
 module tosuke.smilebasic.ast.optimize;
 
+import tosuke.smilebasic.error;
 import tosuke.smilebasic.ast.node;
 
 //定数畳み込み
 public Node constantFolding(Node node){
   import std.algorithm, std.array;
-	node.children = node.children.map!(a => constantFolding(a)).array;
+  try{
+    node.children = node.children.map!(a => constantFolding(a)).array;
+  }catch(SmileBasicError e){
+    if(node.type == NodeType.Line){
+      e.line = (cast(LineNode)node).line;
+    }
+    throw e;
+  }
 
 	switch(node.type){
 		case NodeType.UnaryOp:

@@ -7,9 +7,12 @@ import std.container.dlist;
 alias OperationList = DList!Operation;
 
 enum OperationType{
-  Empty,
   Push, //値とかをPushする
   Command, //値をPopして何かしてPushする(即値読んでなんかする可能性もあり)
+
+  //埋めこみ情報系
+  Empty,
+  Line
 }
 abstract class Operation{
   this(OperationType _type){
@@ -33,6 +36,24 @@ class EmptyOperation : Operation{
   }
 
   override string toString(){return "";}
+  override int codeSize(){return 0;}
+  override VMCode[] code(){return [];}
+}
+
+class LineOperation : Operation{
+  this(int _line){
+    super(OperationType.Line);
+
+    line = _line;
+  }
+
+  private int line_;
+  @property{
+    public int line(){return line_;}
+    private void line(int a){line_ = a;}
+  }
+
+  override string toString(){return "Line("~line.to!string~")";}
   override int codeSize(){return 0;}
   override VMCode[] code(){return [];}
 }

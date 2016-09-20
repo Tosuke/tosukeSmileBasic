@@ -1,10 +1,10 @@
 Parser:
   doc < (statements)* :EndOfProgram
 
-  statements <- statement (S :":"? S statement)* S :EOL+
+  statements <- statement (S :":"? S statement)* S :EOL+ #改行情報を格納する
 
   statement <- printStatement
-  printStatement <- ("print "i / "?") S expr? (S printDelimiter S expr)* S printDelimiter?
+  printStatement <- (("print "i / "?") S expr (S printDelimiter S expr)* S printDelimiter?) / ("print"i / "?") 
   printDelimiter <- (";" / ",")
 
   expr <- factor8

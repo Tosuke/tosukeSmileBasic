@@ -3,6 +3,7 @@ module tosuke.smilebasic.parser;
 import tosuke.smilebasic.ast.node;
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.operator;
+import tosuke.smilebasic.error;
 import pegged.grammar;
 import std.experimental.logger;
 
@@ -18,7 +19,8 @@ class Parser{
 		return new DocumentNode(tree.children.map!(a => node(a)).array);
 	}
 	Node statements(ParseTree tree){
-		return new DocumentNode(tree.children.map!(a => node(a)).array);
+		auto line = position(tree).line.to!int;
+		return new LineNode(line, tree.children.map!(a => node(a)).array);
 	}
 	//UnaryOperators
   Node negExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
@@ -163,11 +165,25 @@ mixin template ParserMixin(string parserName){
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
 		std.stdio.writeln(tree);
-		return node(tree);
+		Node n;
+		try{
+			n = node(tree);
+		}catch(SmileBasicError e){
+			e.slot = 0;
+			throw e;
+		}
+		return n;
 	}
 
 	Node node(ParseTree tree){
-    if(!tree.successful) assert(0, "SyntaxError");
+    if(!tree.successful){
+			auto t = position(tree);
+			int line = t.line.to!int + 1;
+			int col = t.col.to!int + 1;
+			auto e = new SyntaxError("Unrecognized syntax");
+			e.line = line; e.col = col;
+			throw e;
+		}
 		return converters.get(tree.name, &skip)(tree);
 	}
 

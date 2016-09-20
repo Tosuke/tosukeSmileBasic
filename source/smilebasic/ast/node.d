@@ -8,6 +8,7 @@ import std.conv : to;
 
 enum NodeType{
 	Document,
+	Line,
 
 	PrintStatement,
 
@@ -42,6 +43,24 @@ class DocumentNode : Node{
 	this(Node[] _children){
 		type = NodeType.Document;
 		super("Doc", _children);
+	}
+
+	override Operation operation(){
+		return new EmptyOperation();
+	}
+}
+
+class LineNode : Node{
+	this(int _line, Node[] _children){
+		type = NodeType.Line;
+		super("Line", _children);
+		line = _line;
+	}
+
+	private int line_;
+	@property{
+		public int line(){return line_;}
+		private void line(int a){line_ = a;}
 	}
 
 	override Operation operation(){
