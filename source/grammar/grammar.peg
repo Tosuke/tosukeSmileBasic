@@ -4,7 +4,7 @@ Parser:
   statements <- statement (S :":"? S statement)* S :EOL+ #改行情報を格納する
 
   statement <- printStatement
-  printStatement <- (("print "i / "?") S expr (S printDelimiter S expr)* S printDelimiter?) / ("print"i / "?") 
+  printStatement <- (("print "i / "?") S expr (S printDelimiter S expr)* S printDelimiter?) / ("print"i / "?")
   printDelimiter <- (";" / ",")
 
   expr <- factor8
@@ -54,7 +54,7 @@ Parser:
   decimalFloater <~(digits "." digits)
   hexInteger <~(:"&h"i hexDigit+)
   binInteger <~(:"&b"i [01]+)
-  stringLiteral <~(:doublequote (!doublequote .)* :doublequote)
+  stringLiteral <~(:doublequote (!doublequote .)* :doublequote?)
 
   S <: space*
   EOL <- "\r\n" / "\n" / "\r"

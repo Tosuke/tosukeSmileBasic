@@ -17,7 +17,7 @@ class VM{
 
   Stack!Value valueStack;
 
-  void delegate()[0x1000] codeTable;
+  void delegate()[0x10000] codeTable;
 
   this(){
     code = new VMCode[][](5);
@@ -49,6 +49,30 @@ class VM{
   }
 
   void initCommandTable(){
+    //UnaryOps
+    codeTable[0x0000] = &unaryOp!"negOp";
+    codeTable[0x1000] = &unaryOp!"notOp";
+    codeTable[0x2000] = &unaryOp!"logicalNotOp";
+
+    codeTable[0x0010] = &binaryOp!"mulOp";
+    codeTable[0x1010] = &binaryOp!"divOp";
+    codeTable[0x2010] = &binaryOp!"intDivOp";
+    codeTable[0x3010] = &binaryOp!"modOp";
+    codeTable[0x4010] = &binaryOp!"addOp";
+    codeTable[0x5010] = &binaryOp!"subOp";
+    codeTable[0x6010] = &binaryOp!"leftShiftOp";
+    codeTable[0x7010] = &binaryOp!"rightShiftOp";
+    codeTable[0x8010] = &binaryOp!"andOp";
+    codeTable[0x9010] = &binaryOp!"orOp";
+    codeTable[0xA010] = &binaryOp!"xorOp";
+
+    codeTable[0x0020] = &binaryOp!"eqOp";
+    codeTable[0x1020] = &binaryOp!"notEqOp";
+    codeTable[0x2020] = &binaryOp!"lessOp";
+    codeTable[0x3020] = &binaryOp!"greaterOp";
+    codeTable[0x4020] = &binaryOp!"lessEqOp";
+    codeTable[0x5020] = &binaryOp!"greaterEqOp";
+
     codeTable[0x0080] = &printCommand;
   }
   void initPushTable(){
@@ -56,6 +80,18 @@ class VM{
     codeTable[0x0011] = &pushImm32;
     codeTable[0x0021] = &pushImm64f;
     codeTable[0x0031] = &pushString;
+  }
+
+  void unaryOp(string op)(){
+    auto a = valueStack.pop;
+    valueStack.push(mixin(op~"(a)"));
+  }
+
+  void binaryOp(string op)(){
+    auto a = valueStack.pop;
+    auto b = valueStack.pop;
+
+    valueStack.push(mixin(op~"(a, b)"));
   }
 
   void printCommand(){

@@ -1,21 +1,19 @@
 module tosuke.smilebasic.code.code;
 
 /*
-#バイトコード表
+# バイトコード表
 0xnnnx
 x<-命令種別
-0b0000|Command
-0b0001|Push
+0x0|Command
+0x1|Push
 
-##Command
+## Command
 0bnxx0
 xx<-種別
 0x00|UnaryOperator
-0x01|BinaryOparator
-0x02|IndexOperator(1)
-0x03|IndexOperator(2)
-0x04|IndexOperator(3)
-0x05|IndexOperator(4)
+0x01|>BinaryOparator
+0x02|>
+
 0x06|Call Function(Common)
 0x07|Call Function(Local)
 0x08|Call command statement
@@ -31,7 +29,38 @@ xx<-種別
 0x16|string goto
 0x17|string gosub
 
-###Call command statement
+### UnaryOperator
+0xm000 UnaryOperator
+m<-種別
+0x0|OpNeg
+0x1|OpNot
+0x2|OpLogicalNot
+
+### BinaryOparator
+0xm010 BinaryOparator1
+m<-種別
+0x0|OpMul
+0x1|OpDiv
+0x2|OpIntDiv
+0x3|OpMod
+0x4|OpAdd
+0x5|OpSub
+0x6|OpLShift
+0x7|OpRShift
+0x8|OpAnd
+0x9|OpOr
+0xA|OpXor
+
+0xm020 BianryOperator2
+m<-種別
+0x0|OpEq
+0x1|OpNotEq
+0x2|OpLess
+0x3|OpGreater
+0x4|OpLessEq
+0x5|OpGreaterEq
+
+### Call command statement
 0xm080 CallCmd imm16(argument num)
 m<-種別
 0x0|Print

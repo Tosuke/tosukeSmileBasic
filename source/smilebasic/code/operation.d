@@ -226,7 +226,15 @@ class UnaryOpCommand : Command{
     return 1;
   }
   override VMCode[] code(){
-    return [];
+    auto code = (a){
+      switch(a){
+        case UnaryOp.Neg:         return 0x0000;
+        case UnaryOp.Not:         return 0x1000;
+        case UnaryOp.LogicalNot:  return 0x2000;
+        default: assert(0);
+      }
+    }(op).to!VMCode;
+    return [code];
   }
 }
 
@@ -241,16 +249,16 @@ class BinaryOpCommand : Command{
   override string toString(){
     string temp = (a){
       switch(a){
-        case BinaryOp.Mul:    return "*";
-        case BinaryOp.Div:    return "/";
-        case BinaryOp.IntDiv: return "div";
-        case BinaryOp.Mod:    return "mod";
+        case BinaryOp.Mul:        return "*";
+        case BinaryOp.Div:        return "/";
+        case BinaryOp.IntDiv:     return "div";
+        case BinaryOp.Mod:        return "mod";
         //-----------------------------------
-        case BinaryOp.Add: return "+";
-        case BinaryOp.Sub: return "-";
+        case BinaryOp.Add:        return "+";
+        case BinaryOp.Sub:        return "-";
         //-----------------------------------
-        case BinaryOp.LShift: return "<<";
-        case BinaryOp.RShift: return ">>";
+        case BinaryOp.LShift:     return "<<";
+        case BinaryOp.RShift:     return ">>";
         //-----------------------------------
         case BinaryOp.Eq:         return "==";
         case BinaryOp.NotEq:      return "!=";
@@ -259,9 +267,9 @@ class BinaryOpCommand : Command{
         case BinaryOp.LessEq:     return "<=";
         case BinaryOp.GreaterEq:  return ">=";
         //-----------------------------------
-        case BinaryOp.And:  return "and";
-        case BinaryOp.Or:   return "or";
-        case BinaryOp.Xor:  return "xor";
+        case BinaryOp.And:        return "and";
+        case BinaryOp.Or:         return "or";
+        case BinaryOp.Xor:        return "xor";
         //-----------------------------------
         case BinaryOp.LogicalAnd: return "&&";
         case BinaryOp.LogicalOr:  return "||";
@@ -277,6 +285,33 @@ class BinaryOpCommand : Command{
     return 1;
   }
   override VMCode[] code(){
-    return [];
+    VMCode code = (a){
+      switch(a){
+        case BinaryOp.Mul:        return 0x0010;
+        case BinaryOp.Div:        return 0x1010;
+        case BinaryOp.IntDiv:     return 0x2010;
+        case BinaryOp.Mod:        return 0x3010;
+        //--------------------------------------
+        case BinaryOp.Add:        return 0x4010;
+        case BinaryOp.Sub:        return 0x5010;
+        //--------------------------------------
+        case BinaryOp.LShift:     return 0x6010;
+        case BinaryOp.RShift:     return 0x7010;
+        //--------------------------------------
+        case BinaryOp.And:        return 0x8010;
+        case BinaryOp.Or:         return 0x9010;
+        case BinaryOp.Xor:        return 0xA010;
+        //--------------------------------------
+        case BinaryOp.Eq:         return 0x0020;
+        case BinaryOp.NotEq:      return 0x1020;
+        case BinaryOp.Less:       return 0x2020;
+        case BinaryOp.Greater:    return 0x3020;
+        case BinaryOp.LessEq:     return 0x4020;
+        case BinaryOp.GreaterEq:  return 0x5020;
+        //--------------------------------------
+        default: assert(0);
+      }
+    }(op).to!VMCode;
+    return [code];
   }
 }

@@ -18,22 +18,20 @@ void main(){
 	auto parser = new Parser();
 
 	try{
-		auto tree = parser.parse(`print 44.0<"hhh"\nhohh`~"\n");
+		auto tree = parser.parse(`print 1+2+3`~"\n");
 		tree.writeln;
-		tree = constantFolding(tree);
-		tree.writeln;
+		//tree = constantFolding(tree);
+		//tree.writeln;
+
+		auto list = genList(tree);
+		list[].writeln;
+		auto byteCode = genCode(list);
+		byteCode.writeln;
+
+		auto vm = new VM();
+		vm.set(0, byteCode);
+		vm.run(0);
 	}catch(SmileBasicError e){
 		writeln(e.msg);
 	}
-
-	/*
-	auto list = genList(tree);
-	list[].writeln;
-	auto byteCode = genCode(list);
-	byteCode.writeln;
-
-	auto vm = new VM();
-	vm.set(0, byteCode);
-	vm.run(0);
-	*/
 }
