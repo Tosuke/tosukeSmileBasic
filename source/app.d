@@ -18,7 +18,7 @@ void main(){
 	auto parser = new Parser();
 
 	try{
-		auto tree = parser.parse(`print 1+2+3`~"\n");
+		auto tree = parser.parse(`print "hhh"`~"\n");
 		tree.writeln;
 		//tree = constantFolding(tree);
 		//tree.writeln;

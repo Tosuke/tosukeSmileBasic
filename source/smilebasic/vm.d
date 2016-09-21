@@ -130,7 +130,13 @@ class VM{
     valueStack.push(Value(*(cast(double*)&k)));
   }
   void pushString(){
-    auto length = take();
-    valueStack.push(Value(cast(wstring)take(length)));
+    import std.array;
+    Appender!(wchar[]) str;
+    while(true){
+      auto a = cast(wchar)take();
+      if(a == 0) break;
+      str ~= a;
+    }
+    valueStack.push(Value(cast(wstring)(str.data)));
   }
 }

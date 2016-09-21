@@ -153,10 +153,10 @@ class PushString : Push{
     return `Push(String)("`~imm.to!string~`")`;
   }
   override int codeSize(){
-    return 1+1+imm.length.to!int;
+    return 1 + imm.length.to!int + 1;
   }
   override VMCode[] code(){
-    return [cast(ushort)0x0031, imm.length.to!ushort] ~ (cast(ushort[])imm);
+    return [cast(VMCode)0x0031] ~ (cast(VMCode[])imm) ~ [cast(VMCode)0];
   }
 }
 
