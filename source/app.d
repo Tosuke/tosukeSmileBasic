@@ -1,5 +1,4 @@
 import std.stdio;
-import pegged.grammar;
 import std.array;
 import std.conv;
 
@@ -18,7 +17,14 @@ void main(){
 	auto parser = new Parser();
 
 	try{
-		auto tree = parser.parse(`print "hhh"`~"\n");
+		Node tree;
+		try{
+			tree = parser.parse(`print ""`);
+			(cast(LineNode)tree).line = 1;
+		}catch(SyntaxError e){
+			e.line = 1;
+			throw e;
+		}
 		tree.writeln;
 		//tree = constantFolding(tree);
 		//tree.writeln;

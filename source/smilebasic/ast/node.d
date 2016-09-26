@@ -52,15 +52,18 @@ class DocumentNode : Node{
 
 class LineNode : Node{
 	this(int _line, Node[] _children){
+		line = _line;
+		this(_children);
+	}
+	this(Node[] _children){
 		type = NodeType.Line;
 		super("Line", _children);
-		line = _line;
 	}
 
 	private int line_;
 	@property{
 		public int line(){return line_;}
-		private void line(int a){line_ = a;}
+		public void line(int a){line_ = a;}
 	}
 
 	override Operation operation(){

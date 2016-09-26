@@ -10,7 +10,7 @@ OperationList genList(Node node){
   OperationList temp;
 
   switch(node.type){
-    case NodeType.Document:
+    case NodeType.Document, NodeType.Line:
       temp ~= node.operation;
       foreach(a; node.children){
         temp ~= genList(a)[];

@@ -15,12 +15,8 @@ class Parser{
 		initialize();
 	}
 	//Document
-	Node doc(ParseTree tree){
-		return new DocumentNode(tree.children.map!(a => node(a)).array);
-	}
-	Node statements(ParseTree tree){
-		auto line = position(tree).line.to!int;
-		return new LineNode(line, tree.children.map!(a => node(a)).array);
+	Node line(ParseTree tree){
+		return new LineNode(tree.children.map!(a => node(a)).array);
 	}
 	//UnaryOperators
   Node negExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
@@ -142,7 +138,7 @@ class Parser{
 		return new ValueNode(tree.matches.front.to!int(2));
 	}
 	Node stringLiteral(ParseTree tree){
-		return new ValueNode(tree.matches.front.to!wstring);
+		return new ValueNode(tree.matches.front.to!wstring[1..$]);
 	}
 
 	Node printStatement(ParseTree tree){
