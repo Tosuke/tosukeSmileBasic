@@ -23,6 +23,16 @@ abstract class Node{
 		public NodeType type(){return type_;}
 		protected void type(NodeType a){type_ = a;}
 	}
+	private int line_; //自分の位置の行番号
+	@property{
+		public int line(){return line_;}
+		public void line(int a){
+			line_ = a;
+			foreach(ref c; children){
+				c.line = a;
+			}
+		}
+	}
 	string name;
 	Node[] children;
 
@@ -58,12 +68,6 @@ class LineNode : Node{
 	this(Node[] _children){
 		type = NodeType.Line;
 		super("Line", _children);
-	}
-
-	private int line_;
-	@property{
-		public int line(){return line_;}
-		public void line(int a){line_ = a;}
 	}
 
 	override Operation operation(){

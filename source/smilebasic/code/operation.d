@@ -24,6 +24,7 @@ abstract class Operation{
     public OperationType type(){return type_;}
     private void type(OperationType o){type_ = o;}
   }
+  public int line; //行番号
 
   abstract override string toString();
   abstract int codeSize();

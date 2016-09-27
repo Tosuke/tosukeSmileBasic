@@ -12,8 +12,16 @@ struct Stack(T){
     }
     data[++ptr] = a;
   }
+
+  void dup(){
+    push(this.front);
+  }
   T pop(){
     if(ptr == 0) assert(0);
     return data[ptr--];
+  }
+
+  @property T front(){
+    return data[ptr];
   }
 }

@@ -11,7 +11,11 @@ OperationList genList(Node node){
 
   switch(node.type){
     case NodeType.Document, NodeType.Line:
-      temp ~= node.operation;
+      temp ~= (a){
+        a.line = node.line;
+        return a;
+      }(node.operation);
+      
       foreach(a; node.children){
         temp ~= genList(a)[];
       }
@@ -20,7 +24,11 @@ OperationList genList(Node node){
       foreach_reverse(a; node.children){
         temp ~= genList(a)[];
       }
-      temp ~= node.operation;
+
+      temp ~= (a){
+        a.line = node.line;
+        return a;
+      }(node.operation);
       break;
   }
 

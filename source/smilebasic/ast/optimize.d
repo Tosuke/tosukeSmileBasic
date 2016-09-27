@@ -6,23 +6,23 @@ import tosuke.smilebasic.ast.node;
 //定数畳み込み
 public Node constantFolding(Node node){
   import std.algorithm, std.array;
+  node.children = node.children.map!(a => constantFolding(a)).array;
+
   try{
-    node.children = node.children.map!(a => constantFolding(a)).array;
-  }catch(SmileBasicError e){
-    if(node.type == NodeType.Line){
-      e.line = (cast(LineNode)node).line;
+    switch(node.type){
+      case NodeType.UnaryOp:
+        return folding(cast(UnaryOpNode)node);
+      case NodeType.BinaryOp:
+        return folding(cast(BinaryOpNode)node);
+      default:
+        return node;
     }
+  }catch(SmileBasicError e){
+    e.line = node.line;
+    import std.experimental.logger;
+    log(node.line);
     throw e;
   }
-
-	switch(node.type){
-		case NodeType.UnaryOp:
-			return folding(cast(UnaryOpNode)node);
-		case NodeType.BinaryOp:
-			return folding(cast(BinaryOpNode)node);
-		default:
-			return node;
-	}
 }
 
 private Node folding(UnaryOpNode node){

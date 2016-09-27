@@ -9,6 +9,7 @@ import tosuke.smilebasic.ast.node;
 import tosuke.smilebasic.ast.optimize;
 import tosuke.smilebasic.ast.genList;
 import tosuke.smilebasic.code.gencode;
+import tosuke.smilebasic.code.sourcemap;
 import tosuke.smilebasic.vm;
 
 void main(){
@@ -18,19 +19,30 @@ void main(){
 
 	try{
 		Node tree;
+		Node[] nodeList;
+		int line = 1;
 		try{
-			tree = parser.parse(`print ""`);
-			(cast(LineNode)tree).line = 1;
+			nodeList = parser.parse(`print ""+44`).children;
 		}catch(SyntaxError e){
-			e.line = 1;
+			e.line = line;
 			throw e;
 		}
+		Appender!(Node[]) temp;
+		foreach(a; nodeList){
+			a.line = line;
+			temp ~= a;
+		}
+		tree = new DocumentNode(temp.data);
 		tree.writeln;
 		//tree = constantFolding(tree);
 		//tree.writeln;
 
 		auto list = genList(tree);
 		list[].writeln;
+
+		auto codeMap = list.codeMap;
+		codeMap.data.writeln;
+
 		auto byteCode = genCode(list);
 		byteCode.writeln;
 
