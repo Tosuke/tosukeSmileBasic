@@ -5,8 +5,6 @@ Parser:
 
   commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
   commandDelimiter <- ";" / ","
-  #printStatement < (("print"i / "?") expr (printDelimiter expr)* printDelimiter?) / ("print"i / "?")
-  #printDelimiter <- (";" / ",")
 
   expr <- factor8
 
