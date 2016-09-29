@@ -9,6 +9,7 @@ import std.experimental.logger;
 
 class Parser{
 	import std.algorithm, std.array;
+	import std.string;
   import std.conv : to;
 
 	this(){
@@ -141,12 +142,22 @@ class Parser{
 		return new ValueNode(tree.matches.front.to!wstring[1..$]);
 	}
 
-	Node printStatement(ParseTree tree){
-		Node[] temp =  tree.children
-									.filter!(a => !(a.name == "Parser.printDelimiter" && a.matches.front == ";"))
-									.map!(a => a.name != "Parser.printDelimiter" ? node(a) : new ValueNode("\t"w))
+	Node commandStatement(ParseTree tree){
+		auto name = tree.children[0].matches.front.to!wstring.toLower;
+		switch(name){
+			case "print"w, "?"w:
+				return print(tree.children[1..$]);
+			default:
+				throw new SyntaxError("Unrecognized syntax");
+		}
+	}
+
+	Node print(ParseTree[] trees){
+		Node[] temp =  trees
+									.filter!(a => !(a.name == "Parser.commandDelimiter" && a.matches.front == ";"))
+									.map!(a => a.name != "Parser.commandDelimiter" ? node(a) : new ValueNode("\t"w))
 									.array;
-		if(tree.children.length == 0 || tree.children[$-1].name != "Parser.printDelimiter"){
+		if(trees.length == 0 || trees[$-1].name != "Parser.commandDelimiter"){
 			temp ~= new ValueNode("\n"w);
 		}
 		return new PrintStatementNode(temp);

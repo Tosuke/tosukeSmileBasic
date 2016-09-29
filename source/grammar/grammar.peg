@@ -1,9 +1,12 @@
 Parser:
   line < statement (:":"? statement)* :EndOfProgram #改行情報を格納する
 
-  statement <- printStatement
-  printStatement < (("print "i / "?") expr (printDelimiter expr)* printDelimiter?) / ("print "i / "?")
-  printDelimiter <- (";" / ",")
+  statement <- commandStatement #printStatement
+
+  commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
+  commandDelimiter <- ";" / ","
+  #printStatement < (("print"i / "?") expr (printDelimiter expr)* printDelimiter?) / ("print"i / "?")
+  #printDelimiter <- (";" / ",")
 
   expr <- factor8
 
@@ -13,9 +16,9 @@ Parser:
   logicalOrExpr < :"||" factor7
 
   factor7 < factor6 (andExpr / orExpr / xorExpr)*
-  andExpr < :"and "i factor6
-  orExpr < :"or "i factor6
-  xorExpr < :"xor "i factor6
+  andExpr < :"and"i factor6
+  orExpr < :"or"i factor6
+  xorExpr < :"xor"i factor6
 
   factor6 < factor5 (eqExpr / notEqExpr / lessExpr / greaterExpr / lessEqExpr / greaterEqExpr)*
   eqExpr < :"==" factor5
@@ -36,8 +39,8 @@ Parser:
   factor3 < factor2 (mulExpr / divExpr / intDivExpr / modExpr)*
   mulExpr < :"*" factor2
   divExpr < :"/" factor2
-  intDivExpr < :"div "i factor2
-  modExpr < :"mod "i factor2
+  intDivExpr < :"div"i factor2
+  modExpr < :"mod"i factor2
 
   factor2 <- negExpr / notExpr / logicalNotExpr / primary
   negExpr < :"-" factor2
@@ -53,6 +56,8 @@ Parser:
   hexInteger <~(:"&h"i hexDigit+)
   binInteger <~(:"&b"i [01]+)
   stringLiteral <~ doublequote (!doublequote .)* :doublequote?
+
+  identifier <~ [a-zA-Z_][a-zA-Z_0-9]*
 
   S <: space*
   EOL <- "\r\n" / "\n" / "\r"

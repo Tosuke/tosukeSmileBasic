@@ -22,7 +22,7 @@ void main(){
 		Node[] nodeList;
 		int line = 1;
 		try{
-			nodeList = parser.parse(`print ""+44`).children;
+			nodeList = parser.parse(`print"hhh"print 22`).children;
 		}catch(SyntaxError e){
 			e.line = line;
 			throw e;
