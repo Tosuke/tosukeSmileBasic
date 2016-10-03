@@ -14,7 +14,6 @@ Slot slot(string source){
   slot.source =  source
                 .split("\n")
                 .map!(a => a.strip)
-                .filter!(a => a.length)
                 .array;
   return slot;
 }

@@ -1,7 +1,7 @@
 Parser:
-  line < statement (:":"? statement)* :EndOfProgram #改行情報を格納する
+  line < statement (:":"? statement)* :EndOfProgram / :EndOfProgram #改行情報を格納する
 
-  statement <- commandStatement #printStatement
+  statement <- commandStatement
 
   commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
   commandDelimiter <- ";" / ","
