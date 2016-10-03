@@ -1,6 +1,6 @@
-module tosuke.smilebasic.code.operation;
+module tosuke.smilebasic.compiler.operation;
 
-import tosuke.smilebasic.code.code;
+import tosuke.smilebasic.compiler;
 import std.conv : to;
 import std.container.dlist;
 

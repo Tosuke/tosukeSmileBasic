@@ -1,6 +1,6 @@
-module tosuke.smilebasic.code.sourcemap;
+module tosuke.smilebasic.compiler.sourcemap;
 
-import tosuke.smilebasic.code.operation;
+import tosuke.smilebasic.compiler;
 import std.conv : to;
 
 //VMコードから行番号を求めるための表

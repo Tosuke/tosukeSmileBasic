@@ -1,6 +1,7 @@
-module tosuke.smilebasic.parser;
+module tosuke.smilebasic.compiler.parser;
 
-import tosuke.smilebasic.ast.node;
+import tosuke.smilebasic.compiler;
+
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.operator;
 import tosuke.smilebasic.error;
@@ -11,7 +12,7 @@ class Parser{
 	import std.algorithm, std.array;
 	import std.string;
   import std.conv : to;
-
+	
 	this(){
 		initialize();
 	}

@@ -1,4 +1,4 @@
-module tosuke.smilebasic.code.code;
+module tosuke.smilebasic.vm.code;
 
 /*
 # バイトコード表

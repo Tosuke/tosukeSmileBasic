@@ -1,9 +1,8 @@
-module tosuke.smilebasic.ast.genList;
+module tosuke.smilebasic.compiler.genlist;
 
 //ASTを中間表現コードに置きかえる
 
-import tosuke.smilebasic.ast.node;
-import tosuke.smilebasic.code.operation;
+import tosuke.smilebasic.compiler;
 import std.conv : to;
 
 OperationList genList(Node node){

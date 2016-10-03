@@ -1,8 +1,7 @@
-module tosuke.smilebasic.ast.node;
+module tosuke.smilebasic.compiler.node;
 
+import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.value;
-import tosuke.smilebasic.operator;
-import tosuke.smilebasic.code.operation;
 
 import std.conv : to;
 

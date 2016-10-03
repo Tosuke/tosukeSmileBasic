@@ -1,7 +1,7 @@
-module tosuke.smilebasic.ast.optimize;
+module tosuke.smilebasic.compiler.astoptimize;
 
+import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.error;
-import tosuke.smilebasic.ast.node;
 
 //定数畳み込み
 public Node constantFolding(Node node){

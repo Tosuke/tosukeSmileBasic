@@ -2,15 +2,9 @@ import std.stdio;
 import std.array;
 import std.conv;
 
-import tosuke.smilebasic.parser;
-import tosuke.smilebasic.operator;
-import tosuke.smilebasic.error;
-import tosuke.smilebasic.ast.node;
-import tosuke.smilebasic.ast.optimize;
-import tosuke.smilebasic.ast.genList;
-import tosuke.smilebasic.code.gencode;
-import tosuke.smilebasic.code.sourcemap;
+import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.vm;
+import tosuke.smilebasic.error;
 
 void main(){
 	tosuke.smilebasic.operator.initialize;

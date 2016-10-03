@@ -1,7 +1,6 @@
-module tosuke.smilebasic.vm;
+module tosuke.smilebasic.vm.vm;
 
-import tosuke.smilebasic.code.code;
-import tosuke.smilebasic.operator;
+import tosuke.smilebasic.vm;
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.utils;
 

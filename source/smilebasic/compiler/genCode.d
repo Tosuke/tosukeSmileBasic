@@ -1,7 +1,6 @@
-module tosuke.smilebasic.code.gencode;
+module tosuke.smilebasic.compiler.gencode;
 
-import tosuke.smilebasic.code.operation;
-import tosuke.smilebasic.code.code;
+import tosuke.smilebasic.compiler;
 
 VMCode[] genCode(OperationList list){
   import std.array;
