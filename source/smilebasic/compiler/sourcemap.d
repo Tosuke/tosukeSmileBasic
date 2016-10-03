@@ -3,12 +3,13 @@ module tosuke.smilebasic.compiler.sourcemap;
 import tosuke.smilebasic.compiler;
 import std.conv : to;
 
-//VMコードから行番号を求めるための表
+///VMコードから行番号を求めるための表
 public struct CodeMap{
-  int[] data;//行番号を添字とし、値はvm上のアドレス。行の初めのアドレスが入る
+  ///行番号を添字とし、値はvm上のアドレス。行の初めのアドレスが入る
+  int[] data;
 
+  ///data[line]<=opecode<data[line+1]となるlineを探す
   public int search(int opecode){
-    //data[line]<=opecode<data[line+1]となるlineを探す
     int s(int[] a, int b){
       if(a.length <= 2){
         return 0;

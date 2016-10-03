@@ -3,38 +3,62 @@ module tosuke.smilebasic.vm.vm;
 import tosuke.smilebasic.vm;
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.utils;
+import tosuke.smilebasic.error;
 
 import std.conv : to;
 import std.experimental.logger;
 
 class VM{
-  VMCode[][] code;
+  private{
+    Slot[] slots;
+    @property Slot currentSlot(){ return slots[currentSlotNumber]; }
 
-  VMCode[] currentCode;
+    @property VMCode[] currentCode(){ return currentSlot.vmcode;}
 
-  uint pc;
+    uint pc;
+    uint currentSlotNumber;
 
-  Stack!Value valueStack;
+    Stack!Value valueStack;
 
-  void delegate()[0x10000] codeTable;
+    void delegate()[0x10000] codeTable;
+  }
+
+  
 
   this(){
-    code = new VMCode[][](5);
-    codeTable[] = (){assert(0, "Invalid Bytecode");};
+    slots = new Slot[5];
+    foreach(ref a; slots) a = new Slot();
+
+    codeTable[] = (){ assert(0, "Invalid Bytecode"); };
     initCommandTable();
     initPushTable();
   }
 
-  void set(int slot, VMCode[] _code){
-    code[slot] = _code;
+  void set(int slotNum, Slot slot)
+  in{
+    assert(0 <= slotNum && slotNum <= 4);
+  }body{
+    slots[slotNum] = slot;
   }
 
-  void run(int slot){
-    currentCode = code[slot];
+  void run(int slotNum)
+  in{
+    assert(0 <= slotNum && slotNum <= 4);
+  }body{
+    currentSlotNumber = slotNum;
+    pc = 0;
 
     while(pc < currentCode.length){
+      auto pcBak = pc;
       VMCode code = take();
-      codeTable[code]();
+      try{
+        codeTable[code]();
+      }catch(SmileBasicError e){
+        auto codemap = currentSlot.codemap;
+        e.line = codemap.search(pcBak);
+        throw e;
+      }
+      
     }
   }
 
