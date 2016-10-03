@@ -13,7 +13,7 @@ void main(){
 		auto slot = slot(
 			`
 				print 114514
-				print "hage"+4
+				print "hage"
 			`
 		);
 		slot.source.writeln;

@@ -34,7 +34,7 @@ public:
     
     auto ast = buildAST();
     version(none) ast = ast.constantFolding;
-
+  
     auto list = genList(ast);
     codemap = list.codeMap;
 
