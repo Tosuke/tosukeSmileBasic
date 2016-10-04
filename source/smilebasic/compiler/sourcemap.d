@@ -3,6 +3,7 @@ module tosuke.smilebasic.compiler.sourcemap;
 import tosuke.smilebasic.compiler;
 import std.conv : to;
 
+
 ///VMコードから行番号を求めるための表
 public struct CodeMap{
   ///行番号を添字とし、値はvm上のアドレス。行の初めのアドレスが入る
@@ -27,8 +28,10 @@ public struct CodeMap{
   }
 }
 
+
+///中間表現コードからCodeMapを得る
 public CodeMap codeMap(OperationList list){
-  import std.array;
+  import std.array : Appender;
   Appender!(int[]) map;
   int cl = 0; //currentLine
   int cnt = 0;
@@ -48,10 +51,10 @@ public CodeMap codeMap(OperationList list){
   return cm;
 }
 
+
 unittest{
   CodeMap m;
   m.data = [0, 1, 10, int.max];
-  import std.experimental.logger;
   assert(m.search(1) == 1);
   assert(m.search(4) == 1);
   assert(m.search(11) == 2);

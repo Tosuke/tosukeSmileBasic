@@ -8,7 +8,8 @@ import std.conv : to;
 
 ///定数畳み込みをする
 public Node constantFolding(Node node){
-  import std.algorithm, std.array;
+  import std.algorithm : map;
+  import std.array : array;
   node.children = node.children.map!(a => constantFolding(a)).array;
 
   try{

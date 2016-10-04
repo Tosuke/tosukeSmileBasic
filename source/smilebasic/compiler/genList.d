@@ -1,15 +1,14 @@
 module tosuke.smilebasic.compiler.genlist;
 
-//ASTを中間表現コードに置きかえる
-
 import tosuke.smilebasic.compiler;
 import std.conv : to;
 
+///ASTを中間表現コードを生成する
 OperationList genList(Node node){
   OperationList temp;
 
   switch(node.type){
-    case NodeType.Document, NodeType.Line:
+    case NodeType.Document:
       temp ~= (a){
         a.line = node.line;
         return a;

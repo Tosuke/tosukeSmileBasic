@@ -5,14 +5,17 @@ import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.value;
 import tosuke.smilebasic.operator;
 import tosuke.smilebasic.error;
+
 import pegged.grammar;
 import std.experimental.logger;
+import std.algorithm, std.array;
+import std.string;
+import std.conv : to;
 
+///パーサ
 class Parser{
-	import std.algorithm, std.array;
-	import std.string;
-  import std.conv : to;
 	
+	///初期化
 	this(){
 		initialize();
 	}
@@ -20,7 +23,7 @@ class Parser{
 	private{
 		//Document
 		Node line(ParseTree tree){
-			return new LineNode(tree.children.map!(a => node(a)).array);
+			return new DocumentNode(tree.children.map!(a => node(a)).array);
 		}
 		//UnaryOperators
   	Node negExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
@@ -121,7 +124,7 @@ class Parser{
 
 		//Literals
 		Node decimalInteger(ParseTree tree){
-			double k = tree.matches.front.to!double;
+			auto k = tree.matches.front.to!double;
 			Value v;
 			if(k > int.max){
 				v = k;
@@ -131,7 +134,7 @@ class Parser{
 			return new ValueNode(v);
 		}
 		Node decimalFloater(ParseTree tree){
-			double k = tree.matches.front.to!double;
+			auto k = tree.matches.front.to!double;
 			return new ValueNode(k);
 		}
 		Node hexInteger(ParseTree tree){
@@ -146,7 +149,7 @@ class Parser{
 		}
 
 		Node commandStatement(ParseTree tree){
-			auto name = tree.children[0].matches.front.to!wstring.toLower;
+			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){
 				case "print"w, "?"w:
 					return print(tree.children[1..$]);
@@ -172,10 +175,14 @@ class Parser{
 }
 
 import pegged.grammar;
-mixin template ParserMixin(string parserName){
+
+///パーサのユーティリテイの実装
+private mixin template ParserMixin(string parserName){
+
+	///パースしてASTを返す
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
-		std.stdio.writeln(tree);
+		version(none) std.stdio.writeln(tree);
 		Node n;
 		try{
 			n = node(tree);
@@ -186,9 +193,10 @@ mixin template ParserMixin(string parserName){
 		return n;
 	}
 
+	///ParseTreeからNodeを得る
 	Node node(ParseTree tree){
     if(!tree.successful){
-			auto t = position(tree);
+			immutable t = position(tree);
 			int line = t.line.to!int + 1;
 			int col = t.col.to!int + 1;
 			auto e = new SyntaxError("Unrecognized syntax");
@@ -198,15 +206,18 @@ mixin template ParserMixin(string parserName){
 		return converters.get(tree.name, &skip)(tree);
 	}
 
+	///ParseTreeを処理する関数が見つからなかったときに処理をスキップする
 	Node skip(ParseTree tree){
 		//("skip "~tree.name).log;
 		return node(tree.children.front);
 	}
+
+	///ParseTreeをNodeに変換する関数群
 	alias Converter = Node delegate(ParseTree);
 	Converter[string] converters;
 
+	import std.meta, std.traits;
 	void initialize(){
-		import std.meta, std.traits;
 		alias Members = AliasSeq!(__traits(allMembers, typeof(this)));
 
 		enum bool X1(string k) = is(typeof(__traits(getMember, this, k)) == function);
@@ -223,7 +234,7 @@ mixin template ParserMixin(string parserName){
 	private static string converterGenerator(string[] functions){
 		string s;
 		foreach(a; functions){
-			import std.format;
+			import std.format : format;
 			s ~= format(q{converters["%s.%s"] = &%s;}, parserName, a, a);
 		}
 		return s;

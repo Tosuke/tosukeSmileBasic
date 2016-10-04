@@ -8,6 +8,7 @@ import std.array;
 import std.conv;
 import std.algorithm, std.string;
 
+
 ///ソースコードからSlotを生成する
 Slot slot(string source){
   auto slot = new Slot;
@@ -18,8 +19,10 @@ Slot slot(string source){
   return slot;
 }
 
+
 ///ソースコードとそれから生成されるデータをまとめるクラス
-class Slot{
+public class Slot{
+
 public:
   ///ソースコード
   string[] source;
@@ -40,7 +43,6 @@ public:
     vmcode = genCode(list);
   }
 
-
   private Node buildAST(){
     
     auto parser = new Parser;
@@ -59,7 +61,6 @@ public:
 
       list ~= n.children;
     }
-
     return new DocumentNode(list.data);
   }
 }

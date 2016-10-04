@@ -4,6 +4,8 @@ import tosuke.smilebasic.error;
 import std.conv : to;
 import std.format;
 
+
+///値の種別
 enum ValueType{
 	Undefined,
 	Integer,
@@ -11,6 +13,8 @@ enum ValueType{
 	String
 }
 
+
+///値の種別を文字列化する
 string toString(ValueType t){
 	switch(t){
 		case ValueType.Undefined: return "Undefined";
@@ -20,17 +24,25 @@ string toString(ValueType t){
 		default: assert(0);
 	}
 }
+
+
+///tosukeSmileBasic内の値
 struct Value{
+	import std.variant : Algebraic;
+
 	alias data this;
 
+	///初期化
 	this(T)(T a){
 		data = a;
 	}
 
-	import std.variant;
+	///値の実体
 	private Algebraic!(int, double, wstring) data_;
 	@property{
+		///ditto
 		public auto data(){return data_;}
+		///ditto
 		public void data(T)(T a){
 			static if(is(T == Value)){
 				type = a.type;
@@ -49,10 +61,15 @@ struct Value{
 			}
 		}
 	}
+
+
+	/// =演算子
 	void opAssign(T)(T a){data = a;}
 
+	/// 値の種別
 	private ValueType type_;
 	@property{
+		///ditto
 		public ValueType type(){return type_;}
 		private void type(ValueType a){type_ = a;}
 	}
@@ -68,7 +85,7 @@ struct Value{
 	}
 
 	//Operator Overloadings
-	//negOp
+	/// 単項-演算子
 	Value opUnary(string op : "-")(){
 		switch(type){
 	    case ValueType.Integer: return Value(-(data.get!int));
@@ -76,7 +93,8 @@ struct Value{
 	    default: throw imcompatibleTypeError("-", this);
 	  }
 	}
-	//notOp
+
+	/// ~演算子
 	Value opUnary(string op : "~")(){
 		if(this.isArithmeticValue){
 			return Value(~(this.toInteger));
@@ -85,7 +103,7 @@ struct Value{
 		}
 	}
 
-	//mulOp
+	/// *演算子
 	Value opBinary(string op : "*")(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
@@ -94,14 +112,14 @@ struct Value{
 	      return Value(this.toFloater * b.toFloater);
 	    }
 	  }else if(this.type == ValueType.String && b.isArithmeticValue){
-	    import std.array;
+	    import std.array : replicate;
 	    return Value(this.get!wstring.replicate(b.toInteger));
 	  }else{
 	    throw imcompatibleTypeError("*", this, b);
 	  }
 	}
 
-	//divOp
+	/// /演算子
 	Value opBinary(string op : "/")(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(this.toFloater / b.toFloater);
@@ -110,7 +128,7 @@ struct Value{
 	  }
 	}
 
-	//modOp
+	/// mod演算子
 	Value opBinary(string op : "%")(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(this.toInteger % b.toInteger);
@@ -119,7 +137,7 @@ struct Value{
 	  }
 	}
 
-	//addOp
+	/// +演算子
 	Value opBinary(string op : "+")(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
@@ -134,7 +152,7 @@ struct Value{
 	  }
 	}
 
-	//subOp
+	/// -演算子
 	Value opBinary(string op : "-")(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
@@ -147,7 +165,7 @@ struct Value{
 	  }
 	}
 
-	//shiftOp
+	/// <<,>>演算子
 	Value opBinary(string op)(Value b) if(op == "<<" || op == ">>"){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
@@ -156,7 +174,7 @@ struct Value{
 	  }
 	}
 
-	//bitOp
+	/// &,|,^演算子
 	Value opBinary(string op)(Value b) if(op == "&" || op == "|" || op == "^"){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
@@ -171,7 +189,8 @@ struct Value{
 			}(op), this, b);
 	  }
 	}
-	//eqOp
+
+	/// ==演算子
 	bool opEquals(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 			if(this.type == ValueType.Integer && b.type == ValueType.Integer){
@@ -185,11 +204,12 @@ struct Value{
 			throw new TypeMismatchError();
 		}
 	}
-	//cmpOp
+
+	/// <,>,<=.>=演算子
 	int opCmp(Value b){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 			if(this.type == ValueType.Integer && b.type == ValueType.Integer){
-				int m = this.get!int; int n = b.get!int;
+				immutable m = this.get!int; immutable n = b.get!int;
 				if(m <  n){
 					return -1;
 				}else if(m == n){
@@ -198,7 +218,7 @@ struct Value{
 					return +1;
 				}
 			}else{
-				double m = this.toFloater; double n = b.toFloater;
+				immutable m = this.toFloater; immutable n = b.toFloater;
 				if(m <  n){
 					return -1;
 				}else if(m == n){
@@ -208,7 +228,7 @@ struct Value{
 				}
 			}
 		}else if(this.type == ValueType.String && b.type == ValueType.String){
-			wstring m = this.get!wstring; wstring n = b.get!wstring;
+			immutable m = this.get!wstring; immutable n = b.get!wstring;
 			if(m <  n){
 				return -1;
 			}else if(m == n){
@@ -223,13 +243,20 @@ struct Value{
 	}
 }
 
+
+///数値型であるか？
 bool isArithmeticValue(Value v){
 	return v.type == ValueType.Integer || v.type == ValueType.Floater;
 }
+
+
+///配列型であるか？
 bool isArrayValue(Value v){
 	return false;
 }
 
+
+///実数型に変換する
 double toFloater(Value v){
 	if(!isArithmeticValue(v)) throw new TypeMismatchError();
 	if(v.type == ValueType.Integer){
@@ -239,6 +266,8 @@ double toFloater(Value v){
 	}
 }
 
+
+///整数型に変換する
 int toInteger(Value v){
 	if(!isArithmeticValue(v)) throw new TypeMismatchError();
 	if(v.type == ValueType.Floater){
@@ -255,6 +284,8 @@ int toInteger(Value v){
 	}
 }
 
+
+///真であれば0以外、偽であれば0を返す
 int toBoolean(Value v){
 	switch(v.type){
 		case ValueType.Integer: return cast(int)(v.get!int != 0);

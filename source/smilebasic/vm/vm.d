@@ -8,23 +8,28 @@ import tosuke.smilebasic.error;
 import std.conv : to;
 import std.experimental.logger;
 
+
+///仮想マシン
 class VM{
   private{
+    ///スロット
     Slot[] slots;
     @property Slot currentSlot(){ return slots[currentSlotNumber]; }
 
     @property VMCode[] currentCode(){ return currentSlot.vmcode;}
 
+    ///プログラムカウンタ
     uint pc;
     uint currentSlotNumber;
 
     Stack!Value valueStack;
 
+    ///命令表
     void delegate()[0x10000] codeTable;
   }
 
   
-
+  ///初期化
   this(){
     slots = new Slot[5];
     foreach(ref a; slots) a = new Slot();
@@ -34,6 +39,8 @@ class VM{
     initPushTable();
   }
 
+
+  ///スロットをvmに関連付ける
   void set(int slotNum, Slot slot)
   in{
     assert(0 <= slotNum && slotNum <= 4);
@@ -41,6 +48,8 @@ class VM{
     slots[slotNum] = slot;
   }
 
+
+  ///指定スロットを実行する
   void run(int slotNum)
   in{
     assert(0 <= slotNum && slotNum <= 4);
@@ -62,16 +71,22 @@ class VM{
     }
   }
 
-  VMCode take(){
+private:
+  ///PCを1つ進め、値を得る
+  private VMCode take(){
     return currentCode[pc++];
   }
 
-  VMCode[] take(uint a){
+
+  ///任意の個数PCを進め、値を得る
+  private VMCode[] take(uint a){
     pc += a;
     return a == 1 ? [currentCode[pc-a]] : currentCode[pc-a..pc];
   }
 
-  void initCommandTable(){
+
+  //初期化
+  private void initCommandTable(){
     //UnaryOps
     codeTable[0x0000] = &unaryOp!"negOp";
     codeTable[0x1000] = &unaryOp!"notOp";
@@ -98,6 +113,9 @@ class VM{
 
     codeTable[0x0080] = &printCommand;
   }
+
+
+  ///初期化
   void initPushTable(){
     codeTable[0x0001] = &pushImm16;
     codeTable[0x0011] = &pushImm32;
@@ -118,8 +136,8 @@ class VM{
   }
 
   void printCommand(){
-    int argNum = take();
-    import std.array;
+    immutable argNum = take();
+    import std.array : Appender;
     import std.conv : to;
 
     Appender!wstring temp;
@@ -134,7 +152,7 @@ class VM{
         }
       }(v.type);
     }
-    import std.stdio;
+    import std.stdio : write;
     temp.data.write;
   }
 
@@ -144,7 +162,7 @@ class VM{
   }
   void pushImm32(){
     auto t = take(2);
-    uint k = t[0] << 16 | t[1];
+    immutable k = t[0] << 16 | t[1];
     valueStack.push(Value(cast(int)k));
   }
   void pushImm64f(){
@@ -153,7 +171,7 @@ class VM{
     valueStack.push(Value(*(cast(double*)&k)));
   }
   void pushString(){
-    import std.array;
+    import std.array : Appender;
     Appender!(wchar[]) str;
     while(true){
       auto a = cast(wchar)take();
