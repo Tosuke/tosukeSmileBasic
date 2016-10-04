@@ -220,13 +220,10 @@ private mixin template ParserMixin(string parserName){
 	void initialize(){
 		alias Members = AliasSeq!(__traits(allMembers, typeof(this)));
 
-		enum bool X1(string k) = is(typeof(__traits(getMember, this, k)) == function);
-		enum bool X2(string k) = is(ReturnType!(typeof(&__traits(getMember, this, k))) : Node);
-		enum bool X3(string k) = is(Parameters!(typeof(&__traits(getMember, this, k))) == AliasSeq!(ParseTree));
-		enum bool X4(string k) = k != "node" && k != "skip";
+		enum bool X1(string k) = is(typeof(&__traits(getMember, this, k)) : Node function(ParseTree));
+		enum bool X2(string k) = k != "node" && k != "skip";
 
-		alias Functions = Filter!(templateAnd!(X1, X2, X3, X4), Members);
-
+		alias Functions = Filter!(templateAnd!(X1, X2), Members);
 		mixin(converterGenerator([Functions]));
 		converters.rehash;
 	}
