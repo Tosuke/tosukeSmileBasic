@@ -12,8 +12,8 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				print 114514
-				print "hage"
+				print 444
+				print "hhh"+5
 			`
 		);
 		slot.source.writeln;

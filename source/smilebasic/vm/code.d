@@ -74,6 +74,6 @@ x<-種別
 0x3|string
 
 ### Push string
-0x0031 PushStr length(imm16) wchar...
+0x0031 PushStr wchar...nullChar
 */
 alias VMCode = ushort;
