@@ -6,8 +6,15 @@ import std.conv : to;
 
 ///VMコードから行番号を求めるための表
 public struct CodeMap{
-  ///行番号を添字とし、値はvm上のアドレス。行の初めのアドレスが入る
-  int[] data;
+  ///idを添字とし、値はvm上のアドレス。行の初めのアドレスが入る
+  private int[] map;
+  ///idを添字とし、値には行番号が入る
+  private int[] list;
+
+  ///初期化
+  this(int[] _map, int[] _list){
+    map = _map; list = _list;
+  }
 
   ///data[line]<=opecode<data[line+1]となるlineを探す
   public int search(int opecode){
@@ -24,38 +31,32 @@ public struct CodeMap{
       }
     }
 
-    return s(data, opecode);
+    return list[s(map, opecode)];
   }
 }
 
 
 ///中間表現コードからCodeMapを得る
-public CodeMap codeMap(OperationList list){
+public CodeMap codeMap(OperationList olist){
   import std.array : Appender;
-  Appender!(int[]) map;
+  Appender!(int[]) map, list;
   int cl = 0; //currentLine
   int cnt = 0;
 
   map ~= 0;
-  foreach(a; list){
+  list ~= 0;
+
+  foreach(a; olist){
     if(a.line > cl){
       cl = a.line;
       map ~= cnt;
+      list ~= cl;
     }
     cnt += a.codeSize;
   }
   map ~= cnt;
-
-  CodeMap cm;
-  cm.data = map.data;
-  return cm;
+  list ~= cl;
+ 
+  return CodeMap(map.data, list.data);
 }
 
-
-unittest{
-  CodeMap m;
-  m.data = [0, 1, 10, int.max];
-  assert(m.search(1) == 1);
-  assert(m.search(4) == 1);
-  assert(m.search(11) == 2);
-}
