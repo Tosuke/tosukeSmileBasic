@@ -25,7 +25,10 @@ struct Stack(T){
   ///Popする
   T pop(){
     if(ptr == 0) assert(0);
-    return data[ptr--];
+    auto a = data[ptr];
+    data[ptr].clear;
+    ptr--;
+    return a;
   }
 
   ///スタックの最上

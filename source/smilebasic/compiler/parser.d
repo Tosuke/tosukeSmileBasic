@@ -174,6 +174,13 @@ class Parser{
 			}
 			return new PrintStatementNode(temp);
 		}
+
+		Node assignStatement(ParseTree tree){
+			VariableNode var = node(tree.children[0]).to!VariableNode;
+			Node expr = node(tree.children[1]);
+
+			return new AssignStatementNode(var, expr);			
+		}
 	}
 	
 	mixin ParserMixin!("Parser");

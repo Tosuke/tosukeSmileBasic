@@ -12,6 +12,8 @@ enum NodeType{
 	Document,
 	///Print文
 	PrintStatement,
+	///代入文
+	AssignStatement,
 
 	///二項演算子
 	BinaryOp,
@@ -102,6 +104,24 @@ class PrintStatementNode : Node{
 
 	override Operation operation(){
 		return new PrintCommand(this.children.length.to!ushort);
+	}
+}
+
+
+///代入文
+class AssignStatementNode : Node{
+
+	///初期化
+	this(VariableNode var, Node expr){
+		type = NodeType.AssignStatement;
+		super("Assign", [expr]);
+		variable = var;
+	}
+
+	private VariableNode variable;
+
+	override Operation operation(){
+		return variable.popOperation;
 	}
 }
 
@@ -237,6 +257,11 @@ abstract class VariableNode : Node{
 		type = NodeType.Variable;
 		super(name, children);
 	}
+
+	override abstract Operation operation();
+
+	///popされるときのoperation
+	abstract Operation popOperation();
 }
 
 ///単純変数
@@ -254,5 +279,9 @@ class ScalarVariableNode : VariableNode{
 	override Operation operation(){
 		//変数だけのときは式なのでPushと判断する
 		return new PushScalarVariable(name);
+	}
+
+	override Operation popOperation(){
+		return new PopScalarVariable(name);
 	}
 }

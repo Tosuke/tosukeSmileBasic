@@ -67,6 +67,9 @@ private struct Compiler{
     foreach(ref op; list){
       if(cast(PushScalarVariable)op){
         op = resolute(op.to!PushScalarVariable);
+
+      }else if(cast(PopScalarVariable)op){
+        op = resolute(op.to!PopScalarVariable);
       }
     }
 
@@ -86,6 +89,26 @@ private struct Compiler{
       }
       auto id = slot.globalVar.idof(op.name);
       return new PushGlobalScalarVariable(id);
+
+    }else{
+      //TODO:ローカル変数
+      assert(0);
+    }
+  }
+
+  private Operation resolute(PopScalarVariable op){
+    if(inGlobal || op.name in slot.globalVar){
+      //グローバル変数
+      if(op.name !in slot.globalVar){
+        if(!isStrict){
+          define(slot.globalVar, op.name);                    
+        }else{
+          //TODO:StrictモードとUndefinedVariableErrorの実装
+          assert(0);
+        }
+      }
+      auto id = slot.globalVar.idof(op.name);
+      return new PopGlobalScalarVariable(id);
 
     }else{
       //TODO:ローカル変数

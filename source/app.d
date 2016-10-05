@@ -12,8 +12,8 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				print a# + a%
-				print "hhh"+5
+				a$="ゆうアシ"
+				print a$+"はハゲ"
 			`
 		);
 		slot.source.writeln;

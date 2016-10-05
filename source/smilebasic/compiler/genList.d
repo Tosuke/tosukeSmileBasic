@@ -3,7 +3,7 @@ module tosuke.smilebasic.compiler.genlist;
 import tosuke.smilebasic.compiler;
 import std.conv : to;
 
-///ASTを中間表現コードを生成する
+///ASTから中間表現コードを生成する
 OperationList genList(Node node){
   OperationList temp;
 

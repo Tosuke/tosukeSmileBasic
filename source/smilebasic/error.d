@@ -128,6 +128,8 @@ class DuplicateVariableError : DuplicateSymbolError{
 
 ///内部エラー
 class InternalError : Exception{
+
+  ///コンストラクタ
   this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable next = null){
     super("Internal Error: "~msg, file, line, next);
   }

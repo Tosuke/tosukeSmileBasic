@@ -6,6 +6,7 @@ module tosuke.smilebasic.vm.code;
 x<-命令種別
 0x0|Command
 0x1|Push
+0x2|Pop
 
 ## Command
 0bnxx0
@@ -77,5 +78,12 @@ x<-種別
 
 ### Push string
 0x0031 PushStr wchar...nullChar
+
+## Pop
+0x00x2
+x<-種別
+0x0|none
+0x1|var16(global)
+0x2|var32(global)
 */
 alias VMCode = ushort;
