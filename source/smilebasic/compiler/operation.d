@@ -20,7 +20,10 @@ enum OperationType{
   Command, 
   
   ///何もしない
-  Empty
+  Empty,
+
+  ///変数定義
+  DefineVariable
 }
 
 
@@ -35,7 +38,9 @@ abstract class Operation{
   ///中間表現コードの種別
   private OperationType type_;
   @property{
+    ///ditto
     public OperationType type(){return type_;}
+    ///ditto
     private void type(OperationType o){type_ = o;}
   }
 
@@ -600,4 +605,31 @@ class BinaryOpCommand : Command{
     }(op).to!VMCode;
     return [code];
   }
+}
+
+
+///単純変数の定義
+class DefineScalarVariable : Operation{
+  
+  ///初期化
+  this(wstring _name){
+    super(OperationType.DefineVariable);
+    name = _name;
+  }
+
+  ///定義する変数の名前
+  private wstring name_;
+  @property{
+    ///ditto
+    public wstring name(){return name_;}
+    ///ditto
+    private void name(wstring a){name_ = a;}
+  }
+
+  override string toString(){
+    return `Define(var '`~name.to!string~`')`;
+  }
+
+  override int codeSize(){return 0;}
+  override VMCode[] code(){return [];}
 }

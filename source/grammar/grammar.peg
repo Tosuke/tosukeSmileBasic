@@ -1,14 +1,14 @@
 Parser:
   line < statement (:":"? statement)* :EndOfProgram / :EndOfProgram #改行情報を格納する
 
-  statement <- assignStatement / commandStatement
+  statement <- variableDefineStatement / assignStatement / commandStatement
 
   commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
   commandDelimiter <- ";" / ","
 
   assignStatement < variable :"=" expr
 
-  variableDefineStatement < :("var"i / "dim"i) (assignStatement / variable)+
+  variableDefineStatement < :("var "i / "dim "i) (assignStatement / variable) (:"," (assignStatement / variable))*
 
   expr <- factor8
 

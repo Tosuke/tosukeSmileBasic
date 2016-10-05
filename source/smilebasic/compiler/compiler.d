@@ -65,15 +65,34 @@ private struct Compiler{
   private auto compile(OperationList list){
 
     foreach(ref op; list){
-      if(cast(PushScalarVariable)op){
-        op = resolute(op.to!PushScalarVariable);
+      try{
+        if(cast(DefineScalarVariable)op){
+          define(op.to!DefineScalarVariable);
 
-      }else if(cast(PopScalarVariable)op){
-        op = resolute(op.to!PopScalarVariable);
+        }else if(cast(PushScalarVariable)op){
+          op = resolute(op.to!PushScalarVariable);
+
+        }else if(cast(PopScalarVariable)op){
+          op = resolute(op.to!PopScalarVariable);
+        }
+      }catch(SmileBasicError e){
+        e.line = op.line;
+        throw e;
       }
+      
     }
 
     return list;
+  }
+
+  private void define(DefineScalarVariable op){
+    if(inGlobal){
+      //グローバル変数
+      define(slot.globalVar, op.name);
+    }else{
+      //TODO:ローカル変数
+      assert(0);
+    }
   }
 
   private Operation resolute(PushScalarVariable op){

@@ -181,6 +181,27 @@ class Parser{
 
 			return new AssignStatementNode(var, expr);			
 		}
+
+		Node variableDefineStatement(ParseTree tree){
+			VariableNode[] defines = 
+				 tree.children[]
+				.map!(
+					(a){
+						if(a.name == "Parser.variable"){
+							return node(a).to!VariableNode;
+						}else{
+							return node(a.children[0]).to!VariableNode;										
+						}
+					}
+				).array;
+			
+			Node[] temp =  tree.children[]
+										.filter!(a => a.name == "Parser.assignStatement")
+										.map!(a => node(a))
+										.array;
+			
+			return new VariableDefineStatementNode(defines, temp);
+		}
 	}
 	
 	mixin ParserMixin!("Parser");
@@ -195,7 +216,7 @@ private mixin template ParserMixin(string parserName){
 	///パースしてASTを返す
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
-		version(all) std.stdio.writeln(tree);
+		version(none) std.stdio.writeln(tree);
 		Node n;
 		try{
 			n = node(tree);

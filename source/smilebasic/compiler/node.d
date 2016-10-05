@@ -3,6 +3,7 @@ module tosuke.smilebasic.compiler.node;
 import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.value;
 
+import std.algorithm, std.array;
 import std.conv : to;
 
 
@@ -14,6 +15,8 @@ enum NodeType{
 	PrintStatement,
 	///代入文
 	AssignStatement,
+	///変数定義文
+	VariableDefineStatement,
 
 	///二項演算子
 	BinaryOp,
@@ -123,6 +126,41 @@ class AssignStatementNode : Node{
 	override Operation operation(){
 		return variable.popOperation;
 	}
+}
+
+
+///変数定義文
+class VariableDefineStatementNode : Node{
+
+	///初期化
+	this(VariableNode[] defines, Node[] _children){
+		type = NodeType.VariableDefineStatement;
+		
+		Node[] temp =
+			defines[].map!(
+				(a){
+					return new class() Node{
+						
+						this(){
+							type = NodeType.VariableDefineStatement;
+							super(a.name);
+						}
+
+						override Operation operation(){
+							return a.defineOperation;
+						}
+
+					}.to!Node;
+				}
+			).array;
+
+			super("Define", temp ~ _children);
+	}
+
+	override Operation operation(){
+		return new EmptyOperation();
+	}
+
 }
 
 
@@ -262,6 +300,9 @@ abstract class VariableNode : Node{
 
 	///popされるときのoperation
 	abstract Operation popOperation();
+
+	///定義されるときのoperation
+	abstract Operation defineOperation();
 }
 
 ///単純変数
@@ -274,7 +315,7 @@ class ScalarVariableNode : VariableNode{
 	}
 
 	///変数名
-	wstring name;
+	private wstring name;
 
 	override Operation operation(){
 		//変数だけのときは式なのでPushと判断する
@@ -283,5 +324,9 @@ class ScalarVariableNode : VariableNode{
 
 	override Operation popOperation(){
 		return new PopScalarVariable(name);
+	}
+
+	override Operation defineOperation(){
+		return new DefineScalarVariable(name);
 	}
 }

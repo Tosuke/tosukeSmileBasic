@@ -8,7 +8,7 @@ OperationList genList(Node node){
   OperationList temp;
 
   switch(node.type){
-    case NodeType.Document:
+    case NodeType.Document, NodeType.VariableDefineStatement:
       temp ~= (a){
         a.line = node.line;
         return a;

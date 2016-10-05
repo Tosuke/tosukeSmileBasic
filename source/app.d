@@ -12,8 +12,10 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				a$="ゆうアシ"
-				print a$+"はハゲ"
+				var a$="ゆうアシ"
+				dim a% = 10
+				b$ = a$+"はハゲ"
+				print b$*a%
 			`
 		);
 		slot.source.writeln;
