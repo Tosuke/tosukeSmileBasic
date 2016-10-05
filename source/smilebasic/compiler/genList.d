@@ -3,12 +3,12 @@ module tosuke.smilebasic.compiler.genlist;
 import tosuke.smilebasic.compiler;
 import std.conv : to;
 
-///ASTを中間表現コードを生成する
+///ASTから中間表現コードを生成する
 OperationList genList(Node node){
   OperationList temp;
 
   switch(node.type){
-    case NodeType.Document:
+    case NodeType.Document, NodeType.VariableDefineStatement:
       temp ~= (a){
         a.line = node.line;
         return a;

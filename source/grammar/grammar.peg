@@ -1,10 +1,14 @@
 Parser:
   line < statement (:":"? statement)* :EndOfProgram / :EndOfProgram #改行情報を格納する
 
-  statement <- commandStatement
+  statement <- variableDefineStatement / assignStatement / commandStatement
 
   commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
   commandDelimiter <- ";" / ","
+
+  assignStatement < variable :"=" expr
+
+  variableDefineStatement < :("var "i / "dim "i) (assignStatement / variable) (:"," (assignStatement / variable))*
 
   expr <- factor8
 
@@ -48,14 +52,18 @@ Parser:
   primary < :"(" expr :")" / value
 
   value <- decimalFloater / decimalInteger / hexInteger / binInteger /
-          stringLiteral
+          stringLiteral / variable
   decimalInteger <~digits
   decimalFloater <~(digits "." digits)
   hexInteger <~(:"&h"i hexDigit+)
   binInteger <~(:"&b"i [01]+)
   stringLiteral <~ doublequote (!doublequote .)* :doublequote?
 
-  identifier <~ [a-zA-Z_][a-zA-Z_0-9]*
+  #Variable
+  variable <- scalarVariable
+  scalarVariable <- identifier
+
+  identifier <~ [a-zA-Z_][a-zA-Z_0-9]*[%#$]?
 
   S <: space*
   EOL <- "\r\n" / "\n" / "\r"

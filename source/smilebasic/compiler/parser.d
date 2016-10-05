@@ -148,6 +148,12 @@ class Parser{
 			return new ValueNode(tree.matches.front.to!wstring[1..$]);
 		}
 
+		//Variables
+		Node scalarVariable(ParseTree tree){
+			immutable name = tree.children.front.matches.front.to!wstring.toLower;
+			return new ScalarVariableNode(name);
+		}
+
 		Node commandStatement(ParseTree tree){
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){
@@ -167,6 +173,34 @@ class Parser{
 				temp ~= new ValueNode("\n"w);
 			}
 			return new PrintStatementNode(temp);
+		}
+
+		Node assignStatement(ParseTree tree){
+			VariableNode var = node(tree.children[0]).to!VariableNode;
+			Node expr = node(tree.children[1]);
+
+			return new AssignStatementNode(var, expr);			
+		}
+
+		Node variableDefineStatement(ParseTree tree){
+			VariableNode[] defines = 
+				 tree.children[]
+				.map!(
+					(a){
+						if(a.name == "Parser.variable"){
+							return node(a).to!VariableNode;
+						}else{
+							return node(a.children[0]).to!VariableNode;										
+						}
+					}
+				).array;
+			
+			Node[] temp =  tree.children[]
+										.filter!(a => a.name == "Parser.assignStatement")
+										.map!(a => node(a))
+										.array;
+			
+			return new VariableDefineStatementNode(defines, temp);
 		}
 	}
 	

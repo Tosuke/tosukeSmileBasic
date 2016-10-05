@@ -35,8 +35,9 @@ class VM{
     foreach(ref a; slots) a = new Slot();
 
     codeTable[] = (){ assert(0, "Invalid Bytecode"); };
-    initCommandTable();
-    initPushTable();
+    initCommandTable;
+    initPushTable;
+    initPopTable;
   }
 
 
@@ -121,6 +122,16 @@ private:
     codeTable[0x0011] = &pushImm32;
     codeTable[0x0021] = &pushImm64f;
     codeTable[0x0031] = &pushString;
+    codeTable[0x0041] = &pushGlobalVar16;
+    codeTable[0x0051] = &pushGlobalVar32;
+  }
+
+
+  ///初期化
+  void initPopTable(){
+    codeTable[0x0002] = &popNone;
+    codeTable[0x0012] = &popGlobalVar16;
+    codeTable[0x0022] = &popGlobalVar32;
   }
 
   void unaryOp(string op)(){
@@ -160,16 +171,19 @@ private:
     auto k = cast(short)take();
     valueStack.push(Value(k));
   }
+
   void pushImm32(){
     auto t = take(2);
     immutable k = t[0] << 16 | t[1];
     valueStack.push(Value(cast(int)k));
   }
+
   void pushImm64f(){
     auto t = take(4);
     ulong k = t[0].to!ulong << 48 | t[1].to!ulong << 32 | t[2] << 16 | t[3];
     valueStack.push(Value(*(cast(double*)&k)));
   }
+
   void pushString(){
     import std.array : Appender;
     Appender!(wchar[]) str;
@@ -179,5 +193,31 @@ private:
       str ~= a;
     }
     valueStack.push(Value(cast(wstring)(str.data)));
+  }
+
+  void pushGlobalVar16(){
+    auto id = take().to!uint;
+    valueStack.push(currentSlot.globalVar[id]);
+  }
+
+  void pushGlobalVar32(){
+    auto t = take(2);
+    immutable id = t[0] << 16 | t[1];
+    valueStack.push(currentSlot.globalVar[id]);
+  }
+
+  void popNone(){
+    valueStack.pop();
+  }
+
+  void popGlobalVar16(){
+    auto id = take().to!uint;
+    currentSlot.globalVar[id] = valueStack.pop();
+  }
+
+  void popGlobalVar32(){
+    auto t = take(2);
+    immutable id = t[0] << 16 | t[1];
+    currentSlot.globalVar[id] = valueStack.pop();
   }
 }

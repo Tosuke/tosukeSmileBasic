@@ -33,8 +33,26 @@ struct Value{
 	alias data this;
 
 	///初期化
-	this(T)(T a){
+	this(T)(T a) if(!is(T == ValueType)){
 		data = a;
+	}
+
+	this(ValueType t){
+		final switch(t){
+			case ValueType.Undefined:
+				break;
+			case ValueType.Integer:
+				data = 0;
+				break;
+			case ValueType.Floater:
+				data = 0.0;
+				break;
+			case ValueType.String:
+				data = ""w;
+				break;
+		}
+
+		type = t;
 	}
 
 	///値の実体
@@ -64,7 +82,26 @@ struct Value{
 
 
 	/// =演算子
-	void opAssign(T)(T a){data = a;}
+	void opAssign(T)(T a) if(!is(T == Value)){
+		data = a;
+	}
+
+	///ditto
+	void opAssign(Value a){
+		if(this.isArithmeticValue && a.isArithmeticValue){
+			if(this.type == ValueType.Integer){
+				this.data = a.toInteger;
+			}else{
+				this.data = a.toFloater;
+			}
+		}else if(this.type == a.type || this.type == ValueType.Undefined){
+			this.data = a;
+		}else{
+			throw new TypeMismatchError(
+				format("failed to convert types '%s' to '%s'", a.type.toString, this.type.toString)
+			);
+		}
+	}
 
 	/// 値の種別
 	private ValueType type_;
@@ -72,6 +109,11 @@ struct Value{
 		///ditto
 		public ValueType type(){return type_;}
 		private void type(ValueType a){type_ = a;}
+	}
+
+	///初期化
+	public void clear(){
+		this.type = ValueType.Undefined;
 	}
 
 	string toString(){
