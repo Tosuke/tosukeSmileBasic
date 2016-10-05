@@ -19,6 +19,8 @@ enum NodeType{
   UnaryOp,
 	///リテラル
 	Value,
+	///変数
+	Variable
 }
 
 
@@ -28,6 +30,7 @@ abstract class Node{
 	///ノードの種類
 	private NodeType type_;
 	@property{
+		///ditto
 		public NodeType type(){return type_;}
 		protected void type(NodeType a){type_ = a;}
 	}
@@ -35,6 +38,7 @@ abstract class Node{
 	///ノードの位置の行番号
 	private int line_;
 	@property{
+		///ditto
 		public int line(){return line_;}
 		///ditto
 		public void line(int a){
@@ -61,7 +65,8 @@ abstract class Node{
 
 	///ASTを人間が読める形で出力する
 	override string toString(){
-		import std.algorithm, std.string;
+		import std.algorithm : map;
+		import std.string : join;
 		return name~":["~children.map!"a.toString".join(", ")~"]";
 	}
 
@@ -221,4 +226,33 @@ Value unaryOp(UnaryOp op, Node a){
 ///ditto
 Value binaryOp(BinaryOp op, Node a, Node b){
   return tosuke.smilebasic.operator.binaryOp(op, (cast(ValueNode)a).value, (cast(ValueNode)b).value);
+}
+
+
+///変数
+abstract class VariableNode : Node{
+	
+	///初期化
+	this(string name, Node[] children = []){
+		type = NodeType.Variable;
+		super(name, children);
+	}
+}
+
+///単純変数
+class ScalarVariableNode : VariableNode{
+	
+	///初期化
+	this(wstring name_){
+		name = name_;
+		super("ScalarVariable("~name.to!string~")");
+	}
+
+	///変数名
+	wstring name;
+
+	override Operation operation(){
+		//変数だけのときは式なのでPushと判断する
+		return new PushScalarVariable(name);
+	}
 }

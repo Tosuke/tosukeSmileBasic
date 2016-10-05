@@ -148,6 +148,12 @@ class Parser{
 			return new ValueNode(tree.matches.front.to!wstring[1..$]);
 		}
 
+		//Variables
+		Node scalarVariable(ParseTree tree){
+			immutable name = tree.children.front.matches.front.to!wstring.toLower;
+			return new ScalarVariableNode(name);
+		}
+
 		Node commandStatement(ParseTree tree){
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){
@@ -182,7 +188,7 @@ private mixin template ParserMixin(string parserName){
 	///パースしてASTを返す
 	Node parse(string source){
 		auto tree = mixin(parserName~"(source)");
-		version(none) std.stdio.writeln(tree);
+		version(all) std.stdio.writeln(tree);
 		Node n;
 		try{
 			n = node(tree);

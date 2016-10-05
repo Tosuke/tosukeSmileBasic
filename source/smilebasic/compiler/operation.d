@@ -1,6 +1,8 @@
 module tosuke.smilebasic.compiler.operation;
 
 import tosuke.smilebasic.compiler;
+import tosuke.smilebasic.error;
+
 import std.conv : to;
 import std.container.dlist;
 
@@ -71,7 +73,10 @@ enum PushType{
   ///64bit浮動小数
   Imm64f,
   ///文字列
-  String
+  String,
+
+  ///変数
+  Variable
 }
 
 
@@ -87,6 +92,7 @@ abstract class Push : Operation{
   ///何をPushするか
   private PushType type_;
   @property{
+    ///ditto
     public PushType pushType(){return type_;}
     private void pushType(PushType p){type_ = p;}
   }
@@ -199,6 +205,82 @@ class PushString : Push{
 
   override VMCode[] code(){
     return [cast(VMCode)0x0031] ~ (cast(VMCode[])imm) ~ [cast(VMCode)0];
+  }
+}
+
+
+///単純変数をPushする(名前未解決)
+class PushScalarVariable : Push{
+
+  ///初期化
+  this(wstring _name){
+    super(PushType.Variable);
+    name = _name;
+  }
+
+  ///Pushする変数の名前
+  private wstring name_;
+  @property{
+    ///ditto
+    public wstring name(){return name_;}
+    ///ditto
+    private void name(wstring a){name_ = a;}
+  }
+
+  override string toString(){
+    return `Push(var)("`~name.to!string~`")`;
+  }
+
+  override int codeSize(){
+    throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
+  }
+
+  override VMCode[] code(){
+    throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
+  }
+}
+
+
+///グローバルな単純変数をPushする
+class PushGlobalScalarVariable : Push{
+
+  ///初期化
+  this(uint _id){
+    super(PushType.Variable);
+    id = _id;
+  }
+
+  ///Pushする変数のid
+  private uint id_;
+  @property{
+    ///ditto
+    public uint id(){return id_;}
+    ///ditto
+    private void id(uint a){id_ = a;}
+  }
+
+  override string toString(){
+    if(id <= 0xffff){
+      return `Push(gvar16)(`~id.to!string~`)`;
+    }else{
+      return `Push(gvar32)(`~id.to!string~`)`;
+    }                 
+  }
+
+  override int codeSize(){
+    if(id <= 0xffff){
+      return 1 + 1; //gvar16
+    }else{
+      return 1 + 2; //gvar32
+    }
+  }
+
+  override VMCode[] code(){
+    if(id <= 0xffff){
+      return [0x0041, id & 0xffff];
+    }else{
+      return [0x0051, (id >>> 16) & 0xffff, id & 0xffff];
+    }
   }
 }
 

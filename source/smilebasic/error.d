@@ -92,5 +92,43 @@ auto imcompatibleTypeError(string operator, Value a){
 
 ///ditto
 auto imcompatibleTypeError(string operator, Value a, Value b){
-	return new TypeMismatchError(format("imcompatible types for '%s': '%s' and '%s'", operator, a.type.toString, b.type.toString));
+	return new TypeMismatchError(
+    format("imcompatible types for '%s': '%s' and '%s'", operator, a.type.toString, b.type.toString)
+  );
+}
+
+///シンボル衝突エラー
+abstract class DuplicateSymbolError : SmileBasicError{
+  ///詳細を含まず発生させる
+  this(string error){
+    super(error);
+  }
+
+  ///詳細を含んで発生させる
+  this(string error, string detail){
+    super(error, detail);
+  }
+} 
+
+
+///変数定義の衝突
+class DuplicateVariableError : DuplicateSymbolError{
+
+  ///詳細を含まず発生させる
+  this(){
+    super("Duplicate variable");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("Duplicate variable", detail);
+  }
+}
+
+
+///内部エラー
+class InternalError : Exception{
+  this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable next = null){
+    super("Internal Error: "~msg, file, line, next);
+  }
 }

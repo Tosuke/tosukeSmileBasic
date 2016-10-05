@@ -12,7 +12,7 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				print 444666
+				print a# + a%
 				print "hhh"+5
 			`
 		);

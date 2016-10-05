@@ -3,6 +3,7 @@ module tosuke.smilebasic.vm.slot;
 import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.vm;
 import tosuke.smilebasic.error;
+import tosuke.smilebasic.value;
 
 import std.array;
 import std.conv;
@@ -31,36 +32,13 @@ public:
   ///VMアドレスとソースコードの対応表
   CodeMap codemap;
 
-  ///ソースコードをコンパイルしてバイトコードなどのデータを生成する
-  void compile(){
-    
-    auto ast = buildAST();
-    version(none) ast = ast.constantFolding;
-  
-    auto list = genList(ast);
-    codemap = list.codeMap;
 
-    vmcode = genCode(list);
-  }
+  ///グローバル変数
+  SymbolTable!Value globalVar;
 
-  private Node buildAST(){
-    
-    auto parser = new Parser;
 
-    Appender!(Node[]) list;
-
-    foreach(i, s; source[]){
-      Node n;
-      try{
-        n = parser.parse(s);
-        n.line = i.to!int + 1;
-      }catch(SyntaxError e){
-        e.line = i.to!int + 1;
-        throw e;
-      }
-
-      list ~= n.children;
-    }
-    return new DocumentNode(list.data);
+  ///初期化
+  this(){
+    globalVar = SymbolTable!Value(() => new DuplicateVariableError());
   }
 }

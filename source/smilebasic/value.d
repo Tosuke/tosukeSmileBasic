@@ -33,8 +33,26 @@ struct Value{
 	alias data this;
 
 	///初期化
-	this(T)(T a){
+	this(T)(T a) if(!is(T == ValueType)){
 		data = a;
+	}
+
+	this(ValueType t){
+		final switch(t){
+			case ValueType.Undefined:
+				break;
+			case ValueType.Integer:
+				data = 0;
+				break;
+			case ValueType.Floater:
+				data = 0.0;
+				break;
+			case ValueType.String:
+				data = ""w;
+				break;
+		}
+
+		type = t;
 	}
 
 	///値の実体

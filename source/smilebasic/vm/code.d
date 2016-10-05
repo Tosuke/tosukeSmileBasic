@@ -72,6 +72,8 @@ x<-種別
 0x1|imm32
 0x2|imm64f
 0x3|string
+0x4|var16(global)
+0x5|var32(global)
 
 ### Push string
 0x0031 PushStr wchar...nullChar
