@@ -22,16 +22,16 @@ class Parser{
 
 	private{
 		//Document
-		Node line(ParseTree tree){
+		Node line(ParseTree tree) const {
 			return new DocumentNode(tree.children.map!(a => node(a)).array);
 		}
 		//UnaryOperators
-  	Node negExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
-  	Node notExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.Not, node(tree.children[0]));}
-  	Node logicalNotExpr(ParseTree tree){return new UnaryOpNode(UnaryOp.LogicalNot, node(tree.children[0]));}
+  	Node negExpr(ParseTree tree) const {return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
+  	Node notExpr(ParseTree tree) const {return new UnaryOpNode(UnaryOp.Not, node(tree.children[0]));}
+  	Node logicalNotExpr(ParseTree tree) const {return new UnaryOpNode(UnaryOp.LogicalNot, node(tree.children[0]));}
 
 		//BinaryOperators
-		Node factor3(ParseTree tree){
+		Node factor3(ParseTree tree) const {
 			Node temp = node(tree.children.front);
 			foreach(t; tree.children[1..$]){
 				temp = new BinaryOpNode((name){
@@ -47,7 +47,7 @@ class Parser{
 			return temp;
 		}
 
-		Node factor4(ParseTree tree){
+		Node factor4(ParseTree tree) const {
 			Node temp = node(tree.children.front);
 			foreach(t; tree.children[1..$]){
 				temp = new BinaryOpNode((name){
@@ -61,7 +61,7 @@ class Parser{
 			return temp;
 		}
 
-		Node factor5(ParseTree tree){
+		Node factor5(ParseTree tree) const {
 			Node temp = node(tree.children.front);
 			foreach(t; tree.children[1..$]){
 				temp = new BinaryOpNode((name){
@@ -75,7 +75,7 @@ class Parser{
 			return temp;
 		}
 
-		Node factor6(ParseTree tree){
+		Node factor6(ParseTree tree) const {
 			Node temp = node(tree.children.front);
 			foreach(t; tree.children[1..$]){
 				temp = new BinaryOpNode((name){
@@ -93,7 +93,7 @@ class Parser{
 			return temp;
 		}
 
-		Node factor7(ParseTree tree){
+		Node factor7(ParseTree tree) const {
 			Node temp = node(tree.children.front);
 			foreach(t; tree.children[1..$]){
 				temp = new BinaryOpNode((name){
@@ -108,7 +108,7 @@ class Parser{
 			return temp;
 		}
 
-		Node factor8(ParseTree tree){
+		Node factor8(ParseTree tree) const {
 			Node temp = node(tree.children.front);
 			foreach(t; tree.children[1..$]){
 				temp = new BinaryOpNode((name){
@@ -123,7 +123,7 @@ class Parser{
 		}
 
 		//Literals
-		Node decimalInteger(ParseTree tree){
+		Node decimalInteger(ParseTree tree) const {
 			auto k = tree.matches.front.to!double;
 			Value v;
 			if(k > int.max){
@@ -133,28 +133,28 @@ class Parser{
 			}
 			return new ValueNode(v);
 		}
-		Node decimalFloater(ParseTree tree){
+		Node decimalFloater(ParseTree tree) const {
 			auto k = tree.matches.front.to!double;
 			return new ValueNode(k);
 		}
-		Node hexInteger(ParseTree tree){
+		Node hexInteger(ParseTree tree) const {
 			string str = tree.matches.front;
 			return new ValueNode(cast(int)(str.to!long(16)));
 		}
-		Node binInteger(ParseTree tree){
+		Node binInteger(ParseTree tree) const {
 			return new ValueNode(tree.matches.front.to!int(2));
 		}
-		Node stringLiteral(ParseTree tree){
+		Node stringLiteral(ParseTree tree) const {
 			return new ValueNode(tree.matches.front.to!wstring[1..$]);
 		}
 
 		//Variables
-		Node scalarVariable(ParseTree tree){
+		Node scalarVariable(ParseTree tree) const {
 			immutable name = tree.children.front.matches.front.to!wstring.toLower;
 			return new ScalarVariableNode(name);
 		}
 
-		Node commandStatement(ParseTree tree){
+		Node commandStatement(ParseTree tree) const {
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){
 				case "print"w, "?"w:
@@ -164,7 +164,7 @@ class Parser{
 			}
 		}
 
-		Node print(ParseTree[] trees){
+		Node print(ParseTree[] trees) const {
 			Node[] temp =  trees
 										.filter!(a => !(a.name == "Parser.commandDelimiter" && a.matches.front == ";"))
 										.map!(a => a.name != "Parser.commandDelimiter" ? node(a) : new ValueNode("\t"w))
@@ -175,14 +175,15 @@ class Parser{
 			return new PrintStatementNode(temp);
 		}
 
-		Node assignStatement(ParseTree tree){
+		Node assignStatement(ParseTree tree) const {
 			VariableNode var = node(tree.children[0]).to!VariableNode;
 			Node expr = node(tree.children[1]);
 
 			return new AssignStatementNode(var, expr);			
 		}
 
-		Node variableDefineStatement(ParseTree tree){
+
+		Node variableDefineStatement(ParseTree tree) const {
 			VariableNode[] defines = 
 				 tree.children[]
 				.map!(
@@ -214,7 +215,7 @@ import pegged.grammar;
 private mixin template ParserMixin(string parserName){
 
 	///パースしてASTを返す
-	Node parse(string source){
+	Node parse(string source) const {
 		auto tree = mixin(parserName~"(source)");
 		version(none) std.stdio.writeln(tree);
 		Node n;
@@ -228,7 +229,7 @@ private mixin template ParserMixin(string parserName){
 	}
 
 	///ParseTreeからNodeを得る
-	Node node(ParseTree tree){
+	Node node(ParseTree tree) const {
     if(!tree.successful){
 			immutable t = position(tree);
 			int line = t.line.to!int + 1;
@@ -241,13 +242,13 @@ private mixin template ParserMixin(string parserName){
 	}
 
 	///ParseTreeを処理する関数が見つからなかったときに処理をスキップする
-	Node skip(ParseTree tree){
+	Node skip(ParseTree tree) const {
 		//("skip "~tree.name).log;
 		return node(tree.children.front);
 	}
 
 	///ParseTreeをNodeに変換する関数群
-	alias Converter = Node delegate(ParseTree);
+	alias Converter = Node delegate(ParseTree) const;
 	Converter[string] converters;
 
 	import std.meta, std.traits;

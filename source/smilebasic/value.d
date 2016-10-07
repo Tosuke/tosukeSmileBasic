@@ -3,6 +3,7 @@ module tosuke.smilebasic.value;
 import tosuke.smilebasic.error;
 import std.conv : to;
 import std.format;
+import std.algorithm, std.range, std.array;
 
 
 ///値の種別
@@ -10,17 +11,19 @@ enum ValueType{
 	Undefined,
 	Integer,
 	Floater,
-	String
+	String,
+	Array,
 }
 
 
 ///値の種別を文字列化する
 string toString(ValueType t){
 	switch(t){
-		case ValueType.Undefined: return "Undefined";
-		case ValueType.Integer: return "Integer";
-		case ValueType.Floater: return "Floater";
-		case ValueType.String: return "String";
+		case ValueType.Undefined:	return "Undefined";
+		case ValueType.Integer: 	return "Integer";
+		case ValueType.Floater: 	return "Floater";
+		case ValueType.String: 		return "String";
+		case ValueType.Array: 		return "Array";
 		default: assert(0);
 	}
 }
@@ -37,6 +40,7 @@ struct Value{
 		data = a;
 	}
 
+	///ditto
 	this(ValueType t){
 		final switch(t){
 			case ValueType.Undefined:
@@ -50,16 +54,19 @@ struct Value{
 			case ValueType.String:
 				data = ""w;
 				break;
+			case ValueType.Array:
+				break;
 		}
 
 		type = t;
 	}
 
 	///値の実体
-	private Algebraic!(int, double, wstring) data_;
+	alias Type = Algebraic!(int, double, StringValue, ArrayValue);
+	private Type data_;
 	@property{
 		///ditto
-		public auto data(){return data_;}
+		public Type data() const {return data_;}
 		///ditto
 		public void data(T)(T a){
 			static if(is(T == Value)){
@@ -73,11 +80,93 @@ struct Value{
 				data_ = a;
 			}else static if(is(T : wstring)){
 				type = ValueType.String;
+				data_ = new StringValue(a);
+			}else static if(is(T == StringValue)){
+				type = ValueType.String;
+				data_ = a;
+			}else static if(is(T == ArrayValue)){
+				type = ValueType.Array;
 				data_ = a;
 			}else{
 				static assert(0);
 			}
 		}
+	}
+
+
+	///取得
+	T get(T)() const{
+		static if(is(T : wstring)){
+			return data.get!StringValue.data.to!T;
+		}else{
+			return data.get!T;
+		}
+	}
+
+
+	///次元
+	int dimension() @property const{
+		final switch(this.type){
+			case ValueType.Undefined:	return 0;
+			case ValueType.Integer: 	return 0;
+			case ValueType.Floater: 	return 0;
+			case ValueType.String:		return this.get!StringValue.dimension;
+			case ValueType.Array:			return this.get!ArrayValue.dimension;
+		}
+	}
+
+
+	///長さ
+	size_t length() @property const {
+		switch(this.type){
+			case ValueType.String:	return this.get!StringValue.length;
+			case ValueType.Array:		return this.get!ArrayValue.length;
+			default:
+				throw cannotUseAsArrayError(this);
+		}
+	}
+
+	///配列アクセス
+	Value index(int[] ind) const {
+		if(ind.length != this.dimension){
+			throw illegalIndexError(this.dimension);
+		}
+		if(!this.isArrayValue){
+			throw cannotUseAsArrayError(this);
+		}
+
+		if(this.type == ValueType.String){
+			return this.get!StringValue.index(ind);
+		}else if(this.type == ValueType.Array){
+			return this.get!ArrayValue.index(ind);
+		}
+		assert(0);
+	}
+
+	///ditto
+	Value opIndex(int[] ind...) const {
+		return index(ind);
+	}
+
+	///配列アクセス
+	void indexAssign(Value a, int[] ind){
+		if(ind.length != this.dimension){
+			throw illegalIndexError(this.dimension);
+		}
+		if(!this.isArrayValue){
+			throw cannotUseAsArrayError(this);
+		}
+
+		if(this.type == ValueType.String){
+			this.get!StringValue.indexAssign(a, ind);
+		}else if(this.type == ValueType.Array){
+			this.get!ArrayValue.indexAssign(a, ind);
+		}
+	}
+
+	///ditto
+	void opIndexAssign(Value a, int[] ind...){
+		indexAssign(a, ind);
 	}
 
 
@@ -97,9 +186,7 @@ struct Value{
 		}else if(this.type == a.type || this.type == ValueType.Undefined){
 			this.data = a;
 		}else{
-			throw new TypeMismatchError(
-				format("failed to convert types '%s' to '%s'", a.type.toString, this.type.toString)
-			);
+			throw failedToConvertTypeError(this, a);
 		}
 	}
 
@@ -107,7 +194,7 @@ struct Value{
 	private ValueType type_;
 	@property{
 		///ditto
-		public ValueType type(){return type_;}
+		public ValueType type() const {return type_;}
 		private void type(ValueType a){type_ = a;}
 	}
 
@@ -116,7 +203,7 @@ struct Value{
 		this.type = ValueType.Undefined;
 	}
 
-	string toString(){
+	string toString() const{
 		switch(this.type){
 			case ValueType.Undefined: return "undefined";
 			case ValueType.Integer: return this.get!int.to!string;
@@ -128,7 +215,7 @@ struct Value{
 
 	//Operator Overloadings
 	/// 単項-演算子
-	Value opUnary(string op : "-")(){
+	Value opUnary(string op : "-")() const{
 		switch(type){
 	    case ValueType.Integer: return Value(-(data.get!int));
 	    case ValueType.Floater: return Value(-(data.get!double));
@@ -137,7 +224,7 @@ struct Value{
 	}
 
 	/// ~演算子
-	Value opUnary(string op : "~")(){
+	Value opUnary(string op : "~")() const {
 		if(this.isArithmeticValue){
 			return Value(~(this.toInteger));
 		}else{
@@ -146,7 +233,7 @@ struct Value{
 	}
 
 	/// *演算子
-	Value opBinary(string op : "*")(Value b){
+	Value opBinary(string op : "*")(Value b) const {
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
 	      return Value(this.get!int * b.get!int);
@@ -162,7 +249,7 @@ struct Value{
 	}
 
 	/// /演算子
-	Value opBinary(string op : "/")(Value b){
+	Value opBinary(string op : "/")(Value b) const {
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(this.toFloater / b.toFloater);
 	  }else{
@@ -171,7 +258,7 @@ struct Value{
 	}
 
 	/// mod演算子
-	Value opBinary(string op : "%")(Value b){
+	Value opBinary(string op : "%")(Value b) const {
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(this.toInteger % b.toInteger);
 	  }else{
@@ -180,7 +267,7 @@ struct Value{
 	}
 
 	/// +演算子
-	Value opBinary(string op : "+")(Value b){
+	Value opBinary(string op : "+")(Value b) const {
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
 	      return Value(this.get!int + b.get!int);
@@ -195,7 +282,7 @@ struct Value{
 	}
 
 	/// -演算子
-	Value opBinary(string op : "-")(Value b){
+	Value opBinary(string op : "-")(Value b) const {
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    if(this.type == ValueType.Integer && b.type == ValueType.Integer){
 	      return Value(this.get!int - b.get!int);
@@ -208,7 +295,7 @@ struct Value{
 	}
 
 	/// <<,>>演算子
-	Value opBinary(string op)(Value b) if(op == "<<" || op == ">>"){
+	Value opBinary(string op)(Value b) const if(op == "<<" || op == ">>"){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
 	  }else{
@@ -217,7 +304,7 @@ struct Value{
 	}
 
 	/// &,|,^演算子
-	Value opBinary(string op)(Value b) if(op == "&" || op == "|" || op == "^"){
+	Value opBinary(string op)(Value b) const if(op == "&" || op == "|" || op == "^"){
 		if(this.isArithmeticValue && b.isArithmeticValue){
 	    return Value(mixin(`this.toInteger`~op~`b.toInteger`));
 	  }else{
@@ -233,7 +320,7 @@ struct Value{
 	}
 
 	/// ==演算子
-	bool opEquals(Value b){
+	bool opEquals(Value b) const{
 		if(this.isArithmeticValue && b.isArithmeticValue){
 			if(this.type == ValueType.Integer && b.type == ValueType.Integer){
 				return this.get!int == b.get!int;
@@ -248,7 +335,7 @@ struct Value{
 	}
 
 	/// <,>,<=.>=演算子
-	int opCmp(Value b){
+	int opCmp(Value b) const{
 		if(this.isArithmeticValue && b.isArithmeticValue){
 			if(this.type == ValueType.Integer && b.type == ValueType.Integer){
 				immutable m = this.get!int; immutable n = b.get!int;
@@ -283,6 +370,11 @@ struct Value{
 		}
 		assert(0);
 	}
+
+	///怒られるので
+	auto toHash() const{
+		return data.toHash;
+	}
 }
 
 
@@ -294,7 +386,7 @@ bool isArithmeticValue(Value v){
 
 ///配列型であるか？
 bool isArrayValue(Value v){
-	return false;
+	return v.type == ValueType.String || v.type == ValueType.Array;
 }
 
 
@@ -335,4 +427,178 @@ int toBoolean(Value v){
 		case ValueType.String: return 3;
 		default: assert(0);
 	}
+}
+
+///配列アクセスを提供する
+abstract class IArray{
+	
+	///次元
+	abstract int dimension() @property const;
+
+	///長さ
+	abstract size_t length() @property const;
+
+	///配列アクセス
+	abstract Value index(int[] ind);
+
+	///配列アクセス
+	abstract void indexAssign(Value a, int[] ind);
+}
+
+///内部文字列
+class StringValue : IArray{
+	
+	///初期化
+	this(wstring str){
+		data = str;
+	}
+
+	///文字列の実体
+	public wstring data;
+
+	///次元
+	override int dimension() @property const {return 1;}
+
+	///長さ
+	override size_t length() @property const{
+		return data.length;
+	}
+
+	///配列アクセス
+	override Value index(int[] ind) const
+	in{
+		assert(ind.length == 1);
+	}body{
+		immutable i = ind[0];
+		return Value(data[i..i+1].dup.to!wstring);
+	}
+
+	///配列アクセス
+	override void indexAssign(Value a, int[] ind)
+	in{
+		assert(ind.length == 1);
+	}body{
+		if(a.type != ValueType.String)
+			throw failedToConvertTypeError(Value(ValueType.String), a);
+		
+		immutable i = ind[0];
+		data = data[0..i] ~ a.get!wstring ~ data[i+1..$];
+	}
+}
+
+unittest{
+	auto a = Value("aaa"w);
+	assert(a[1] == Value("a"w));
+	Value b = a;
+
+	a[1] = Value("bbb"w);
+	assert(a == Value("abbba"w));
+
+	assert(b == Value("abbba"w));
+}
+
+
+///内部配列
+abstract class ArrayValue : IArray{
+
+	///次元
+	override abstract int dimension() @property const;
+
+	///長さ
+	override abstract size_t length() @property const;
+
+	///配列アクセス
+	override abstract Value index(int[] ind);
+
+	///配列アクセス
+	override abstract void indexAssign(Value a, int[] ind);
+}
+
+import std.experimental.ndslice;
+
+///内部配列の実装
+class TypedArrayValue(T) : ArrayValue{
+
+	///配列の生データ
+	private T[] data_;
+	@property{
+		///ditto
+		public T[] data(){return data_;}
+		///ditto
+		public void data(T[] a){
+			data_ = a;
+			slice = a.sliced(slice.shape);
+		}
+	}
+
+	///スライスされた配列
+	private Slice!(4, T*) slice;
+
+	///次元
+	private int dimension_;
+	@property{
+		///ditto
+		public override int dimension() const {return dimension_;}
+		private void dimension(int a){dimension_ = a;}
+	}
+
+	///長さ
+	public override size_t length() @property const {
+		return data_.length; //悪手
+	}
+
+	///初期化
+	this(int[] ind){
+		if(!(1 <= ind.length && ind.length <= 4)){
+			throw new OutOfRangeError("only 1~4 index allowed");
+		}
+
+		size_t length = ind.reduce!"a*b";
+		data_ = new T[length];
+
+		if(length){
+			size_t[4] l = [1, 1, 1, 1];
+			l[0..ind.length] = ind.to!(size_t[])[];
+
+			slice = data.sliced(l);
+		}
+	}
+
+	///配列アクセス
+	public override Value index(int[] ind)
+	in{
+		assert(ind.length == dimension);
+	}body{
+		size_t[4] l = [0, 0, 0, 0];
+		l[0..ind.length] = ind.to!(size_t[])[];
+		
+		try{
+			const v = Value(slice.opIndex!(size_t[4])(l)); 
+			return v;
+		}catch(Error e){
+			throw invalidIndexError;
+		}
+			
+	}
+
+	///配列アクセス
+	public override void indexAssign(Value a, int[] ind)
+	in{
+		assert(ind.length == dimension);
+	}body{
+		int[4] l = [0, 0, 0, 0];
+		l[0..ind.length] = ind[];
+
+		try{
+			slice[l] = a.get!T;			
+		}catch(Error e){
+			throw invalidIndexError;
+		}
+	}
+}
+
+unittest{
+	auto a = new TypedArrayValue!int([2, 2]);
+	a.indexAssign(Value(1), [0, 0]);
+	assert(a.index([0, 0]) == Value(1));
 }

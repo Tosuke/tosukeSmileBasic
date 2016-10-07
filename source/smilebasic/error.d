@@ -21,7 +21,7 @@ abstract class SmileBasicError : Exception{
 
   ///エラーメッセージ
   @property string msg(){
-    return format("Line %d in slot%d %s%s", line, slot, error, detail.length != 0 ? ": "~detail : "");
+    return format("%d : ? in slot%d %s%s", line, slot, error, detail.length != 0 ? ": "~detail : "");
   }
 
 public:
@@ -63,7 +63,7 @@ class SyntaxError : SmileBasicError{
 
 
   @property override string msg(){
-    return format("(%d:%d) in slot%d %s%s", line, col, slot, error, detail.length != 0 ? ": "~detail : "");
+    return format("%d : %d in slot%d %s%s", line, col, slot, error, detail.length != 0 ? ": "~detail : "");
   }
 }
 
@@ -97,6 +97,22 @@ auto imcompatibleTypeError(string operator, Value a, Value b){
   );
 }
 
+
+///代入式の型が異なっているときにTypeMismatchErrorを生成する
+auto failedToConvertTypeError(Value a, Value b){
+  return new TypeMismatchError(
+    format("failed to convert types '%s' to '%s'", b.type.toString, a.type.toString)
+  );
+}
+
+
+///指定された型が配列として使えない
+auto cannotUseAsArrayError(Value a){
+  return new TypeMismatchError(
+    format("cannot use a type '%s' as array", a.type.toString)
+  );
+}
+
 ///シンボル衝突エラー
 abstract class DuplicateSymbolError : SmileBasicError{
   ///詳細を含まず発生させる
@@ -123,6 +139,35 @@ class DuplicateVariableError : DuplicateSymbolError{
   this(string detail){
     super("Duplicate variable", detail);
   }
+}
+
+
+///範囲外の数値が指定された
+class OutOfRangeError : SmileBasicError{
+
+  ///詳細を含まず発生させる
+  this(){
+    super("Out of range");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("Out of range", detail);
+  }
+}
+
+
+///インデックス数が合わない
+auto illegalIndexError(int num){
+  return new OutOfRangeError(
+    format("only %d index allowed", num)
+  );
+}
+
+
+///インデックスの大きさが合わない
+auto invalidIndexError(){
+  return new OutOfRangeError("invalid index");
 }
 
 
