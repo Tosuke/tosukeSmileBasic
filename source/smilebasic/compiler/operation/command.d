@@ -33,13 +33,13 @@ abstract class Command : Operation{
   private CommandType type_;
   @property{
     ///ditto
-    public CommandType commandType(){return type_;}
+    public CommandType commandType() const {return type_;}
     private void commandType(CommandType p){type_ = p;}
   }
 
-  abstract override string toString();
-  abstract override int codeSize();
-  abstract override VMCode[] code();
+  abstract override string toString() const;
+  abstract override int codeSize() const;
+  abstract override VMCode[] code() const;
 }
 
 
@@ -55,15 +55,15 @@ class PrintCommand : Command{
   ///引数の数
   private ushort argNum;
 
-  override string toString(){
+  override string toString() const{
     return "Command(Print)("~argNum.to!string~")";
   }
 
-  override int codeSize(){
+  override int codeSize() const{
     return 1+1;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const{
     return [0x0080, argNum];
   }
 }
@@ -82,7 +82,7 @@ class UnaryOpCommand : Command{
   ///演算子の種別
   private UnaryOp op;
 
-  override string toString(){
+  override string toString() const{
     string temp = (a){
       switch(a){
         case UnaryOp.Neg:         return "-";
@@ -94,11 +94,11 @@ class UnaryOpCommand : Command{
     return "Command(UnaryOp("~temp~"))";
   }
 
-  override int codeSize(){
+  override int codeSize() const{
     return 1;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const{
     auto code = (a){
       switch(a){
         case UnaryOp.Neg:         return 0x0000;
@@ -124,7 +124,7 @@ class BinaryOpCommand : Command{
   ///演算子の種別
   private BinaryOp op;
 
-  override string toString(){
+  override string toString() const{
     string temp = (a){
       switch(a){
         case BinaryOp.Mul:        return "*";
@@ -159,10 +159,10 @@ class BinaryOpCommand : Command{
     return "Command(BinaryOp("~temp~"))";
   }
 
-  override int codeSize(){
+  override int codeSize() const{
     return 1;
   }
-  override VMCode[] code(){
+  override VMCode[] code() const{
     VMCode code = (a){
       switch(a){
         case BinaryOp.Mul:        return 0x0010;

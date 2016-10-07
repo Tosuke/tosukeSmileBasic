@@ -38,13 +38,13 @@ abstract class Push : Operation{
   private PushType type_;
   @property{
     ///ditto
-    public PushType pushType(){return type_;}
+    public PushType pushType() const {return type_;}
     private void pushType(PushType p){type_ = p;}
   }
 
-  abstract override string toString();
-  abstract override int codeSize();
-  abstract override VMCode[] code();
+  abstract override string toString() const;
+  abstract override int codeSize() const;
+  abstract override VMCode[] code() const;
 }
 
 
@@ -60,15 +60,15 @@ class PushImm16 : Push{
   ///Pushする値
   public short imm;
 
-  override string toString(){
+  override string toString() const {
     return "Push(imm16)("~imm.to!string~")";
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     return 1+1;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     return [0x0001, cast(ushort)imm];
   }
 }
@@ -86,15 +86,15 @@ class PushImm32 : Push{
   ///Pushする値
   public int imm;
 
-  override string toString(){
+  override string toString() const {
     return "Push(Imm32)("~imm.to!string~")";
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     return 1+2;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     uint k = cast(uint)imm;
     return [0x0011, (k >>> 16) & 0xffff, k & 0xffff];
   }
@@ -113,15 +113,15 @@ class PushImm64f : Push{
   ///Pushする値
   public double imm;
 
-  override string toString(){
+  override string toString() const{
     return "Push(Imm64f)("~imm.to!string~")";
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     return 1 + 4;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     ulong k = *(cast(ulong*)&imm);
     return [0x0021, (k >>> 48) & 0xffff, (k >>> 32) & 0xffff, (k >>> 16) & 0xffff, k & 0xffff];
   }
@@ -140,15 +140,15 @@ class PushString : Push{
   ///Pushする値
   public wstring imm;
 
-  override string toString(){
+  override string toString() const{
     return `Push(String)("`~imm.to!string~`")`;
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     return 1 + imm.length.to!int + 1;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     return [cast(VMCode)0x0031] ~ (cast(VMCode[])imm) ~ [cast(VMCode)0];
   }
 }
@@ -167,20 +167,20 @@ class PushScalarVariable : Push{
   private wstring name_;
   @property{
     ///ditto
-    public wstring name(){return name_;}
+    public wstring name() const {return name_;}
     ///ditto
     private void name(wstring a){name_ = a;}
   }
 
-  override string toString(){
+  override string toString() const{
     return `Push(var)("`~name.to!string~`")`;
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
   }
 }
@@ -199,12 +199,12 @@ class PushGlobalScalarVariable : Push{
   private uint id_;
   @property{
     ///ditto
-    public uint id(){return id_;}
+    public uint id() const {return id_;}
     ///ditto
     private void id(uint a){id_ = a;}
   }
 
-  override string toString(){
+  override string toString() const{
     if(id <= 0xffff){
       return `Push(gvar16)(`~id.to!string~`)`;
     }else{
@@ -212,7 +212,7 @@ class PushGlobalScalarVariable : Push{
     }                 
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     if(id <= 0xffff){
       return 1 + 1; //gvar16
     }else{
@@ -220,7 +220,7 @@ class PushGlobalScalarVariable : Push{
     }
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const{
     if(id <= 0xffff){
       return [0x0041, id & 0xffff];
     }else{

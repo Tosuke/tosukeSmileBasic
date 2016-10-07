@@ -38,7 +38,7 @@ abstract class Node{
 	private NodeType type_;
 	@property{
 		///ditto
-		public NodeType type(){return type_;}
+		public NodeType type() const {return type_;}
 		protected void type(NodeType a){type_ = a;}
 	}
 
@@ -46,7 +46,7 @@ abstract class Node{
 	private int line_;
 	@property{
 		///ditto
-		public int line(){return line_;}
+		public int line() const {return line_;}
 		///ditto
 		public void line(int a){
 			line_ = a;
@@ -71,7 +71,7 @@ abstract class Node{
 
 
 	///ASTを人間が読める形で出力する
-	override string toString(){
+	override string toString() const{
 		import std.algorithm : map;
 		import std.string : join;
 		return name~":["~children.map!"a.toString".join(", ")~"]";
@@ -79,7 +79,7 @@ abstract class Node{
 
 
 	///中間コード
-	abstract Operation operation();
+	abstract Operation operation() const;
 }
 
 
@@ -92,7 +92,7 @@ class DocumentNode : Node{
 		super("Doc", _children);
 	}
 
-	override Operation operation(){
+	override Operation operation() const{
 		return new EmptyOperation();
 	}
 }

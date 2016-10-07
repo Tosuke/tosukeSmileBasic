@@ -18,13 +18,13 @@ abstract class VariableNode : Node{
 		super(name, children);
 	}
 
-	override abstract Operation operation();
+	override abstract Operation operation() const;
 
 	///popされるときのoperation
-	abstract Operation popOperation();
+	abstract Operation popOperation() const;
 
 	///定義されるときのoperation
-	abstract Operation defineOperation();
+	abstract Operation defineOperation() const;
 }
 
 ///単純変数
@@ -39,16 +39,16 @@ class ScalarVariableNode : VariableNode{
 	///変数名
 	private wstring name;
 
-	override Operation operation(){
+	override Operation operation() const {
 		//変数だけのときは式なのでPushと判断する
 		return new PushScalarVariable(name);
 	}
 
-	override Operation popOperation(){
+	override Operation popOperation() const {
 		return new PopScalarVariable(name);
 	}
 
-	override Operation defineOperation(){
+	override Operation defineOperation() const {
 		return new DefineScalarVariable(name);
 	}
 }

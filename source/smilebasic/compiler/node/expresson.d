@@ -52,7 +52,7 @@ class BinaryOpNode : Node{
 	///演算子の種別
 	BinaryOp op;
 
-	override Operation operation(){
+	override Operation operation() const{
 		return new BinaryOpCommand(op);
 	}
 }
@@ -79,7 +79,7 @@ class UnaryOpNode : Node{
 	///演算子の種別
   UnaryOp op;
 
-	override Operation operation(){
+	override Operation operation() const {
 		return new UnaryOpCommand(op);
 	}
 }
@@ -99,7 +99,7 @@ class ValueNode : Node{
 	///値
 	public Value value;
 
-	override Operation operation(){
+	override Operation operation() const {
 		switch(value.type){
 			case ValueType.Integer:
 				auto k = value.get!int;

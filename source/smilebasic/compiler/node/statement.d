@@ -18,7 +18,7 @@ class PrintStatementNode : Node{
 		super("Print", _children);
 	}
 
-	override Operation operation(){
+	override Operation operation() const {
 		return new PrintCommand(this.children.length.to!ushort);
 	}
 }
@@ -36,7 +36,7 @@ class AssignStatementNode : Node{
 
 	private VariableNode variable;
 
-	override Operation operation(){
+	override Operation operation() const {
 		return variable.popOperation;
 	}
 }
@@ -59,7 +59,7 @@ class VariableDefineStatementNode : Node{
 							super(a.name);
 						}
 
-						override Operation operation(){
+						override Operation operation() const {
 							return a.defineOperation;
 						}
 
@@ -70,7 +70,7 @@ class VariableDefineStatementNode : Node{
 			super("Define", temp ~ _children);
 	}
 
-	override Operation operation(){
+	override Operation operation() const {
 		return new EmptyOperation();
 	}
 }

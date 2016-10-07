@@ -42,7 +42,7 @@ abstract class Operation{
   private OperationType type_;
   @property{
     ///ditto
-    public OperationType type(){return type_;}
+    public OperationType type() const {return type_;}
     ///ditto
     private void type(OperationType o){type_ = o;}
   }
@@ -51,13 +51,13 @@ abstract class Operation{
   public int line;
 
   ///文字列化
-  abstract override string toString();
+  abstract override string toString() const;
   
   ///VMコード化したときの長さ
-  abstract int codeSize();
+  abstract int codeSize() const;
 
   ///VMコード
-  abstract VMCode[] code();
+  abstract VMCode[] code() const;
 }
 
 
@@ -68,9 +68,9 @@ class EmptyOperation : Operation{
     super(OperationType.Empty);
   }
 
-  override string toString(){return "";}
-  override int codeSize(){return 0;}
-  override VMCode[] code(){return [];}
+  override string toString() const {return "";}
+  override int codeSize() const {return 0;}
+  override VMCode[] code() const {return [];}
 }
 
 
@@ -87,15 +87,16 @@ class DefineScalarVariable : Operation{
   private wstring name_;
   @property{
     ///ditto
-    public wstring name(){return name_;}
+    public wstring name() const{return name_;}
     ///ditto
     private void name(wstring a){name_ = a;}
   }
 
-  override string toString(){
-    return `Define(var '`~name.to!string~`')`;
+  override string toString() const{
+    immutable n = name;
+    return `Define(var '`~n.to!string~`')`;
   }
 
-  override int codeSize(){return 0;}
-  override VMCode[] code(){return [];}
+  override int codeSize() const {return 0;}
+  override VMCode[] code() const {return [];}
 }

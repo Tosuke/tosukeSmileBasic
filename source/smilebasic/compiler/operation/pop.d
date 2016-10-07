@@ -31,14 +31,14 @@ abstract class Pop : Operation{
   private PopType type_;
   @property{
     ///ditto
-    public PopType popType(){return type_;}
+    public PopType popType() const {return type_;}
     ///ditto
     private void popType(PopType a){type_ = a;}
   }
 
-  abstract override string toString();
-  abstract override int codeSize();
-  abstract override VMCode[] code();
+  abstract override string toString() const;
+  abstract override int codeSize() const;
+  abstract override VMCode[] code() const;
 }
 
 
@@ -50,15 +50,15 @@ class PopNone : Pop{
     super(PopType.None);
   }
 
-  override string toString(){
+  override string toString() const{
     return `Pop(none)`;
   }
 
-  override int codeSize(){
+  override int codeSize() const{
     return 1;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const{
     return [0x0002];
   }
 }
@@ -77,20 +77,20 @@ class PopScalarVariable : Pop{
   private wstring name_;
   @property{
     ///ditto
-    public wstring name(){return name_;}
+    public wstring name() const {return name_;}
     ///ditto
     private void name(wstring a){name_ = a;}
   }
 
-  override string toString(){
+  override string toString() const{
     return `Pop(var)(`~name.to!string~`)`;
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
   }
 }
@@ -109,12 +109,12 @@ class PopGlobalScalarVariable : Pop{
   private uint id_;
   @property{
     ///ditto
-    public uint id(){return id_;}
+    public uint id() const {return id_;}
     ///ditto
     private void id(uint a){id_ = a;}
   }
 
-  override string toString(){
+  override string toString() const{
     if(id <= 0xffff){
       return `Pop(gvar16)(`~id.to!string~`)`;
     }else{
@@ -122,11 +122,11 @@ class PopGlobalScalarVariable : Pop{
     }
   }
 
-  override int codeSize(){
+  override int codeSize() const {
     return id <= 0xffff ? 1 + 1 : 1 + 2;
   }
 
-  override VMCode[] code(){
+  override VMCode[] code() const {
     if(id <= 0xffff){
       //Pop(gvar16)
       return [0x0012, id & 0xffff];

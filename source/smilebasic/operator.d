@@ -2,7 +2,7 @@ module tosuke.smilebasic.operator;
 
 import tosuke.smilebasic.error;
 import tosuke.smilebasic.value;
-import tosuke.smilebasic.compiler.node : Node, ValueNode;
+import tosuke.smilebasic.compiler.node;
 import std.conv : to;
 import std.experimental.logger;
 
