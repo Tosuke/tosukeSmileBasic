@@ -6,7 +6,7 @@ Parser:
   commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
   commandDelimiter <- ";" / ","
 
-  assignStatement < variable :"=" expr
+  assignStatement < expr :"=" expr
 
   variableDefineStatement < :("var "i / "dim "i) (assignStatement / variable) (:"," (assignStatement / variable))*
 

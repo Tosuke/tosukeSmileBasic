@@ -8,10 +8,26 @@ import tosuke.smilebasic.value;
 import std.algorithm, std.array;
 import std.conv : to;
 
+///式の構成要素
+abstract class ExpressionNode : Node{
+
+	///初期化
+	this(string name, Node[] children = []){
+		super(name, children);
+	}
+
+	///中間コード
+	override abstract Operation operation() const;
+
+	///代入可能か
+	abstract bool isAssignable() const {
+		return false;
+	}
+}
 
 //式の構成要素
 ///二項演算子
-class BinaryOpNode : Node{
+class BinaryOpNode : ExpressionNode{
 
 	///初期化
 	this(BinaryOp _op, Node a, Node b){
@@ -55,11 +71,13 @@ class BinaryOpNode : Node{
 	override Operation operation() const{
 		return new BinaryOpCommand(op);
 	}
+
+	override bool isAssignable() const {return false;}
 }
 
 
 ///単項演算子
-class UnaryOpNode : Node{
+class UnaryOpNode : ExpressionNode{
 
 	///初期化
   this(UnaryOp _op, Node a){
@@ -82,11 +100,13 @@ class UnaryOpNode : Node{
 	override Operation operation() const {
 		return new UnaryOpCommand(op);
 	}
+
+	override bool isAssignable() const {return false;}
 }
 
 
 ///リテラルを格納する
-class ValueNode : Node{
+class ValueNode : ExpressionNode{
 
 	///初期化
 	this(T)(T a){
@@ -116,6 +136,8 @@ class ValueNode : Node{
 			default: assert(0);
 		}
 	}
+
+	override bool isAssignable() const {return false;}
 }
 
 import tosuke.smilebasic.operator;

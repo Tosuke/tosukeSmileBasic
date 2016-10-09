@@ -176,7 +176,15 @@ class Parser{
 		}
 
 		Node assignStatement(ParseTree tree) const {
-			VariableNode var = node(tree.children[0]).to!VariableNode;
+
+			auto var = (v){
+				if(v.isAssignable){
+					return v.to!VariableNode;
+				}else{
+					throw new SyntaxError("rvalue is not assignable");
+				}
+			}(node(tree.children[0]).to!ExpressionNode);
+
 			Node expr = node(tree.children[1]);
 
 			return new AssignStatementNode(var, expr);			

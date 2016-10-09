@@ -10,7 +10,7 @@ import std.conv : to;
 
 
 ///変数
-abstract class VariableNode : Node{
+abstract class VariableNode : ExpressionNode{
 	
 	///初期化
 	this(string name, Node[] children = []){
@@ -25,6 +25,9 @@ abstract class VariableNode : Node{
 
 	///定義されるときのoperation
 	abstract Operation defineOperation() const;
+
+	///代入可能か?(popOperationを呼べるか？)
+	abstract override bool isAssignable() const;
 }
 
 ///単純変数
@@ -50,5 +53,9 @@ class ScalarVariableNode : VariableNode{
 
 	override Operation defineOperation() const {
 		return new DefineScalarVariable(name);
+	}
+
+	override bool isAssignable() const {
+		return true;
 	}
 }
