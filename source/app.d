@@ -12,6 +12,7 @@ void main(){
 	try{
 		auto slot = slot(
 			`
+				'コメント
 				var a$="ゆうアシ"
 				dim a% = 10
 				b$ = a$+"はハゲ"

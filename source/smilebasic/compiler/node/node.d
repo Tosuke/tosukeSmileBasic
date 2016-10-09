@@ -13,6 +13,9 @@ import std.conv : to;
 enum NodeType{
 	///プログラム全体
 	Document,
+	///何もしない
+	Empty,
+
 	///Print文
 	PrintStatement,
 	///代入文
@@ -93,6 +96,21 @@ class DocumentNode : Node{
 	}
 
 	override Operation operation() const{
+		return new EmptyOperation();
+	}
+}
+
+
+///何もしない
+class EmptyNode : Node{
+
+	///初期化
+	this(){
+		type = NodeType.Empty;
+		super("Empty");
+	}
+
+	override Operation operation() const {
 		return new EmptyOperation();
 	}
 }

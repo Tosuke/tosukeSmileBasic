@@ -1,7 +1,7 @@
 Parser:
   line < statement (:":"? statement)* :EndOfProgram / :EndOfProgram #改行情報を格納する
 
-  statement <- variableDefineStatement / assignStatement / commandStatement
+  statement <- commentStatement / variableDefineStatement / assignStatement / commandStatement
 
   commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
   commandDelimiter <- ";" / ","
@@ -9,6 +9,8 @@ Parser:
   assignStatement < expr :"=" expr
 
   variableDefineStatement < :("var "i / "dim "i) (assignStatement / variable) (:"," (assignStatement / variable))*
+
+  commentStatement < :"'" :(.+)
 
   expr <- factor8
 
@@ -62,6 +64,7 @@ Parser:
   #Variable
   variable <- scalarVariable
   scalarVariable <- identifier
+  indexVariable < expr :"[" expr (:"," expr)* :"]" 
 
   identifier <~ [a-zA-Z_][a-zA-Z_0-9]*[%#$]?
 

@@ -211,6 +211,10 @@ class Parser{
 			
 			return new VariableDefineStatementNode(defines, temp);
 		}
+
+		Node commentStatement(ParseTree tree) const {
+			return new EmptyNode();
+		}
 	}
 	
 	mixin ParserMixin!("Parser");
