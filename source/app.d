@@ -17,7 +17,12 @@ void main(){
 				'dim a% = 10
 				'b$ = a$+"はハゲ"
 				'print b$*a%
-				var a$[10]
+				?"hh"[0]
+				var b$[10]
+				var c[0]
+				c=b$
+				?c[9]
+				?"hh"
 			`
 		);
 		slot.source.writeln;
@@ -28,5 +33,6 @@ void main(){
 		vm.run(0);
 	}catch(SmileBasicError e){
 		writeln(e.msg);
+		//throw e;
 	}
 }

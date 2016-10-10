@@ -128,11 +128,11 @@ struct Value{
 
 	///配列アクセス
 	Value index(int[] ind) const {
-		if(ind.length != this.dimension){
-			throw illegalIndexError(this.dimension);
-		}
 		if(!this.isArrayValue){
 			throw cannotUseAsArrayError(this);
+		}
+		if(ind.length != this.dimension){
+			throw illegalIndexError(this.dimension);
 		}
 
 		if(this.type == ValueType.String){
@@ -581,6 +581,8 @@ class TypedArrayValue(T) : ArrayValue
 		if(!(1 <= ind.length && ind.length <= 4)){
 			throw new OutOfRangeError("only 1~4 index allowed");
 		}
+
+		dimension = ind.length.to!int;
 
 		size_t length = ind.reduce!"a*b";
 		data_ = new T[length];

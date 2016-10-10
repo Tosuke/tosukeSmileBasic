@@ -96,3 +96,40 @@ class ArrayVariableNode : VariableNode{
 		return false; //定義のみなので
 	}
 }
+
+
+///配列変数(利用)
+class IndexVariableNode : VariableNode{
+
+	///初期化
+	this(ExpressionNode _value, ExpressionNode[] _index){
+		super("IndexVariable", (_value ~ _index).to!(Node[]));
+	}
+
+	///値
+	public ExpressionNode value() @property const {
+		return cast(ExpressionNode)children[0];
+	}
+
+	///インデックス
+	public ExpressionNode[] index() @property const {
+		return cast(ExpressionNode[])children[1..$];
+	}
+
+	override Operation operation() const {
+		return new IndexOpCommand(index.length.to!ushort);
+	}
+
+	override Operation popOperation() const {
+		assert(0);
+	}
+
+	override Operation defineOperation() const {
+		throw new InternalError("Define is not implemented");
+	}
+
+	override bool isAssignable() const {
+		//上位の値が代入可能かに依存する
+		return value.isAssignable;
+	}
+}

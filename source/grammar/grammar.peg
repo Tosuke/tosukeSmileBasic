@@ -47,7 +47,7 @@ Parser:
   intDivExpr < :"div"i factor2
   modExpr < :"mod"i factor2
 
-  factor2 <- negExpr / notExpr / logicalNotExpr / primary
+  factor2 <- negExpr / notExpr / logicalNotExpr / indexVariable /primary
   negExpr < :"-" factor2
   notExpr < :"not"i factor2
   logicalNotExpr < :"!" factor2

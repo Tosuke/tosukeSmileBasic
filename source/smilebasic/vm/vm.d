@@ -111,6 +111,8 @@ private:
     codeTable[0x3020] = &binaryOp!"greaterOp";
     codeTable[0x4020] = &binaryOp!"lessEqOp";
     codeTable[0x5020] = &binaryOp!"greaterEqOp";
+    //IndexOp
+    codeTable[0x0030] = &indexOp;
     //CreateArrays
     codeTable[0x0040] = &createArray!int;
     codeTable[0x1040] = &createArray!double;
@@ -148,6 +150,19 @@ private:
     auto b = valueStack.pop;
 
     valueStack.push(mixin(op~"(a, b)"));
+  }
+
+  void indexOp(){
+    auto arr = valueStack.pop();
+    
+    immutable num = take();
+    auto ind = new int[num];
+    foreach(ref a; ind){
+      a = valueStack.pop().toInteger;
+    }
+    
+    auto v = arr.index(ind);
+    valueStack.push(v);
   }
 
   void printCommand(){

@@ -161,6 +161,13 @@ class Parser{
 			return new ArrayVariableNode(name, index);
 		}
 
+		Node indexVariable(ParseTree tree) const {
+			auto value = node(tree.children[0]).to!ExpressionNode;
+			auto index = tree.children[1..$].map!(a => node(a).to!ExpressionNode).array;
+
+			return new IndexVariableNode(value, index);
+		}
+
 		Node commandStatement(ParseTree tree) const {
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){

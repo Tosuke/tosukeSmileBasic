@@ -17,7 +17,9 @@ enum CommandType{
   ///単項演算子
   UnaryOp,
   ///二項演算子
-  BinaryOp
+  BinaryOp,
+  ///配列アクセス演算子
+  IndexOp
 }
 
 
@@ -56,15 +58,15 @@ class PrintCommand : Command{
   ///引数の数
   private ushort argNum;
 
-  override string toString() const{
+  override string toString() const {
     return "Command(Print)("~argNum.to!string~")";
   }
 
-  override int codeSize() const{
+  override int codeSize() const {
     return 1+1;
   }
 
-  override VMCode[] code() const{
+  override VMCode[] code() const {
     return [0x0080, argNum];
   }
 }
@@ -83,7 +85,7 @@ class UnaryOpCommand : Command{
   ///演算子の種別
   private UnaryOp op;
 
-  override string toString() const{
+  override string toString() const {
     string temp = (a){
       switch(a){
         case UnaryOp.Neg:         return "-";
@@ -95,11 +97,11 @@ class UnaryOpCommand : Command{
     return "Command(UnaryOp("~temp~"))";
   }
 
-  override int codeSize() const{
+  override int codeSize() const {
     return 1;
   }
 
-  override VMCode[] code() const{
+  override VMCode[] code() const {
     auto code = (a){
       switch(a){
         case UnaryOp.Neg:         return 0x0000;
@@ -125,7 +127,7 @@ class BinaryOpCommand : Command{
   ///演算子の種別
   private BinaryOp op;
 
-  override string toString() const{
+  override string toString() const {
     string temp = (a){
       switch(a){
         case BinaryOp.Mul:        return "*";
@@ -160,10 +162,10 @@ class BinaryOpCommand : Command{
     return "Command(BinaryOp("~temp~"))";
   }
 
-  override int codeSize() const{
+  override int codeSize() const {
     return 1;
   }
-  override VMCode[] code() const{
+  override VMCode[] code() const {
     VMCode code = (a){
       switch(a){
         case BinaryOp.Mul:        return 0x0010;
@@ -192,5 +194,32 @@ class BinaryOpCommand : Command{
       }
     }(op).to!VMCode;
     return [code];
+  }
+}
+
+
+///配列アクセス演算子
+class IndexOpCommand : Command{
+
+  ///初期化
+  this(ushort _indexNum){
+    indexNum = _indexNum;
+    super(CommandType.IndexOp);
+  }
+
+  ///インデックスの数
+  private ushort indexNum;
+
+  override string toString() const {
+    return `Command(indexOp(`~indexNum.to!string~`))`;
+  }
+
+  override int codeSize() const {
+    return 1 + 1;
+  }
+
+  override VMCode[] code() const {
+    //IndexOperator indexNum(imm16)
+    return [0x0030, indexNum];
   }
 }
