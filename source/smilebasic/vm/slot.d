@@ -15,7 +15,6 @@ Slot slot(string source){
   auto slot = new Slot;
   slot.source =  source
                 .split("\n")
-                .map!(a => a.strip)
                 .array;
   return slot;
 }

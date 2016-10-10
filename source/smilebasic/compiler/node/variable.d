@@ -4,6 +4,7 @@ import tosuke.smilebasic.compiler.node;
 
 import tosuke.smilebasic.compiler;
 import tosuke.smilebasic.value;
+import tosuke.smilebasic.error;
 
 import std.algorithm, std.array;
 import std.conv : to;
@@ -39,6 +40,7 @@ class ScalarVariableNode : VariableNode{
 		super("ScalarVariable("~name.to!string~")");
 	}
 
+
 	///変数名
 	private wstring name;
 
@@ -57,5 +59,40 @@ class ScalarVariableNode : VariableNode{
 
 	override bool isAssignable() const {
 		return true;
+	}
+}
+
+
+///配列変数(定義)
+class ArrayVariableNode : VariableNode{
+
+	///初期化
+	this(wstring _name, ExpressionNode[] index){
+		name = _name;
+		super("ArrayVariable("~name.to!string~"[])", index.to!(Node[]));
+	}
+
+	///変数名
+	private wstring name;
+	private size_t indexNum() @property const {
+		return children.length;
+	}
+
+	override Operation operation() const {
+		//定義のみなので実装されない
+		throw new InternalError("Push is not implemented");
+	}
+
+	override Operation popOperation() const {
+		//定義のみなので実装されない
+		throw new InternalError("Pop is not implemented");
+	}
+
+	override Operation defineOperation() const {
+		return new DefineArrayVariable(name, indexNum.to!ushort);
+	}
+
+	override bool isAssignable() const {
+		return false; //定義のみなので
 	}
 }

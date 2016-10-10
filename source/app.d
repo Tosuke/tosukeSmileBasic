@@ -13,10 +13,11 @@ void main(){
 		auto slot = slot(
 			`
 				'コメント
-				var a$="ゆうアシ"
-				dim a% = 10
-				b$ = a$+"はハゲ"
-				print b$*a%
+				'var a$="ゆうアシ"
+				'dim a% = 10
+				'b$ = a$+"はハゲ"
+				'print b$*a%
+				var a$[10]
 			`
 		);
 		slot.source.writeln;

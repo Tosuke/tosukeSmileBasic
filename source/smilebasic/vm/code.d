@@ -14,7 +14,8 @@ xx<-種別
 0x00|UnaryOperator
 0x01|>BinaryOparator
 0x02|>
-
+0x03|IndexOperator
+0x04|CreateArray
 0x06|Call Function(Common)
 0x07|Call Function(Local)
 0x08|Call command statement
@@ -60,6 +61,13 @@ m<-種別
 0x3|OpGreater
 0x4|OpLessEq
 0x5|OpGreaterEq
+
+### CreateArray
+0xm040 indexNum
+m<-種別
+0x0|Integer
+0x1|Floater
+0x2|String
 
 ### Call command statement
 0xm080 CallCmd imm16(argument num)

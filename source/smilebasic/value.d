@@ -392,7 +392,9 @@ bool isArrayValue(Value v){
 
 ///実数型に変換する
 double toFloater(Value v){
-	if(!isArithmeticValue(v)) throw new TypeMismatchError();
+	if(!isArithmeticValue(v))
+		throw failedToConvertTypeError(v, Value(ValueType.Floater));
+		
 	if(v.type == ValueType.Integer){
 		return v.get!int.to!double;
 	}else{
@@ -403,7 +405,9 @@ double toFloater(Value v){
 
 ///整数型に変換する
 int toInteger(Value v){
-	if(!isArithmeticValue(v)) throw new TypeMismatchError();
+	if(!isArithmeticValue(v))
+		throw failedToConvertTypeError(v, Value(ValueType.Integer));
+	
 	if(v.type == ValueType.Floater){
 		auto k = v.get!double;
 		if(k > int.max){
@@ -438,6 +442,9 @@ abstract class IArray{
 	///長さ
 	abstract size_t length() @property const;
 
+	///配列アクセスで返却される値の型
+	abstract ValueType type() @property const;
+
 	///配列アクセス
 	abstract Value index(int[] ind);
 
@@ -460,8 +467,13 @@ class StringValue : IArray{
 	override int dimension() @property const {return 1;}
 
 	///長さ
-	override size_t length() @property const{
+	override size_t length() @property const {
 		return data.length;
+	}
+
+	///配列アクセスで返却される値の型
+	override ValueType type() @property const {
+		return ValueType.String;
 	}
 
 	///配列アクセス
@@ -507,6 +519,9 @@ abstract class ArrayValue : IArray{
 	///長さ
 	override abstract size_t length() @property const;
 
+	///内部の型
+	override abstract ValueType type() @property const;
+
 	///配列アクセス
 	override abstract Value index(int[] ind);
 
@@ -517,7 +532,8 @@ abstract class ArrayValue : IArray{
 import std.experimental.ndslice;
 
 ///内部配列の実装
-class TypedArrayValue(T) : ArrayValue{
+class TypedArrayValue(T) : ArrayValue
+	if(is(T == int) || is(T == double) || is(T ==  StringValue)){
 
 	///配列の生データ
 	private T[] data_;
@@ -547,6 +563,19 @@ class TypedArrayValue(T) : ArrayValue{
 		return data_.length; //悪手
 	}
 
+	///配列アクセスで返却される型
+	public override ValueType type() @property const {
+		static if(is(T == int)){
+			return ValueType.Integer;
+		}else static if(is(T == double)){
+			return ValueType.Floater;
+		}else static if(is(T == StringValue)){
+			return ValueType.String;
+		}else{
+			static assert(0);
+		}
+	}
+
 	///初期化
 	this(int[] ind){
 		if(!(1 <= ind.length && ind.length <= 4)){
@@ -555,6 +584,11 @@ class TypedArrayValue(T) : ArrayValue{
 
 		size_t length = ind.reduce!"a*b";
 		data_ = new T[length];
+		static if(is(T == StringValue)){
+			foreach(ref a; data_){
+				a = new StringValue(""w);
+			}
+		}
 
 		if(length){
 			size_t[4] l = [1, 1, 1, 1];

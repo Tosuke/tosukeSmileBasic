@@ -179,3 +179,8 @@ class InternalError : Exception{
     super("Internal Error: "~msg, file, line, next);
   }
 }
+
+///未解決の名前シンボルを利用しようとした
+auto unresolutedSymbolError(wstring symbol, string file = __FILE__, size_t line = __LINE__){
+  return new InternalError(`symbol '`~symbol.to!string~`' is not resoluted`, file, line, null);
+}

@@ -3,12 +3,13 @@ Parser:
 
   statement <- commentStatement / variableDefineStatement / assignStatement / commandStatement
 
-  commandStatement < (identifier / "?") expr (commandDelimiter expr)* commandDelimiter? / (identifier / "?")
+  commandStatement < commandIdentifier expr (commandDelimiter expr)*  commandDelimiter? / commandIdentifier
   commandDelimiter <- ";" / ","
+  commandIdentifier <- identifier / "?"
 
   assignStatement < expr :"=" expr
 
-  variableDefineStatement < :("var "i / "dim "i) (assignStatement / variable) (:"," (assignStatement / variable))*
+  variableDefineStatement < :("var "i / "dim "i) (arrayVariable / assignStatement / scalarVariable) (:"," (arrayVariable / assignStatement / scalarVariable))*
 
   commentStatement < :"'" :(.+)
 
@@ -62,9 +63,12 @@ Parser:
   stringLiteral <~ doublequote (!doublequote .)* :doublequote?
 
   #Variable
-  variable <- scalarVariable
+  variable <- indexVariable / scalarVariable
   scalarVariable <- identifier
-  indexVariable < expr :"[" expr (:"," expr)* :"]" 
+  indexVariable < primary :"[" expr (:"," expr)* :"]"
+  
+  #定義時にのみ働くので、構文的にはvariableでない
+  arrayVariable < identifier :"[" expr (:"," expr)* :"]" 
 
   identifier <~ [a-zA-Z_][a-zA-Z_0-9]*[%#$]?
 

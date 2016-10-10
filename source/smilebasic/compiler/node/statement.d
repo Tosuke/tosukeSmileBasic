@@ -55,8 +55,8 @@ class VariableDefineStatementNode : Node{
 					return new class() Node{
 						
 						this(){
-							type = NodeType.VariableDefineStatement;
-							super(a.name);
+							type = NodeType.Variable;
+							super(a.name, a.children);
 						}
 
 						override Operation operation() const {

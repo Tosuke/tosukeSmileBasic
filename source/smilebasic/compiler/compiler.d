@@ -26,6 +26,7 @@ private struct Compiler{
   public void compile(){
     auto ast = buildAST(slot.source);
     ast = ast.constantFolding;
+    version(none) std.stdio.writeln(ast);
 
     auto list = genList(ast);
     list = compile(list);
@@ -67,13 +68,21 @@ private struct Compiler{
     foreach(ref op; list){
       try{
         if(cast(DefineScalarVariable)op){
-          define(op.to!DefineScalarVariable);
+          //単純変数を定義
+          op = define(op.to!DefineScalarVariable);
 
         }else if(cast(PushScalarVariable)op){
+          //単純変数の名前解決(式として利用時)
           op = resolute(op.to!PushScalarVariable);
 
         }else if(cast(PopScalarVariable)op){
+          //単純変数の名前解決(代入文として利用時)
           op = resolute(op.to!PopScalarVariable);
+
+        }else if(cast(DefineArrayVariable)op){
+          //配列変数を定義
+          op = define(op.to!DefineArrayVariable);
+
         }
       }catch(SmileBasicError e){
         e.line = op.line;
@@ -85,10 +94,35 @@ private struct Compiler{
     return list;
   }
 
-  private void define(DefineScalarVariable op){
+  private Operation define(DefineScalarVariable op){
     if(inGlobal){
       //グローバル変数
-      define(slot.globalVar, op.name);
+      defineScalar(slot.globalVar, op.name);
+    }else{
+      //TODO:ローカル変数
+      assert(0);
+    }
+
+    return op;
+  }
+
+  private Operation define(DefineArrayVariable op){
+    if(inGlobal){
+      //グローバル変数
+      defineArray(slot.globalVar, op.name);
+      
+      auto id = slot.globalVar.idof(op.name);
+      ValueType type = (n){
+        switch(n){
+          case '%':  return ValueType.Integer;
+          case '#':  return ValueType.Floater;
+          case '$':  return ValueType.String;
+          default:
+            return isDefint ? ValueType.Integer : ValueType.Floater;
+        }
+      }(op.name[$-1]);
+
+      return new DefineGlobalArrayVariable(id, type, op.indexNum);
     }else{
       //TODO:ローカル変数
       assert(0);
@@ -100,7 +134,7 @@ private struct Compiler{
       //グローバル変数
       if(op.name !in slot.globalVar){
         if(!isStrict){
-          define(slot.globalVar, op.name);                    
+          defineScalar(slot.globalVar, op.name);                    
         }else{
           //TODO:StrictモードとUndefinedVariableErrorの実装
           assert(0);
@@ -120,7 +154,7 @@ private struct Compiler{
       //グローバル変数
       if(op.name !in slot.globalVar){
         if(!isStrict){
-          define(slot.globalVar, op.name);                    
+          defineScalar(slot.globalVar, op.name);                    
         }else{
           //TODO:StrictモードとUndefinedVariableErrorの実装
           assert(0);
@@ -135,7 +169,7 @@ private struct Compiler{
     }
   }
 
-  private auto define(ref SymbolTable!Value var, wstring name){
+  private auto defineScalar(ref SymbolTable!Value var, wstring name){
   
     auto value = (n){
       switch(n[$-1]){
@@ -149,6 +183,11 @@ private struct Compiler{
 
     var.add(name, value);
 
+    return var;
+  }
+
+  private auto defineArray(ref SymbolTable!Value var, wstring name){
+    var.add(name, Value(ValueType.Array));
     return var;
   }
 }

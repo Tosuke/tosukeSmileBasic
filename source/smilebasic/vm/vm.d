@@ -92,7 +92,7 @@ private:
     codeTable[0x0000] = &unaryOp!"negOp";
     codeTable[0x1000] = &unaryOp!"notOp";
     codeTable[0x2000] = &unaryOp!"logicalNotOp";
-
+    //BinaryOps
     codeTable[0x0010] = &binaryOp!"mulOp";
     codeTable[0x1010] = &binaryOp!"divOp";
     codeTable[0x2010] = &binaryOp!"intDivOp";
@@ -111,6 +111,10 @@ private:
     codeTable[0x3020] = &binaryOp!"greaterOp";
     codeTable[0x4020] = &binaryOp!"lessEqOp";
     codeTable[0x5020] = &binaryOp!"greaterEqOp";
+    //CreateArrays
+    codeTable[0x0040] = &createArray!int;
+    codeTable[0x1040] = &createArray!double;
+    codeTable[0x2040] = &createArray!StringValue;
 
     codeTable[0x0080] = &printCommand;
   }
@@ -219,5 +223,16 @@ private:
     auto t = take(2);
     immutable id = t[0] << 16 | t[1];
     currentSlot.globalVar[id] = valueStack.pop();
+  }
+
+  void createArray(T)(){
+    immutable num = take();
+    auto index = new int[num];
+    foreach(ref a; index){
+      a = valueStack.pop().toInteger;
+    }
+
+    ArrayValue arr = new TypedArrayValue!T(index);
+    valueStack.push(Value(arr));
   }
 }

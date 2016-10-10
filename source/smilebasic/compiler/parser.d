@@ -154,13 +154,20 @@ class Parser{
 			return new ScalarVariableNode(name);
 		}
 
+		Node arrayVariable(ParseTree tree) const {
+			immutable name = tree.children[0].matches.front.to!wstring.toLower;
+			auto index = tree.children[1..$].map!(a => node(a).to!ExpressionNode).array;
+
+			return new ArrayVariableNode(name, index);
+		}
+
 		Node commandStatement(ParseTree tree) const {
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){
 				case "print"w, "?"w:
 					return print(tree.children[1..$]);
 				default:
-					throw new SyntaxError("Unrecognized syntax");
+					throw syntaxError("Unrecognized syntax", tree.children[0]);
 			}
 		}
 
@@ -181,7 +188,7 @@ class Parser{
 				if(v.isAssignable){
 					return v.to!VariableNode;
 				}else{
-					throw new SyntaxError("rvalue is not assignable");
+					throw syntaxError("rvalue is not assignable", tree.children[0]);
 				}
 			}(node(tree.children[0]).to!ExpressionNode);
 
@@ -194,15 +201,19 @@ class Parser{
 		Node variableDefineStatement(ParseTree tree) const {
 			VariableNode[] defines = 
 				 tree.children[]
-				.map!(
-					(a){
-						if(a.name == "Parser.variable"){
-							return node(a).to!VariableNode;
+				.map!((a){
+					if(a.name == "Parser.scalarVariable" || a.name == "Parser.arrayVariable"){
+						return node(a).to!VariableNode;
+					}else{
+						if(a.children[0].name == "Parser.scalarVariable"){
+							return node(a.children[0]).to!VariableNode;
 						}else{
-							return node(a.children[0]).to!VariableNode;										
+							//不正な代入文
+							throw syntaxError("invalid assignment", a);
 						}
 					}
-				).array;
+				}).array;
+				
 			
 			Node[] temp =  tree.children[]
 										.filter!(a => a.name == "Parser.assignStatement")
@@ -243,19 +254,23 @@ private mixin template ParserMixin(string parserName){
 	///ParseTreeからNodeを得る
 	Node node(ParseTree tree) const {
     if(!tree.successful){
-			immutable t = position(tree);
-			int line = t.line.to!int + 1;
-			int col = t.col.to!int + 1;
-			auto e = new SyntaxError("Unrecognized syntax");
-			e.line = line; e.col = col;
-			throw e;
+			throw syntaxError("Unrecognized syntax", tree);
 		}
 		return converters.get(tree.name, &skip)(tree);
 	}
 
+	///文法エラーを発生させる
+	auto syntaxError(string detail, inout(ParseTree) node) const {
+		auto e = new SyntaxError(detail);
+		e.col = position(node).col.to!int + 1;
+		return e;
+	}
+
 	///ParseTreeを処理する関数が見つからなかったときに処理をスキップする
 	Node skip(ParseTree tree) const {
-		//("skip "~tree.name).log;
+		version(none){
+			("skip "~tree.name).log;
+		}
 		return node(tree.children.front);
 	}
 

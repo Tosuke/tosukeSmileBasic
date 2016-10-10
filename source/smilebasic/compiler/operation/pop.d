@@ -87,11 +87,11 @@ class PopScalarVariable : Pop{
   }
 
   override int codeSize() const {
-    throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
+    throw unresolutedSymbolError(name);
   }
 
   override VMCode[] code() const {
-    throw new InternalError("symbol '"~name.to!string~"' is not resoluted");
+    throw unresolutedSymbolError(name);
   }
 }
 
