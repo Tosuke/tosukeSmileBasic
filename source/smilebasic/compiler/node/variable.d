@@ -121,7 +121,7 @@ class IndexVariableNode : VariableNode{
 	}
 
 	override Operation popOperation() const {
-		assert(0);
+		return new PopIndexValue(index.length.to!ushort);
 	}
 
 	override Operation defineOperation() const {

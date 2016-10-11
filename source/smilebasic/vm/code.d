@@ -93,5 +93,8 @@ x<-種別
 0x0|none
 0x1|var16(global)
 0x2|var32(global)
+0x3|var16(local)
+0x4|var32(local)
+0x5|value indexNum(imm16)
 */
 alias VMCode = ushort;

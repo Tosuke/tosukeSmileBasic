@@ -203,7 +203,7 @@ class Parser{
 				}
 			}(node(tree.children[0]).to!ExpressionNode);
 
-			Node expr = node(tree.children[1]);
+			auto expr = node(tree.children[1]).to!ExpressionNode;
 
 			return new AssignStatementNode(var, expr);			
 		}

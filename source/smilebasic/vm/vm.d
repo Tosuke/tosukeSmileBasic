@@ -138,6 +138,8 @@ private:
     codeTable[0x0002] = &popNone;
     codeTable[0x0012] = &popGlobalVar16;
     codeTable[0x0022] = &popGlobalVar32;
+
+    codeTable[0x0052] = &popValue;
   }
 
   void unaryOp(string op)(){
@@ -238,6 +240,20 @@ private:
     auto t = take(2);
     immutable id = t[0] << 16 | t[1];
     currentSlot.globalVar[id] = valueStack.pop();
+  }
+
+  void popValue(){
+    auto arr = valueStack.pop(); //操作対象配列
+
+    immutable num = take();
+    auto i = new int[num]; //index
+    foreach(ref a; i){
+      a = valueStack.pop().toInteger;
+    }
+
+    auto expr = valueStack.pop(); //代入する値
+
+    arr.indexAssign(expr, i); //代入
   }
 
   void createArray(T)(){

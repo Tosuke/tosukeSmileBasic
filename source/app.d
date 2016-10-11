@@ -12,7 +12,15 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				print "ab"[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+				dim c$[10]
+				c$[0]="c"
+				d$=c$[0]
+				c$[0][0]="d"
+				?c$[0]
+				?d$
+
+				d$[0]="f"
+				?c$[0]
 			`
 		);
 		slot.source.writeln;

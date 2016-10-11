@@ -28,16 +28,28 @@ class PrintStatementNode : Node{
 class AssignStatementNode : Node{
 
 	///初期化
-	this(VariableNode var, Node expr){
+	this(VariableNode var, ExpressionNode expr){
 		type = NodeType.AssignStatement;
-		super("Assign", [expr]);
-		variable = var;
+
+		Node temp = 
+			new class() Node{
+				this(){
+					type = NodeType.Variable;
+
+					super("Variable", var.children);
+				}
+
+				override Operation operation() const {
+					return var.popOperation;
+				}
+			};
+
+		super("Assign", [temp, expr.to!Node]);
 	}
 
-	private VariableNode variable;
 
 	override Operation operation() const {
-		return variable.popOperation;
+		return new EmptyOperation;
 	}
 }
 

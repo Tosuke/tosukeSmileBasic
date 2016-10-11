@@ -7,14 +7,15 @@ import tosuke.smilebasic.error;
 
 import std.conv : to;
 
-
 //Pop
 ///どこにPopするか
 enum PopType{
   ///どこにもしない(値を捨てる)
   None,
   ///変数
-  Variable
+  Variable,
+  ///スタック上の配列
+  Value
 }
 
 
@@ -134,5 +135,30 @@ class PopGlobalScalarVariable : Pop{
       //Pop(gvar32)
       return [0x0022, (id >>> 16) & 0xffff, id & 0xffff];
     }
+  }
+}
+
+///スタック上の配列にインデックスを指定してPopする(その配列は暗黙的にPop noneされる)
+class PopIndexValue : Pop{
+
+  ///初期化
+  this(ushort _indexNum){
+    indexNum = _indexNum;
+    super(PopType.Value);
+  }
+
+  ///インデックスの数
+  private ushort indexNum;
+
+  override string toString() const {
+    return `Pop(index value)`;
+  }
+
+  override int codeSize() const {
+    return 1 + 1;
+  }
+
+  override VMCode[] code() const {
+    return [0x0052, indexNum];
   }
 }
