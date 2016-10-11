@@ -12,17 +12,7 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				'コメント
-				'var a$="ゆうアシ"
-				'dim a% = 10
-				'b$ = a$+"はハゲ"
-				'print b$*a%
-				?"hh"[0]
-				var b$[10]
-				var c[0]
-				c=b$
-				?c[9]
-				?"hh"
+				var f = 10
 			`
 		);
 		slot.source.writeln;

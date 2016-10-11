@@ -212,8 +212,9 @@ class Parser{
 					if(a.name == "Parser.scalarVariable" || a.name == "Parser.arrayVariable"){
 						return node(a).to!VariableNode;
 					}else{
-						if(a.children[0].name == "Parser.scalarVariable"){
-							return node(a.children[0]).to!VariableNode;
+						auto v = node(a.children[0]).to!VariableNode;
+						if(cast(ScalarVariableNode)v){
+							return v;
 						}else{
 							//不正な代入文
 							throw syntaxError("invalid assignment", a);
