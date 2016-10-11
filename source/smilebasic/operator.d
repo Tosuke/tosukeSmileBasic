@@ -8,7 +8,7 @@ import std.experimental.logger;
 
 
 ///初期化
-void initialize(){
+static this(){
   initBinaryOpTable();
   initUnaryOpTable();
 }

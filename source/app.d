@@ -7,11 +7,13 @@ import tosuke.smilebasic.vm;
 import tosuke.smilebasic.error;
 
 void main(){
-	tosuke.smilebasic.operator.initialize;
-
 	try{
 		auto slot = slot(
 			`
+				a$=" "
+				a$[0]="aabb"
+				?a$
+				
 				dim c$[10]
 				c$[0]="c"
 				d$=c$[0]
