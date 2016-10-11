@@ -47,12 +47,12 @@ Parser:
   intDivExpr < :"div"i factor2
   modExpr < :"mod"i factor2
 
-  factor2 <- negExpr / notExpr / logicalNotExpr / indexVariable /primary
+  factor2 <- negExpr / notExpr / logicalNotExpr / primary
   negExpr < :"-" factor2
   notExpr < :"not"i factor2
   logicalNotExpr < :"!" factor2
 
-  primary < :"(" expr :")" / value
+  primary < :"(" expr :")" / indexVariable / value
 
   value <- decimalFloater / decimalInteger / hexInteger / binInteger /
           stringLiteral / variable

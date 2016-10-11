@@ -12,7 +12,7 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				var f = 10
+				print "ab"[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 			`
 		);
 		slot.source.writeln;

@@ -165,6 +165,10 @@ class Parser{
 			auto value = node(tree.children[0]).to!ExpressionNode;
 			auto index = tree.children[1..$].map!(a => node(a).to!ExpressionNode).array;
 
+			if(index.length > 0xf){
+				throw syntaxError("too many index", tree);
+			}
+
 			return new IndexVariableNode(value, index);
 		}
 
