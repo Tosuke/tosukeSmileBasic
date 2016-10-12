@@ -19,6 +19,9 @@ abstract class ExpressionNode : Node{
 	///中間コード
 	override abstract Operation operation() const;
 
+	///処理方向
+	override abstract NodeType type() const;
+
 	///代入可能か
 	abstract bool isAssignable() const {
 		return false;
@@ -31,7 +34,6 @@ class BinaryOpNode : ExpressionNode{
 
 	///初期化
 	this(BinaryOp _op, Node a, Node b){
-    type = NodeType.BinaryOp;
 		op = _op;
 		super((o){
 			switch(o){
@@ -68,8 +70,12 @@ class BinaryOpNode : ExpressionNode{
 	///演算子の種別
 	BinaryOp op;
 
-	override Operation operation() const{
+	override Operation operation() const {
 		return new BinaryOpCommand(op);
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
 	}
 
 	override bool isAssignable() const {return false;}
@@ -81,7 +87,6 @@ class UnaryOpNode : ExpressionNode{
 
 	///初期化
   this(UnaryOp _op, Node a){
-    type = NodeType.UnaryOp;
     op = _op;
 
     super((o){
@@ -101,6 +106,10 @@ class UnaryOpNode : ExpressionNode{
 		return new UnaryOpCommand(op);
 	}
 
+	override NodeType type() const {
+		return NodeType.Reverse;
+	}
+
 	override bool isAssignable() const {return false;}
 }
 
@@ -110,8 +119,6 @@ class ValueNode : ExpressionNode{
 
 	///初期化
 	this(T)(T a){
-		type = NodeType.Value;
-
 		value.data = a;
 		super(value.toString);
 	}
@@ -135,6 +142,10 @@ class ValueNode : ExpressionNode{
 
 			default: assert(0);
 		}
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
 	}
 
 	override bool isAssignable() const {return false;}

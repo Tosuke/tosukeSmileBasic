@@ -15,11 +15,12 @@ abstract class VariableNode : ExpressionNode{
 	
 	///初期化
 	this(string name, Node[] children = []){
-		type = NodeType.Variable;
 		super(name, children);
 	}
 
 	override abstract Operation operation() const;
+
+	override abstract NodeType type() const;
 
 	///popされるときのoperation
 	abstract Operation popOperation() const;
@@ -43,6 +44,10 @@ class ScalarVariableNode : VariableNode{
 
 	///変数名
 	private wstring name;
+
+	override NodeType type() const {
+		return NodeType.Reverse;
+	}
 
 	override Operation operation() const {
 		//変数だけのときは式なのでPushと判断する
@@ -76,6 +81,10 @@ class ArrayVariableNode : VariableNode{
 	private wstring name;
 	private size_t indexNum() @property const {
 		return children.length;
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
 	}
 
 	override Operation operation() const {
@@ -114,6 +123,10 @@ class IndexVariableNode : VariableNode{
 	///インデックス
 	public ExpressionNode[] index() @property const {
 		return cast(ExpressionNode[])children[1..$];
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
 	}
 
 	override Operation operation() const {

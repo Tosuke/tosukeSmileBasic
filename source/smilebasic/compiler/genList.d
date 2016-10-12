@@ -7,8 +7,8 @@ import std.conv : to;
 OperationList genList(Node node){
   OperationList temp;
 
-  switch(node.type){
-    case NodeType.Document, NodeType.VariableDefineStatement:
+  final switch(node.type){
+    case NodeType.Forward:
       temp ~= (a){
         a.line = node.line;
         return a;
@@ -18,7 +18,8 @@ OperationList genList(Node node){
         temp ~= genList(a)[];
       }
       break;
-    default:
+      
+    case NodeType.Reverse:
       foreach_reverse(a; node.children){
         temp ~= genList(a)[];
       }

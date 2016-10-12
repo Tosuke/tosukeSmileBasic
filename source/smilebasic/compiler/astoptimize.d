@@ -13,13 +13,12 @@ public Node constantFolding(Node node){
   node.children = node.children.map!(a => constantFolding(a)).array;
 
   try{
-    switch(node.type){
-      case NodeType.UnaryOp:
-        return folding(cast(UnaryOpNode)node);
-      case NodeType.BinaryOp:
-        return folding(cast(BinaryOpNode)node);
-      default:
-        return node;
+    if(cast(UnaryOpNode)node){
+      return folding(node.to!UnaryOpNode);
+    }else if(cast(BinaryOpNode)node){
+      return folding(node.to!BinaryOpNode);
+    }else{
+      return node;
     }
   }catch(SmileBasicError e){
     e.line = node.line;
@@ -28,7 +27,7 @@ public Node constantFolding(Node node){
 }
 
 private Node folding(UnaryOpNode node){
-  if( node.children[0].type == NodeType.Value &&
+  if( cast(ValueNode)(node.children[0]) &&
       node.children[0].to!ValueNode.value.isArithmeticValue){
     
     return new ValueNode(unaryOp(node.op, node.children[0]));
@@ -37,7 +36,7 @@ private Node folding(UnaryOpNode node){
 	}
 }
 private Node folding(BinaryOpNode node){
-  if((node.children[0].type == NodeType.Value && node.children[1].type == NodeType.Value) &&
+  if((cast(ValueNode)(node.children[0]) && (cast(ValueNode)(node.children[1]))) &&
      (node.children[0].to!ValueNode.value.isArithmeticValue && node.children[1].to!ValueNode.value.isArithmeticValue)){
 		return new ValueNode(binaryOp(node.op, node.children[0], node.children[1]));
 	}else{

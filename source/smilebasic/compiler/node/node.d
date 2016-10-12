@@ -9,42 +9,16 @@ import std.algorithm, std.array;
 import std.conv : to;
 
 
-///ノードの種別
+///genList時の処理方向
 enum NodeType{
-	///プログラム全体
-	Document,
-	///何もしない
-	Empty,
-
-	///Print文
-	PrintStatement,
-	///代入文
-	AssignStatement,
-	///変数定義文
-	VariableDefineStatement,
-
-	///二項演算子
-	BinaryOp,
-	///単項演算子
-  UnaryOp,
-	///リテラル
-	Value,
-	///変数
-	Variable
+	Forward,
+	Reverse
 }
 
 
 ///ASTのノード
 abstract class Node{
 	
-	///ノードの種類
-	private NodeType type_;
-	@property{
-		///ditto
-		public NodeType type() const {return type_;}
-		protected void type(NodeType a){type_ = a;}
-	}
-
 	///ノードの位置の行番号
 	private int line_;
 	@property{
@@ -83,6 +57,9 @@ abstract class Node{
 
 	///中間コード
 	abstract Operation operation() const;
+
+	///処理方向
+	abstract NodeType type() const;
 }
 
 
@@ -91,12 +68,15 @@ class DocumentNode : Node{
 
 	///初期化
 	this(Node[] _children){
-		type = NodeType.Document;
 		super("Doc", _children);
 	}
 
 	override Operation operation() const{
 		return new EmptyOperation();
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
 	}
 }
 
@@ -106,11 +86,14 @@ class EmptyNode : Node{
 
 	///初期化
 	this(){
-		type = NodeType.Empty;
 		super("Empty");
 	}
 
 	override Operation operation() const {
 		return new EmptyOperation();
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
 	}
 }

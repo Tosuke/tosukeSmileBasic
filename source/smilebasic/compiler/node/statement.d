@@ -14,12 +14,15 @@ class PrintStatementNode : Node{
 	
 	///初期化
 	this(Node[] _children){
-		type = NodeType.PrintStatement;
 		super("Print", _children);
 	}
 
 	override Operation operation() const {
 		return new PrintCommand(this.children.length.to!ushort);
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
 	}
 }
 
@@ -29,19 +32,21 @@ class AssignStatementNode : Node{
 
 	///初期化
 	this(VariableNode var, ExpressionNode expr){
-		type = NodeType.AssignStatement;
 
 		Node temp = 
 			new class() Node{
 				this(){
-					type = NodeType.Variable;
-
 					super("Variable", var.children);
 				}
 
 				override Operation operation() const {
 					return var.popOperation;
 				}
+
+				override NodeType type() const {
+					return NodeType.Reverse;
+				}
+
 			};
 
 		super("Assign", [temp, expr.to!Node]);
@@ -51,6 +56,10 @@ class AssignStatementNode : Node{
 	override Operation operation() const {
 		return new EmptyOperation;
 	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
+	}
 }
 
 
@@ -59,7 +68,6 @@ class VariableDefineStatementNode : Node{
 
 	///初期化
 	this(VariableNode[] defines, Node[] _children){
-		type = NodeType.VariableDefineStatement;
 		
 		Node[] temp =
 			defines[].map!(
@@ -67,12 +75,15 @@ class VariableDefineStatementNode : Node{
 					return new class() Node{
 						
 						this(){
-							type = NodeType.Variable;
 							super(a.name, a.children);
 						}
 
 						override Operation operation() const {
 							return a.defineOperation;
+						}
+
+						override NodeType type() const {
+							return NodeType.Reverse;
 						}
 
 					}.to!Node;
@@ -84,6 +95,10 @@ class VariableDefineStatementNode : Node{
 
 	override Operation operation() const {
 		return new EmptyOperation();
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
 	}
 }
 
