@@ -10,19 +10,9 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				a$=" "
-				a$[0]="aabb"
-				?a$
-				
-				dim c$[10]
-				c$[0]="c"
-				d$=c$[0]
-				c$[0][0]="d"
-				?c$[0]
-				?d$
-
-				d$[0]="f"
-				?c$[0]
+				var a$="a$"
+				print a$
+				print var(var("a$"))
 			`
 		);
 		slot.source.writeln;

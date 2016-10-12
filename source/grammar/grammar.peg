@@ -63,7 +63,7 @@ Parser:
   stringLiteral <~ doublequote (!doublequote .)* :doublequote?
 
   #Variable
-  variable <- indexVariable / scalarVariable / varFuncVariable
+  variable <- varFuncVariable / indexVariable / scalarVariable
   scalarVariable <- identifier
   indexVariable < primary :"[" expr (:"," expr)* :"]"
   varFuncVariable < :"var"i :"(" expr :")"

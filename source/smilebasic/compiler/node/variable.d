@@ -138,6 +138,7 @@ class IndexVariableNode : VariableNode{
 	}
 
 	override Operation defineOperation() const {
+		//利用のみなので存在しない
 		throw new InternalError("Define is not implemented");
 	}
 
@@ -146,3 +147,34 @@ class IndexVariableNode : VariableNode{
 		return value.isAssignable;
 	}
 }
+
+
+///var関数変数
+class VarFuncVariableNode : VariableNode{
+
+	///初期化
+	this(ExpressionNode expr){
+		super("VarFuncVariable", [expr.to!Node]);
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
+	}
+
+	override Operation operation() const {
+		return new PushStringVariable();
+	}
+
+	override Operation popOperation() const {
+		assert(0);
+	}
+
+	override Operation defineOperation() const {
+		//利用のみなので存在しない
+		throw new InternalError("Define is not implemented");
+	}
+
+	override bool isAssignable() const {
+		return true;
+	}
+} 

@@ -7,6 +7,7 @@ import tosuke.smilebasic.error;
 
 import std.conv : to;
 import std.experimental.logger;
+import std.typecons;
 
 //実装
 import tosuke.smilebasic.vm.internal.command;
@@ -102,4 +103,30 @@ private:
   mixin PushMixin;
 
   mixin PopMixin;
+
+  ///文字列からシンボルとスロットを得る
+  auto getSymbol(wstring rawName) const {
+    import std.string : toLower;
+    import std.regex : ctRegex, matchFirst;
+
+    wstring name = rawName.toLower;
+    int num = currentSlotNumber;
+
+    auto regex = ctRegex!`^((?P<slot>\d+):)(?P<name>.+)`w;
+    auto match = rawName.matchFirst(regex);
+    if(!match.empty){
+      num = match["slot"].to!int;
+      if(0 <= num && num <= 3){
+        name = match["name"].toLower;
+      }else{
+        num = currentSlotNumber;
+      }
+    }
+
+    Tuple!(wstring, "name", int, "slot") r;
+    r.name = name;
+    r.slot = num;
+
+    return r;
+  }
 }

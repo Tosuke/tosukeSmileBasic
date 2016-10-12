@@ -115,6 +115,7 @@ auto cannotUseAsArrayError(Value a){
 
 ///シンボル衝突エラー
 abstract class DuplicateSymbolError : SmileBasicError{
+  
   ///詳細を含まず発生させる
   this(string error){
     super(error);
@@ -139,6 +140,43 @@ class DuplicateVariableError : DuplicateSymbolError{
   this(string detail){
     super("Duplicate variable", detail);
   }
+}
+
+
+///存在しないシンボル
+abstract class UndefinedSymbolError : SmileBasicError{
+
+  ///詳細を含まず発生させる
+  this(string error){
+    super(error);
+  }
+
+  ///詳細を含んで発生させる
+  this(string error, string detail){
+    super(error, detail);
+  }
+}
+
+
+///存在しない変数
+class UndefinedVariableError : UndefinedSymbolError{
+
+  ///詳細を含まず発生させる
+  this(){
+    super("Undefined variable");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("Undefined variable", detail);
+  }
+}
+
+///存在しない変数
+auto undefinedVariableError(wstring var){
+  return new UndefinedVariableError(
+    format("'%s' is undefined", var.to!string)
+  );
 }
 
 

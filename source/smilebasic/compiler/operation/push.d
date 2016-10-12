@@ -204,7 +204,7 @@ class PushGlobalScalarVariable : Push{
     private void id(uint a){id_ = a;}
   }
 
-  override string toString() const{
+  override string toString() const {
     if(id <= 0xffff){
       return `Push(gvar16)(`~id.to!string~`)`;
     }else{
@@ -220,11 +220,34 @@ class PushGlobalScalarVariable : Push{
     }
   }
 
-  override VMCode[] code() const{
+  override VMCode[] code() const {
     if(id <= 0xffff){
       return [0x0041, id & 0xffff];
     }else{
       return [0x0051, (id >>> 16) & 0xffff, id & 0xffff];
     }
+  }
+}
+
+
+///文字列で指定された変数をPushする
+class PushStringVariable : Push{
+
+  ///初期化
+  this(){
+    super(PushType.Variable);
+  }
+
+  override string toString() const {
+    return `Push(var str)`;
+  }
+
+  override int codeSize() const {
+    return 1;
+  }
+
+  override VMCode[] code() const {
+    //Push var str
+    return [0x0081];
   }
 }

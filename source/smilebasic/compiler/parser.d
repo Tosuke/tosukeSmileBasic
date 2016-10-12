@@ -172,6 +172,11 @@ class Parser{
 			return new IndexVariableNode(value, index);
 		}
 
+		Node varFuncVariable(ParseTree tree) const {
+			auto expr = node(tree.children[0]).to!ExpressionNode;
+			return new VarFuncVariableNode(expr);
+		}
+
 		Node commandStatement(ParseTree tree) const {
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){

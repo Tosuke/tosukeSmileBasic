@@ -83,6 +83,9 @@ x<-種別
 0x3|string
 0x4|var16(global)
 0x5|var32(global)
+0x6|var16(local)
+0x7|var32(local)
+0x8|var str
 
 ### Push string
 0x0031 PushStr wchar...nullChar

@@ -11,6 +11,8 @@ mixin template PushMixin(){
     codeTable[0x0031] = &pushString;
     codeTable[0x0041] = &pushGlobalVar16;
     codeTable[0x0051] = &pushGlobalVar32;
+
+    codeTable[0x0081] = &pushVarString;
   }
 
 
@@ -62,5 +64,24 @@ mixin template PushMixin(){
     auto t = take(2);
     immutable id = t[0] << 16 | t[1];
     valueStack.push(currentSlot.globalVar[id]);
+  }
+
+
+  ///文字列で指定された変数をPush
+  void pushVarString(){
+    wstring rawName = valueStack.pop().get!wstring;
+
+    immutable r = getSymbol(rawName);
+
+    auto name = r.name;
+    auto num = r.slot;
+
+    auto s = slots[num];
+
+    if(name in s.globalVar){
+      valueStack.push(s.globalVar[name]);
+    }else{
+      throw undefinedVariableError(rawName);
+    }
   }
 }
