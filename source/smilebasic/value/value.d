@@ -97,9 +97,9 @@ struct Value{
 
 
 	///取得
-	T get(T)() const{
+	T get(T)() const {
 		static if(is(T : wstring)){
-			return data.get!StringValue.data.to!T;
+			return this.get!StringValue.data.to!T;
 		}else static if(is(T == IArray)){
 			if(this.type == ValueType.String){
 				return this.get!StringValue.to!IArray;
@@ -108,8 +108,28 @@ struct Value{
 			}else{
 				throw cannotUseAsArrayError(this);
 			}
+		}else static if(is(T == int)){
+			if(this.type != ValueType.Integer){
+				throw this.failedToConvertTypeError(Value(ValueType.Integer));
+			}
+			return data.get!int;
+		}else static if(is(T == double)){
+			if(this.type != ValueType.Floater){
+				throw this.failedToConvertTypeError(Value(ValueType.Floater));
+			}
+			return data.get!double;
+		}else static if(is(T == StringValue)){
+			if(this.type != ValueType.String){
+				throw this.failedToConvertTypeError(Value(ValueType.String));
+			}
+			return data.get!StringValue;
+		}else static if(is(T : ArrayValue)){
+			if(this.type != ValueType.Array){
+				throw this.failedToConvertTypeError(Value(ValueType.Array));
+			}
+			return data.get!ArrayValue.to!T;
 		}else{
-			return data.get!T;
+			static assert(0);
 		}
 	}
 
@@ -272,4 +292,9 @@ int toBoolean(Value v){
 		case ValueType.String: return 3;
 		default: assert(0);
 	}
+}
+
+unittest{
+	auto a = Value(22);
+	assert(a.toInteger == 22);
 }
