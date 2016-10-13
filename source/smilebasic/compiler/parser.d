@@ -147,6 +147,9 @@ class Parser{
 		Node stringLiteral(ParseTree tree) const {
 			return new ValueNode(tree.matches.front.to!wstring[1..$]);
 		}
+		Node labelLiteral(ParseTree tree) const {
+			return new ValueNode(tree.matches.front.to!wstring);
+		}
 
 		//Variables
 		Node scalarVariable(ParseTree tree) const {

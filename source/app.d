@@ -10,15 +10,7 @@ void main(){
 	try{
 		auto slot = slot(
 			`
-				var a$="a$"
-				print a$
-				print var(var("a$"))
-
-				var("a$")="BBA"
-				print a$
-
-				var("a$")[0]="A"
-				print a$
+				print @hogehoge
 			`
 		);
 		slot.source.writeln;

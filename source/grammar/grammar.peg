@@ -55,12 +55,13 @@ Parser:
   primary < :"(" expr :")" / indexVariable / value
 
   value <- decimalFloater / decimalInteger / hexInteger / binInteger /
-          stringLiteral / variable
+          stringLiteral / labelLiteral / variable
   decimalInteger <~digits
   decimalFloater <~(digits "." digits)
   hexInteger <~(:"&h"i hexDigit+)
   binInteger <~(:"&b"i [01]+)
   stringLiteral <~ doublequote (!doublequote .)* :doublequote?
+  labelLiteral < label #文字列の特殊な形
 
   #Variable
   variable <- varFuncVariable / indexVariable / scalarVariable
@@ -69,7 +70,10 @@ Parser:
   varFuncVariable < :"var"i :"(" expr :")"
   
   #定義時にのみ働くので、構文的にはvariableでない
-  arrayVariable < identifier :"[" expr (:"," expr)* :"]" 
+  arrayVariable < identifier :"[" expr (:"," expr)* :"]"
+
+  #Label
+  label <~ "@" [a-zA-Z_0-9]+
 
   identifier <~ [a-zA-Z_][a-zA-Z_0-9]*[%#$]?
 
