@@ -162,11 +162,11 @@ class VarFuncVariableNode : VariableNode{
 	}
 
 	override Operation operation() const {
-		return new PushStringVariable();
+		return new PushVariableString();
 	}
 
 	override Operation popOperation() const {
-		assert(0);
+		return new PopVariableString();
 	}
 
 	override Operation defineOperation() const {

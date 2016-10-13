@@ -231,7 +231,7 @@ class PushGlobalScalarVariable : Push{
 
 
 ///文字列で指定された変数をPushする
-class PushStringVariable : Push{
+class PushVariableString : Push{
 
   ///初期化
   this(){

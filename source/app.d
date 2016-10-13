@@ -13,6 +13,12 @@ void main(){
 				var a$="a$"
 				print a$
 				print var(var("a$"))
+
+				var("a$")="BBA"
+				print a$
+
+				var("a$")[0]="A"
+				print a$
 			`
 		);
 		slot.source.writeln;

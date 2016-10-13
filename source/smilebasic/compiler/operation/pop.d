@@ -139,6 +139,28 @@ class PopGlobalScalarVariable : Pop{
 }
 
 
+///文字列で指定された変数に対してPopする
+class PopVariableString : Pop{
+
+  ///初期化
+  this(){
+    super(PopType.Variable);
+  }
+
+  override string toString() const {
+    return `Pop(var str)`;
+  }
+
+  override int codeSize() const {
+    return 1;
+  }
+
+  override VMCode[] code() const {
+    return [0x0052];
+  }
+}
+
+
 ///スタック上の配列にインデックスを指定してPopする(その配列は暗黙的にPop noneされる)
 class PopIndexValue : Pop{
 
@@ -161,27 +183,5 @@ class PopIndexValue : Pop{
 
   override VMCode[] code() const {
     return [0x0062, indexNum];
-  }
-}
-
-
-///文字列で指定された変数に対してPopする
-class PopVariableString : Pop{
-
-  ///初期化
-  this(){
-    super(PopType.Variable);
-  }
-
-  override string toString() const {
-    return `Pop(var str)`;
-  }
-
-  override int codeSize() const {
-    return 1;
-  }
-
-  override VMCode[] code() const {
-    return [0x0052];
   }
 }

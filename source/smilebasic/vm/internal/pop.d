@@ -9,6 +9,7 @@ mixin template PopMixin(){
     codeTable[0x0012] = &popGlobalVar16;
     codeTable[0x0022] = &popGlobalVar32;
 
+    codeTable[0x0052] = &popVarString;
     codeTable[0x0062] = &popValue;
   }
 
@@ -31,6 +32,25 @@ mixin template PopMixin(){
     auto t = take(2);
     immutable id = t[0] << 16 | t[1];
     currentSlot.globalVar[id] = valueStack.pop();
+  }
+
+
+  ///文字列で指定された変数にPop
+  void popVarString(){
+    auto rawName = valueStack.pop().get!wstring;
+
+    immutable r = getSymbol(rawName);
+
+    auto name = r.name;
+    auto slot = slots[r.slot];
+
+    auto value = valueStack.pop();
+
+    if(name in slot.globalVar){
+      slot.globalVar[name] = value;
+    }else{
+      throw undefinedVariableError(rawName);
+    }
   }
 
 
