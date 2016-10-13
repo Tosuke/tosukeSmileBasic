@@ -9,7 +9,7 @@ mixin template PopMixin(){
     codeTable[0x0012] = &popGlobalVar16;
     codeTable[0x0022] = &popGlobalVar32;
 
-    codeTable[0x0052] = &popValue;
+    codeTable[0x0062] = &popValue;
   }
 
 

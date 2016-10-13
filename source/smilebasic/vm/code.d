@@ -98,6 +98,7 @@ x<-種別
 0x2|var32(global)
 0x3|var16(local)
 0x4|var32(local)
-0x5|value indexNum(imm16)
+0x5|var str
+0x6|value indexNum(imm16)
 */
 alias VMCode = ushort;
