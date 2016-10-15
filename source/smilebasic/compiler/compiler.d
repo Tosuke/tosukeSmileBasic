@@ -66,11 +66,33 @@ private struct Compiler{
   private auto compile(OperationList list){
 
     //variables definition & resolution
+    variableResolute(list);
+
+    //functions & labels definition
+    labelDefinition(list);
+
+    return list;
+  }
+
+  mixin VariableDefinition;
+  mixin LabelDefinition;
+}
+
+
+///変数の名前定義・解決
+mixin template VariableDefinition(){
+
+  ///解決処理
+  private void variableResolute(ref OperationList list){
     foreach(ref op; list){
       try{
         if(cast(DefineScalarVariable)op){
           //単純変数を定義
           op = define(op.to!DefineScalarVariable);
+
+        }else if(cast(DefineArrayVariable)op){
+          //配列変数を定義
+          op = define(op.to!DefineArrayVariable);
 
         }else if(cast(PushScalarVariable)op){
           //単純変数の名前解決(式として利用時)
@@ -80,37 +102,16 @@ private struct Compiler{
           //単純変数の名前解決(代入文として利用時)
           op = resolute(op.to!PopScalarVariable);
 
-        }else if(cast(DefineArrayVariable)op){
-          //配列変数を定義
-          op = define(op.to!DefineArrayVariable);
-
-        }
-      }catch(SmileBasicError e){
-        e.line = op.line;
-        throw e;
-      } 
-    }
-
-    //functions & labels definition
-    ulong count = 0; //命令のVM上の位置
-    foreach(ref op; list){
-      try{
-        if(cast(DefineLabel)op){
-          //ラベルを定義
-          op = define(op.to!DefineLabel, count);
-
         }
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
       }
-
-      count += op.codeSize();
     }
-
-    return list;
   }
 
+
+  ///単純変数を定義
   private Operation define(DefineScalarVariable op){
     if(inGlobal){
       //グローバル変数
@@ -123,6 +124,8 @@ private struct Compiler{
     return op;
   }
 
+
+  ///配列変数を定義
   private Operation define(DefineArrayVariable op){
     if(inGlobal){
       //グローバル変数
@@ -146,20 +149,8 @@ private struct Compiler{
     }
   }
 
-  private Operation define(DefineLabel op, ulong count){
-    if(inGlobal){
-      //グローバル空間のラベル
-      Pointer p;
-      p.count = count;
 
-      slot.globalLabel.add(op.name, p);
-    }else{
-      //TODO:ローカルラベル
-      assert(0);
-    }
-    return new EmptyOperation();
-  }
-
+  ///単純変数の名前解決(式として利用時)
   private Operation resolute(PushScalarVariable op){
     if(inGlobal || op.name in slot.globalVar){
       //グローバル変数
@@ -180,6 +171,8 @@ private struct Compiler{
     }
   }
 
+
+  ///単純変数の名前解決(代入文として利用時)
   private Operation resolute(PopScalarVariable op){
     if(inGlobal || op.name in slot.globalVar){
       //グローバル変数
@@ -200,6 +193,9 @@ private struct Compiler{
     }
   }
 
+
+  //ユーティリティ
+  ///単純変数の定義
   private auto defineScalar(ref SymbolTable!Value var, wstring name){
   
     auto value = (n){
@@ -217,8 +213,51 @@ private struct Compiler{
     return var;
   }
 
+
+  ///配列変数の定義
   private auto defineArray(ref SymbolTable!Value var, wstring name){
     var.add(name, Value(ValueType.Array));
     return var;
   }
+}
+
+
+///ラベルの名前定義・解決
+mixin template LabelDefinition(){
+
+  ///ラベル・関数の名前定義
+  private void labelDefinition(ref OperationList list){
+    ulong count = 0; //命令のVM上の位置
+    foreach(ref op; list){
+      try{
+        if(cast(DefineLabel)op){
+          //ラベルを定義
+          op = define(op.to!DefineLabel, count);
+
+        }
+      }catch(SmileBasicError e){
+        e.line = op.line;
+        throw e;
+      }
+
+      count += op.codeSize();
+    }
+  }
+
+
+  ///ラベルの定義
+  private Operation define(DefineLabel op, ulong count){
+    if(inGlobal){
+      //グローバル空間のラベル
+      Pointer p;
+      p.count = count;
+
+      slot.globalLabel.add(op.name, p);
+    }else{
+      //TODO:ローカルラベル
+      assert(0);
+    }
+    return new EmptyOperation();
+  }
+
 }
