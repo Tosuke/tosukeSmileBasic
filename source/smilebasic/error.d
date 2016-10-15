@@ -143,6 +143,21 @@ class DuplicateVariableError : DuplicateSymbolError{
 }
 
 
+///ラベル定義の衝突
+class DuplicateLabelError : DuplicateSymbolError{
+
+  ///詳細を含まず発生させる
+  this(){
+    super("Duplicate label");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("Duplicate label", detail);
+  }
+}
+
+
 ///存在しないシンボル
 abstract class UndefinedSymbolError : SmileBasicError{
 

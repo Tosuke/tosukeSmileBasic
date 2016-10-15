@@ -1,7 +1,8 @@
 Parser:
   line < statement (:":"? statement)* :EndOfProgram / :EndOfProgram #改行情報を格納する
 
-  statement <- commentStatement / variableDefineStatement / assignStatement / commandStatement
+  #Statements
+  statement <- commentStatement / variableDefineStatement / assignStatement / labelStatement / commandStatement
 
   commandStatement < commandIdentifier expr (commandDelimiter expr)*  commandDelimiter? / commandIdentifier
   commandDelimiter <- ";" / ","
@@ -12,6 +13,8 @@ Parser:
   variableDefineStatement < :("var "i / "dim "i) (arrayVariable / assignStatement / scalarVariable) (:"," (arrayVariable / assignStatement / scalarVariable))*
 
   commentStatement < :"'" :(.+)
+
+  labelStatement < label
 
   expr <- factor8
 

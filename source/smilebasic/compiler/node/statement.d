@@ -103,3 +103,24 @@ class VariableDefineStatementNode : Node{
 }
 
 
+///ラベルを宣言する
+class LabelStatement : Node{
+
+	///初期化
+	this(wstring _name){
+		name = _name;
+
+		super("Label "~name.to!string);
+	}
+
+	///ラベルの名前
+	private wstring name;
+
+	override Operation operation() const {
+		return new DefineLabel(name);
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
+	}
+}

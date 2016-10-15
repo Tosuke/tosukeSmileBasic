@@ -10,6 +10,7 @@ void main(){
 	try{
 		auto slot = slot(
 			`
+				@aaa
 				print @hogehoge
 			`
 		);

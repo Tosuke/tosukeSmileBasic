@@ -65,6 +65,7 @@ private struct Compiler{
 
   private auto compile(OperationList list){
 
+    //variables definition & resolution
     foreach(ref op; list){
       try{
         if(cast(DefineScalarVariable)op){
@@ -87,8 +88,24 @@ private struct Compiler{
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
+      } 
+    }
+
+    //functions & labels definition
+    ulong count = 0; //命令のVM上の位置
+    foreach(ref op; list){
+      try{
+        if(cast(DefineLabel)op){
+          //ラベルを定義
+          op = define(op.to!DefineLabel, count);
+
+        }
+      }catch(SmileBasicError e){
+        e.line = op.line;
+        throw e;
       }
-      
+
+      count += op.codeSize();
     }
 
     return list;
@@ -127,6 +144,20 @@ private struct Compiler{
       //TODO:ローカル変数
       assert(0);
     }
+  }
+
+  private Operation define(DefineLabel op, ulong count){
+    if(inGlobal){
+      //グローバル空間のラベル
+      Pointer p;
+      p.count = count;
+
+      slot.globalLabel.add(op.name, p);
+    }else{
+      //TODO:ローカルラベル
+      assert(0);
+    }
+    return new EmptyOperation();
   }
 
   private Operation resolute(PushScalarVariable op){

@@ -26,7 +26,9 @@ enum OperationType{
   Empty,
 
   ///変数定義
-  DefineVariable
+  DefineVariable,
+  ///ラベル定義
+  DefineLabel
 }
 
 
@@ -180,5 +182,37 @@ class DefineGlobalArrayVariable : Operation{
     }(type).to!ushort;
     
     return [op, indexNum, 0x0022, (id >>> 16) & 0xffff, id & 0xffff];
+  }
+}
+
+
+///ラベルの定義
+class DefineLabel : Operation{
+
+  ///初期化
+  this(wstring _name){
+    name = _name;
+    super(OperationType.DefineLabel);
+  }
+
+  ///ラベルの名前
+  private wstring name_;
+  @property{
+    ///ditto
+    public wstring name() const {return name_;}
+    ///ditto
+    private void name(wstring a){name_ = a;}
+  }
+
+  override string toString() const {
+    return `Define(label `~name.to!string~`)`;
+  }
+
+  override int codeSize() const {
+    return 0;
+  }
+
+  override VMCode[] code() const {
+    return [];
   }
 }

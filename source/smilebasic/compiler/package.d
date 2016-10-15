@@ -15,4 +15,5 @@ public{
   import tosuke.smilebasic.compiler.symboltable;
   
   import tosuke.smilebasic.vm.code;
+  import tosuke.smilebasic.vm.types : Pointer;
 }

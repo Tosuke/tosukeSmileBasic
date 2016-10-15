@@ -35,9 +35,13 @@ public:
   ///グローバル変数
   SymbolTable!Value globalVar;
 
+  ///グローバルなラベル
+  SymbolTable!Pointer globalLabel;
+
 
   ///初期化
   this(){
     globalVar = SymbolTable!Value(() => new DuplicateVariableError());
+    globalLabel = SymbolTable!Pointer(() => new DuplicateLabelError());
   }
 }

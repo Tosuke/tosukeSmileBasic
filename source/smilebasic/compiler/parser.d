@@ -246,6 +246,10 @@ class Parser{
 		Node commentStatement(ParseTree tree) const {
 			return new EmptyNode();
 		}
+
+		Node labelStatement(ParseTree tree) const {
+			return new LabelStatement(tree.children[0].matches.front.to!wstring);
+		}
 	}
 	
 	mixin ParserMixin!("Parser");
