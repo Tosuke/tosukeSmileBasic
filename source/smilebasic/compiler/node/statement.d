@@ -124,3 +124,26 @@ class LabelStatement : Node{
 		return NodeType.Forward;
 	}
 }
+
+
+///ラベルでgoto
+class GotoStatementWithLabelNode : Node{
+
+	///初期化
+	this(wstring _name){
+		name = _name;
+
+		super("Goto "~name.to!string);
+	}
+
+	///ラベルの名前
+	private wstring name;
+
+	override Operation operation() const {
+		return new GotoWithLabelCommand(name);
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
+	}
+}

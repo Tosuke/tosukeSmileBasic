@@ -24,12 +24,6 @@ xx<-種別
 0x0B|return
 0x10|goto
 0x11|gosub
-0x12|if goto
-0x13|if gosub
-0x14|on goto
-0x15|on gosub
-0x16|string goto
-0x17|string gosub
 
 ### UnaryOperator
 0xm000 UnaryOperator
@@ -73,6 +67,15 @@ m<-種別
 0xm080 CallCmd imm16(argument num)
 m<-種別
 0x0|Print
+
+### goto & gosub
+0xm100 goto
+0xm110 gosub
+m<-種別
+0x0|addr
+0x1|string
+0x2|if label
+0x3|if string
 
 ## Push
 0x00x1

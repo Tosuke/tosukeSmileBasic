@@ -195,6 +195,28 @@ auto undefinedVariableError(wstring var){
 }
 
 
+///存在しないラベル
+class UndefinedLabelError : UndefinedSymbolError{
+
+  ///詳細を含まず発生させる
+  this(){
+    super("Undefined label");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("Undefined label", detail);
+  }
+}
+
+///存在しないラベル
+auto undefinedLabelError(wstring var){
+  return new UndefinedLabelError(
+    format("'%s' is undefined", var.to!string)
+  );
+}
+
+
 ///範囲外の数値が指定された
 class OutOfRangeError : SmileBasicError{
 

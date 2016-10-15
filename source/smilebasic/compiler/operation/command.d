@@ -19,7 +19,9 @@ enum CommandType{
   ///二項演算子
   BinaryOp,
   ///配列アクセス演算子
-  IndexOp
+  IndexOp,
+  ///goto
+  Goto
 }
 
 
@@ -221,5 +223,64 @@ class IndexOpCommand : Command{
   override VMCode[] code() const {
     //IndexOperator indexNum(imm16)
     return [0x0030, indexNum];
+  }
+}
+
+
+///ラベルでgotoする(未解決)
+class GotoWithLabelCommand : Command{
+
+  ///初期化
+  this(wstring _name){
+    name = _name;
+    super(CommandType.Goto);
+  }
+
+  ///ラベルの名前
+  private wstring name_;
+  @property{
+    ///ditto
+    public wstring name() const {return name_;}
+    ///ditto
+    private void name(wstring a){name_ = a;}
+  }
+
+  override string toString() const {
+    return `Command(goto `~name.to!string~`)`;
+  }
+
+  override int codeSize() const {
+    return 1 + 2;
+  }
+
+  override VMCode[] code() const {
+    throw unresolutedSymbolError(name);
+  }
+}
+
+
+///gotoする
+class GotoCommand : Command{
+
+  ///初期化
+  this(uint _addr){
+    addr = _addr;
+    super(CommandType.Goto);
+  }
+
+  ///goto先のアドレス
+  private uint addr;
+
+  override string toString() const {
+    return `Command(goto `~addr.to!string~`)`;
+  }
+
+  override int codeSize() const {
+    return 1 + 2;
+  }
+
+  override VMCode[] code() const {
+    //goto addr
+    return [0x0100, (addr >>> 16) & 0xffff, addr & 0xffff];
   }
 }

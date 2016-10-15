@@ -2,7 +2,12 @@ Parser:
   line < statement (:":"? statement)* :EndOfProgram / :EndOfProgram #改行情報を格納する
 
   #Statements
-  statement <- commentStatement / variableDefineStatement / assignStatement / labelStatement / commandStatement
+  statement <-  commentStatement /
+                variableDefineStatement /
+                assignStatement /
+                gotoStatement /
+                labelStatement /
+                commandStatement
 
   commandStatement < commandIdentifier expr (commandDelimiter expr)*  commandDelimiter? / commandIdentifier
   commandDelimiter <- ";" / ","
@@ -13,6 +18,8 @@ Parser:
   variableDefineStatement < :("var "i / "dim "i) (arrayVariable / assignStatement / scalarVariable) (:"," (arrayVariable / assignStatement / scalarVariable))*
 
   commentStatement < :"'" :(.+)
+
+  gotoStatement < :"goto "i (label / expr)
 
   labelStatement < label
 

@@ -40,6 +40,9 @@ mixin template CommandMixin(){
 
     //Command Statements
     codeTable[0x0080] = &printCommand;
+
+    //goto & gosub
+    codeTable[0x0100] = &gotoAddr;
   }
 
 
@@ -107,5 +110,13 @@ mixin template CommandMixin(){
 
     ArrayValue arr = new TypedArrayValue!T(index);
     valueStack.push(Value(arr));
+  }
+
+
+  ///アドレス指定goto
+  void gotoAddr(){
+    auto k = take(2);
+    immutable addr = k[0] << 16 | k[1];
+    pc = addr;
   }
 }

@@ -25,6 +25,8 @@ class Parser{
 		Node line(ParseTree tree) const {
 			return new DocumentNode(tree.children.map!(a => node(a)).array);
 		}
+
+
 		//UnaryOperators
   	Node negExpr(ParseTree tree) const {return new UnaryOpNode(UnaryOp.Neg, node(tree.children[0]));}
   	Node notExpr(ParseTree tree) const {return new UnaryOpNode(UnaryOp.Not, node(tree.children[0]));}
@@ -180,6 +182,7 @@ class Parser{
 			return new VarFuncVariableNode(expr);
 		}
 
+		//Statements
 		Node commandStatement(ParseTree tree) const {
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			switch(name){
@@ -245,6 +248,15 @@ class Parser{
 
 		Node commentStatement(ParseTree tree) const {
 			return new EmptyNode();
+		}
+
+		Node gotoStatement(ParseTree tree) const {
+			if(tree.children[0].name == "Parser.label"){
+				return new GotoStatementWithLabelNode(tree.children[0].matches.front.to!wstring);
+			}else{
+				//TODO:文字列指定
+				assert(0);
+			}
 		}
 
 		Node labelStatement(ParseTree tree) const {

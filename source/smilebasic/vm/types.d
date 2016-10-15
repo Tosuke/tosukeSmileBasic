@@ -7,5 +7,5 @@ struct Pointer{
   ///スロット
   int slot;
   ///プログラムカウンタ
-  ulong count; 
+  uint count; 
 }

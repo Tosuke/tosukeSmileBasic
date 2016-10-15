@@ -71,6 +71,9 @@ private struct Compiler{
     //functions & labels definition
     labelDefinition(list);
 
+    //functions & labels resolution
+    labelResolution(list);
+
     return list;
   }
 
@@ -227,7 +230,7 @@ mixin template LabelDefinition(){
 
   ///ラベル・関数の名前定義
   private void labelDefinition(ref OperationList list){
-    ulong count = 0; //命令のVM上の位置
+    uint count = 0; //命令のVM上の位置
     foreach(ref op; list){
       try{
         if(cast(DefineLabel)op){
@@ -244,9 +247,24 @@ mixin template LabelDefinition(){
     }
   }
 
+  ///ラベル・関数の名前解決
+  private void labelResolution(ref OperationList list){
+    foreach(ref op; list){
+      try{
+        if(cast(GotoWithLabelCommand)op){
+          //gotoのラベルを解決
+          op = resolute(op.to!GotoWithLabelCommand);
+        }
+      }catch(SmileBasicError e){
+        e.line = op.line;
+        throw e;
+      }
+    }
+  }
+
 
   ///ラベルの定義
-  private Operation define(DefineLabel op, ulong count){
+  private Operation define(DefineLabel op, uint count){
     if(inGlobal){
       //グローバル空間のラベル
       Pointer p;
@@ -258,6 +276,24 @@ mixin template LabelDefinition(){
       assert(0);
     }
     return new EmptyOperation();
+  }
+
+
+  ///gotoのラベルを解決
+  private Operation resolute(GotoWithLabelCommand op){
+    uint addr;
+    if(inGlobal){
+      //グローバル空間
+      if(op.name in slot.globalLabel){
+        addr = slot.globalLabel[op.name].count;
+      }else{
+        throw undefinedLabelError(op.name);
+      }
+    }else{
+      //ローカル空間
+    }
+
+    return new GotoCommand(addr);
   }
 
 }
