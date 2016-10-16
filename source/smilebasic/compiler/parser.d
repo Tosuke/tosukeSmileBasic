@@ -267,8 +267,16 @@ class Parser{
 			if(tree.children.length == 1){
 				return new IfThenStatementNode(node(tree.children[0]).to!ExpressionNode);
 			}else{
-				//TODO:1行if
-				assert(0);
+				auto cond = new IfThenStatementNode(node(tree.children[0]).to!ExpressionNode);
+
+				auto temp =  tree.children[1..$]
+										.map!(a => node(a))
+										.array;
+				if(!cast(EndifStatementNode)(temp[$-1])){
+					temp ~= new EndifStatementNode; 
+				}
+
+				return new DocumentNode(cond ~ temp);
 			}
 		}
 

@@ -13,6 +13,8 @@ void main(){
 				if a%==1 then
 					?"hage"
 				endif
+
+				if a%==1 then ?"hoge"
 			`);
 		slot.compile;
 
