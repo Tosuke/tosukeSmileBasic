@@ -256,8 +256,7 @@ class Parser{
 			if(tree.children[0].name == "Parser.label"){
 				return new GotoStatementWithLabelNode(tree.children[0].matches.front.to!wstring);
 			}else{
-				//TODO:文字列指定
-				assert(0);
+				return new GotoStatementWithStringNode(node(tree.children[0]).to!ExpressionNode);
 			}
 		}
 

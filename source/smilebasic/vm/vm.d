@@ -7,7 +7,6 @@ import tosuke.smilebasic.error;
 
 import std.conv : to;
 import std.experimental.logger;
-import std.typecons;
 
 //実装
 import tosuke.smilebasic.vm.internal.command;
@@ -32,6 +31,10 @@ class VM{
 
     ///命令表
     void delegate()[0x10000] codeTable;
+
+    //状態
+    ///グローバルである(DEF内でない)か？
+    bool inGlobal = true;
   }
 
   
@@ -105,9 +108,10 @@ private:
   mixin PopMixin;
 
   ///文字列からシンボルとスロットを得る
-  auto getSymbol(wstring rawName) const {
+  auto getSymbol(in wstring rawName) const {
     import std.string : toLower;
     import std.regex : ctRegex, matchFirst;
+    import std.typecons : Tuple;
 
     wstring name = rawName.toLower;
     int num = currentSlotNumber;
@@ -116,7 +120,7 @@ private:
     auto match = rawName.matchFirst(regex);
     if(!match.empty){
       num = match["slot"].to!int;
-      if(0 <= num && num <= 3){
+      if(0 <= num && num < slots.length){
         name = match["name"].toLower;
       }else{
         num = currentSlotNumber;
@@ -128,5 +132,11 @@ private:
     r.slot = num;
 
     return r;
+  }
+
+  ///任意アドレス・スロットにgotoする
+  void gotoBase(uint addr, int slot = -1){
+    pc = addr;
+    currentSlotNumber = slot == -1 ? currentSlotNumber : slot;
   }
 }

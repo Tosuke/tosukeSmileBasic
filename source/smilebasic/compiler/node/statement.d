@@ -147,3 +147,21 @@ class GotoStatementWithLabelNode : Node{
 		return NodeType.Forward;
 	}
 }
+
+
+///文字列でgoto
+class GotoStatementWithStringNode : Node{
+
+	///初期化
+	this(ExpressionNode name){
+		super("Goto", [name.to!Node]);
+	}
+
+	override Operation operation() const {
+		return new GotoWithStringCommand();
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
+	}
+}

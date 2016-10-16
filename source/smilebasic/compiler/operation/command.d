@@ -284,3 +284,26 @@ class GotoCommand : Command{
     return [0x0100, (addr >>> 16) & 0xffff, addr & 0xffff];
   }
 }
+
+
+///文字列でgotoする
+class GotoWithStringCommand : Command{
+
+  ///初期化
+  this(){
+    super(CommandType.Goto);
+  }
+
+  override string toString() const {
+    return `Command(goto)`;
+  }
+
+  override int codeSize() const {
+    return 1;
+  }
+
+  override VMCode[] code() const {
+    //goto str
+    return [0x1100];
+  }
+}

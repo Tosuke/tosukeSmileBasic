@@ -43,6 +43,7 @@ mixin template CommandMixin(){
 
     //goto & gosub
     codeTable[0x0100] = &gotoAddr;
+    codeTable[0x1100] = &gotoStr;
   }
 
 
@@ -110,6 +111,27 @@ mixin template CommandMixin(){
   void gotoAddr(){
     auto k = take(2);
     immutable addr = k[0] << 16 | k[1];
-    pc = addr;
+    gotoBase(addr);
+  }
+
+
+  ///文字列指定goto
+  void gotoStr(){
+    const rawName = valueStack.pop().get!wstring;
+
+    auto r = getSymbol(rawName);
+
+    auto s = slots[r.slot];
+    if(inGlobal){
+      //グローバル
+      if(r.name in s.globalLabel){
+        auto p = s.globalLabel[r.name];
+      }else{
+        throw undefinedLabelError(rawName);
+      }
+    }else{
+      //ローカル
+      assert(0);
+    }
   }
 }

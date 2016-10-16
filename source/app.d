@@ -9,11 +9,11 @@ import tosuke.smilebasic.error;
 void main(){
 	try{
 		auto slot = slot(`
-				@aaa
-				print @hogehoge
-				
-				dim a[10]
-				print a
+				print @a[0]
+				goto "@a"
+				print "A"
+				@a
+				print "B"
 			`);
 		slot.source.writeln;
 		slot.compile;
