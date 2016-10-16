@@ -55,6 +55,12 @@ mixin template PushMixin(){
   ///グローバル名前空間の変数(id長16bit)をPush
   void pushGlobalVar16(){
     auto id = take().to!uint;
+
+    auto v = currentSlot.globalVar[id];
+    if(v.isUndefined){
+      throw new UseUndefinedVariableError();
+    }
+
     valueStack.push(currentSlot.globalVar[id]);
   }
 
@@ -63,7 +69,13 @@ mixin template PushMixin(){
   void pushGlobalVar32(){
     auto t = take(2);
     immutable id = t[0] << 16 | t[1];
-    valueStack.push(currentSlot.globalVar[id]);
+
+    auto v = currentSlot.globalVar[id];
+    if(v.isUndefined){
+      throw new UseUndefinedVariableError();
+    }
+
+    valueStack.push(v);
   }
 
 

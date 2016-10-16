@@ -86,14 +86,7 @@ mixin template CommandMixin(){
     Appender!wstring temp;
     foreach(a; 0..argNum){
       auto v = valueStack.pop();
-      temp ~= (o){
-        switch(o){
-          case ValueType.Integer: return v.get!int.to!wstring;
-          case ValueType.Floater: return v.get!double.to!wstring;
-          case ValueType.String: return v.get!wstring;
-          default: assert(0);
-        }
-      }(v.type);
+      temp ~= v.toStringValue;
     }
     import std.stdio : write;
     temp.data.write;

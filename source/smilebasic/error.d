@@ -246,6 +246,21 @@ auto invalidIndexError(){
 }
 
 
+///未初期化の変数
+class UseUndefinedVariableError : Exception{
+  
+  ///詳細を含まず発生させる
+  this(){
+    super("Undefined variable used");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("Undefined variable used", detail);
+  }
+} 
+
+
 ///内部エラー
 class InternalError : Exception{
 

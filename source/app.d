@@ -12,7 +12,9 @@ void main(){
 			`
 				@aaa
 				print @hogehoge
-				goto @aaa
+				
+				dim a[10]
+				print a
 			`
 		);
 		slot.source.writeln;

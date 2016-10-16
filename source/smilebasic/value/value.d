@@ -245,9 +245,21 @@ bool isArithmeticValue(Value v){
 }
 
 
+///文字列型であるか？
+bool isStringValue(Value v){
+	return v.type == ValueType.String;
+}
+
+
 ///配列型であるか？
 bool isArrayValue(Value v){
 	return v.type == ValueType.String || v.type == ValueType.Array;
+}
+
+
+///未初期化であるか？
+bool isUndefined(Value v){
+	return v.type == ValueType.Undefined;
 }
 
 
@@ -280,6 +292,18 @@ int toInteger(Value v){
 		}
 	}else{
 		return v.get!int;
+	}
+}
+
+
+///文字列型に変換する
+wstring toStringValue(Value v){	
+	if(v.isArithmeticValue){
+		return v.toFloater.to!wstring;
+	}else if(v.isStringValue){
+		return v.get!wstring;
+	}else{
+		throw failedToConvertTypeError(Value(ValueType.String), v);
 	}
 }
 
