@@ -1,11 +1,11 @@
 # tosukeSmileBasic
-SmileBASIC v3.x Compatible? BASIC
+SmileBASIC v3.x Compatible BASIC
 
 ## How to install
 ```sh
 git clone git@github.com:Tosuke/tosukeSmileBasic.git / git clone https://github.com/Tosuke/tosukeSmileBasic.git
 cd tosukeSmileBasic
-dub build --config=update
+dub build -c update
 ```
 
 ## How to build
@@ -14,7 +14,7 @@ dub build
 ```
 When source/grammar/grammar.peg is updated, use instead of this,
 ```sh
-dub build --config=update
+dub build -c update
 ```
 
 ## How to run
