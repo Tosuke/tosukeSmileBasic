@@ -309,7 +309,8 @@ int toBoolean(Value v){
 		case ValueType.Integer: return cast(int)(v.get!int != 0);
 		case ValueType.Floater: return cast(int)(v.get!double != 0);
 		case ValueType.String: return 3;
-		default: assert(0);
+		default:
+			throw failedToConvertTypeError(Value(ValueType.Integer), v);
 	}
 }
 

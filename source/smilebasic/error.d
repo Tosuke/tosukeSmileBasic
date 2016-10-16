@@ -247,7 +247,7 @@ auto invalidIndexError(){
 
 
 ///未初期化の変数
-class UseUndefinedVariableError : Exception{
+class UseUndefinedVariableError : SmileBasicError{
   
   ///詳細を含まず発生させる
   this(){
@@ -258,14 +258,44 @@ class UseUndefinedVariableError : Exception{
   this(string detail){
     super("Undefined variable used", detail);
   }
-} 
+}
+
+
+///thenがあるのにendifがない
+class ThenWithoutEndifError : SmileBasicError{
+  
+  ///詳細を含まず発生させる
+  this(){
+    super("THEN without ENDIF");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("THEN without ENDIF", detail);
+  }
+}
+
+
+///endifがあるのにifがない
+class EndifWithoutIfError : SmileBasicError{
+  
+  ///詳細を含まず発生させる
+  this(){
+    super("ENDIF without IF");
+  }
+
+  ///詳細を含んで発生させる
+  this(string detail){
+    super("ENDIF without IF", detail);
+  }
+}
 
 
 ///内部エラー
 class InternalError : Exception{
 
   ///コンストラクタ
-  this(string msg, string file = __FILE__, size_t line = __LINE__, Throwable next = null){
+  this(string msg = "", string file = __FILE__, size_t line = __LINE__, Throwable next = null){
     super("Internal Error: "~msg, file, line, next);
   }
 }

@@ -125,6 +125,7 @@ class Parser{
 		}
 
 		//Literals
+		///十進整数リテラル
 		Node decimalInteger(ParseTree tree) const {
 			//Valueにはconstやimmutableな値を代入できない
 			auto k = tree.matches.front.to!double;
@@ -136,31 +137,43 @@ class Parser{
 			}
 			return new ValueNode(v);
 		}
+
+		///十進小数リテラル
 		Node decimalFloater(ParseTree tree) const {
 			//Valueにはconstやimmutableな値を代入できない
 			auto k = tree.matches.front.to!double;
 			return new ValueNode(k);
 		}
+
+		///十六進整数リテラル
 		Node hexInteger(ParseTree tree) const {
 			string str = tree.matches.front;
 			return new ValueNode(cast(int)(str.to!long(16)));
 		}
+
+		///二進整数リテラル
 		Node binInteger(ParseTree tree) const {
 			return new ValueNode(tree.matches.front.to!int(2));
 		}
+
+		///文字列リテラル
 		Node stringLiteral(ParseTree tree) const {
 			return new ValueNode(tree.matches.front.to!wstring[1..$]);
 		}
+
+		///ラベルリテラル(文字列リテラルの特殊形)
 		Node labelLiteral(ParseTree tree) const {
 			return new ValueNode(tree.matches.front.to!wstring);
 		}
 
 		//Variables
+		///単純変数
 		Node scalarVariable(ParseTree tree) const {
 			immutable name = tree.children.front.matches.front.to!wstring.toLower;
 			return new ScalarVariableNode(name);
 		}
 
+		///配列変数(定義)
 		Node arrayVariable(ParseTree tree) const {
 			immutable name = tree.children[0].matches.front.to!wstring.toLower;
 			auto index = tree.children[1..$].map!(a => node(a).to!ExpressionNode).array;
@@ -168,6 +181,7 @@ class Parser{
 			return new ArrayVariableNode(name, index);
 		}
 
+		///配列変数(使用)
 		Node indexVariable(ParseTree tree) const {
 			auto value = node(tree.children[0]).to!ExpressionNode;
 			auto index = tree.children[1..$].map!(a => node(a).to!ExpressionNode).array;
@@ -179,49 +193,19 @@ class Parser{
 			return new IndexVariableNode(value, index);
 		}
 
+		///var関数変数
 		Node varFuncVariable(ParseTree tree) const {
 			auto expr = node(tree.children[0]).to!ExpressionNode;
 			return new VarFuncVariableNode(expr);
 		}
 
 		//Statements
-		Node commandStatement(ParseTree tree) const {
-			immutable name = tree.children[0].matches.front.to!wstring.toLower;
-			switch(name){
-				case "print"w, "?"w:
-					return print(tree.children[1..$]);
-				default:
-					throw syntaxError("Unrecognized syntax", tree.children[0]);
-			}
+		///コメント文
+		Node commentStatement(ParseTree tree) const {
+			return new EmptyNode();
 		}
 
-		Node print(ParseTree[] trees) const {
-			Node[] temp =  trees
-										.filter!(a => !(a.name == "Parser.commandDelimiter" && a.matches.front == ";"))
-										.map!(a => a.name != "Parser.commandDelimiter" ? node(a) : new ValueNode("\t"w))
-										.array;
-			if(trees.length == 0 || trees[$-1].name != "Parser.commandDelimiter"){
-				temp ~= new ValueNode("\n"w);
-			}
-			return new PrintStatementNode(temp);
-		}
-
-		Node assignStatement(ParseTree tree) const {
-
-			auto var = (v){
-				if(v.isAssignable){
-					return v.to!VariableNode;
-				}else{
-					throw syntaxError("rvalue is not assignable", tree.children[0]);
-				}
-			}(node(tree.children[0]).to!ExpressionNode);
-
-			auto expr = node(tree.children[1]).to!ExpressionNode;
-
-			return new AssignStatementNode(var, expr);			
-		}
-
-
+		///変数定義
 		Node variableDefineStatement(ParseTree tree) const {
 			VariableNode[] defines = 
 				 tree.children[]
@@ -248,10 +232,23 @@ class Parser{
 			return new VariableDefineStatementNode(defines, temp);
 		}
 
-		Node commentStatement(ParseTree tree) const {
-			return new EmptyNode();
+		///代入文
+		Node assignStatement(ParseTree tree) const {
+
+			auto var = (v){
+				if(v.isAssignable){
+					return v.to!VariableNode;
+				}else{
+					throw syntaxError("rvalue is not assignable", tree.children[0]);
+				}
+			}(node(tree.children[0]).to!ExpressionNode);
+
+			auto expr = node(tree.children[1]).to!ExpressionNode;
+
+			return new AssignStatementNode(var, expr);			
 		}
 
+		///goto文
 		Node gotoStatement(ParseTree tree) const {
 			if(tree.children[0].name == "Parser.label"){
 				return new GotoStatementWithLabelNode(tree.children[0].matches.front.to!wstring);
@@ -260,8 +257,47 @@ class Parser{
 			}
 		}
 
+		///ラベル文
 		Node labelStatement(ParseTree tree) const {
 			return new LabelStatement(tree.children[0].matches.front.to!wstring);
+		}
+
+		///if文(if~then)
+		Node ifThenStatement(ParseTree tree) const {
+			if(tree.children.length == 1){
+				return new IfThenStatementNode(node(tree.children[0]).to!ExpressionNode);
+			}else{
+				//TODO:1行if
+				assert(0);
+			}
+		}
+
+		///endif文
+		Node endifStatement(ParseTree tree) const {
+			return new EndifStatementNode();
+		}
+
+		///命令文
+		Node commandStatement(ParseTree tree) const {
+			immutable name = tree.children[0].matches.front.to!wstring.toLower;
+			switch(name){
+				case "print"w, "?"w:
+					return print(tree.children[1..$]);
+				default:
+					throw syntaxError("Unrecognized syntax", tree.children[0]);
+			}
+		}
+
+		///print文
+		Node print(ParseTree[] trees) const {
+			Node[] temp =  trees
+										.filter!(a => !(a.name == "Parser.commandDelimiter" && a.matches.front == ";"))
+										.map!(a => a.name != "Parser.commandDelimiter" ? node(a) : new ValueNode("\t"w))
+										.array;
+			if(trees.length == 0 || trees[$-1].name != "Parser.commandDelimiter"){
+				temp ~= new ValueNode("\n"w);
+			}
+			return new PrintStatementNode(temp);
 		}
 	}
 	

@@ -5,7 +5,9 @@ import std.conv : to;
 
 ///ASTから中間表現コードを生成する
 OperationList genList(Node node){
-  OperationList temp;
+  import std.array : Appender;
+
+  Appender!OperationList temp;
 
   final switch(node.type){
     case NodeType.Forward:
@@ -32,5 +34,5 @@ OperationList genList(Node node){
   }
 
 
-  return temp;
+  return temp.data;
 }

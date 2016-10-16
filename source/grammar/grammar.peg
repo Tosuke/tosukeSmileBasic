@@ -7,21 +7,25 @@ Parser:
                 assignStatement /
                 gotoStatement /
                 labelStatement /
+                ifThenStatement / endifStatement /
                 commandStatement
 
+  commentStatement < :"'" :(.+)
+  
+  variableDefineStatement < :("var "i / "dim "i) (arrayVariable / assignStatement / scalarVariable) (:"," (arrayVariable / assignStatement / scalarVariable))*
+
+  assignStatement < expr :"=" expr
+  
+  gotoStatement < :"goto "i (label / expr)
+  
+  labelStatement < label
+
+  ifThenStatement < :"if"i expr :"then"i (!endifStatement statement)* endifStatement?
+  endifStatement < "endif"i
+  
   commandStatement < commandIdentifier expr (commandDelimiter expr)*  commandDelimiter? / commandIdentifier
   commandDelimiter <- ";" / ","
   commandIdentifier <- identifier / "?"
-
-  assignStatement < expr :"=" expr
-
-  variableDefineStatement < :("var "i / "dim "i) (arrayVariable / assignStatement / scalarVariable) (:"," (arrayVariable / assignStatement / scalarVariable))*
-
-  commentStatement < :"'" :(.+)
-
-  gotoStatement < :"goto "i (label / expr)
-
-  labelStatement < label
 
   expr <- factor8
 

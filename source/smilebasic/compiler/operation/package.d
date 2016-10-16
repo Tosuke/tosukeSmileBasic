@@ -5,4 +5,5 @@ public{
   import tosuke.smilebasic.compiler.operation.push;
   import tosuke.smilebasic.compiler.operation.pop;
   import tosuke.smilebasic.compiler.operation.command;
+  import tosuke.smilebasic.compiler.operation.define;
 }

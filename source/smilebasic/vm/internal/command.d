@@ -44,6 +44,8 @@ mixin template CommandMixin(){
     //goto & gosub
     codeTable[0x0100] = &gotoAddr;
     codeTable[0x1100] = &gotoStr;
+
+    codeTable[0x4100] = &gotoNotIfAddr;
   }
 
 
@@ -132,6 +134,18 @@ mixin template CommandMixin(){
     }else{
       //ローカル
       assert(0);
+    }
+  }
+
+
+  ///falseならgoto
+  void gotoNotIfAddr(){
+    auto k = take(2);
+    immutable addr = k[0] << 16 | k[1];
+    
+    auto b = valueStack.pop().toBoolean;
+    if(b == 0){
+      gotoBase(addr);
     }
   }
 }

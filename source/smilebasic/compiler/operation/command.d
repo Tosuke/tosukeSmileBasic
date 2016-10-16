@@ -21,7 +21,9 @@ enum CommandType{
   ///配列アクセス演算子
   IndexOp,
   ///goto
-  Goto
+  Goto,
+  ///if
+  If
 }
 
 
@@ -305,5 +307,76 @@ class GotoWithStringCommand : Command{
   override VMCode[] code() const {
     //goto str
     return [0x1100];
+  }
+}
+
+
+///if~then文
+class IfThenCommand : Command{
+
+  ///初期化
+  this(){
+    super(CommandType.If);
+  }
+
+  override string toString() const {
+    return `Command(If then)`;
+  }
+
+  override int codeSize() const {
+    //if goto addr
+    return 1 + 2;
+  }
+
+  override VMCode[] code() const {
+    throw new InternalError();
+  }
+}
+
+
+///endif文
+class EndifCommand : Command{
+
+  ///初期化
+  this(){
+    super(CommandType.If);
+  }
+
+  override string toString() const {
+    return `Command(Endif)`;
+  }
+
+  override int codeSize() const {
+    return 0;
+  }
+
+  override VMCode[] code() const {
+    return [];
+  }
+}
+
+
+///goto not if
+class GotoNotIfCommand : Command{
+
+  ///初期化
+  this(uint _addr){
+    addr = _addr;
+    super(CommandType.Goto);
+  }
+
+  ///goto先のアドレス
+  private uint addr;
+
+  override string toString() const {
+    return `Command(goto if`~addr.to!string~`)`;
+  }
+
+  override int codeSize() const {
+    return 1 + 2;
+  }
+
+  override VMCode[] code() const {
+    return [0x4100, (addr >>> 16) & 0xffff, addr & 0xffff];
   }
 }

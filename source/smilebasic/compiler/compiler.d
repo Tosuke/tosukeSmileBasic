@@ -29,10 +29,12 @@ private struct Compiler{
     version(none) std.stdio.writeln(ast);
 
     auto list = genList(ast);
+    version(none) std.stdio.writeln(list[]);
     list = compile(list);
     
     slot.codemap = list.codeMap;
     slot.vmcode = genCode(list);
+    version(none) std.stdio.writeln(slot.vmcode[]);
   }
 
   private Node buildAST(string[] src){
@@ -68,6 +70,9 @@ private struct Compiler{
     //variables definition & resolution
     variableResolute(list);
 
+    //structions resotetion
+    structionResolute(list);
+
     //functions & labels definition
     labelDefinition(list);
 
@@ -78,6 +83,7 @@ private struct Compiler{
   }
 
   mixin VariableDefinition;
+  mixin StructionResolution;
   mixin LabelDefinition;
 }
 
@@ -295,5 +301,50 @@ mixin template LabelDefinition(){
 
     return new GotoCommand(addr);
   }
+}
 
+
+///構造文の解決
+mixin template StructionResolution(){
+
+  ///構造文の解決
+  //root
+  private void structionResolute(ref OperationList list){
+    uint count = 0;
+    foreach(i, ref op; list[]){
+      count += op.codeSize;
+
+      try{
+        if(cast(IfThenCommand)op){
+          op = ifResolute(list[i+1..$], count);
+        }else if(cast(EndifCommand)op){
+          throw new EndifWithoutIfError();
+        }
+      }catch(SmileBasicError e){
+        e.line = op.line;
+        throw e;
+      }
+    }
+  }
+
+  ///if文
+  private Operation ifResolute(OperationList list, uint count){
+    foreach(i, ref op; list[]){
+      count += op.codeSize;
+
+      try{
+        if(cast(IfThenCommand)op){
+          op = ifResolute(list[i+1..$], count);
+        }else if(cast(EndifCommand)op){
+          op = new EmptyOperation();
+          return new GotoNotIfCommand(count);
+        }      
+      }catch(SmileBasicError e){
+        e.line = op.line;
+        throw e;
+      }
+    }
+    
+    throw new ThenWithoutEndifError();
+  }
 }

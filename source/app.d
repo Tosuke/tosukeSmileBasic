@@ -9,13 +9,11 @@ import tosuke.smilebasic.error;
 void main(){
 	try{
 		auto slot = slot(`
-				print @a[0]
-				goto "@a"
-				print "A"
-				@a
-				print "B"
+				a% = 1
+				if a%==1 then
+					?"hage"
+				endif
 			`);
-		slot.source.writeln;
 		slot.compile;
 
 		auto vm = new VM();

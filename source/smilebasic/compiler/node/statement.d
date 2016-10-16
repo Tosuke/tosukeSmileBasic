@@ -165,3 +165,38 @@ class GotoStatementWithStringNode : Node{
 		return NodeType.Reverse;
 	}
 }
+
+
+///if~then文
+class IfThenStatementNode : Node{
+
+	///初期化
+	this(ExpressionNode cond){
+		super("IfThen", [cond.to!Node]);
+	}
+
+	override Operation operation() const {
+		return new IfThenCommand();
+	}
+
+	override NodeType type() const {
+		return NodeType.Reverse;
+	}
+}
+
+///endif文
+class EndifStatementNode : Node{
+
+	///初期化
+	this(){
+		super("Endif");
+	}
+
+	override Operation operation() const {
+		return new EndifCommand();
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
+	}
+}
