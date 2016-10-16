@@ -231,11 +231,6 @@ struct Value{
 
 	//演算子オーバーロード
 	mixin OperatorMixin;
-
-	///怒られるので
-	auto toHash() const{
-		return data.toHash;
-	}
 }
 
 
@@ -319,6 +314,6 @@ int toBoolean(Value v){
 }
 
 unittest{
-	auto a = Value(22);
+	const a = Value(22);
 	assert(a.toInteger == 22);
 }

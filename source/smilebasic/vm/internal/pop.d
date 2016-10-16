@@ -44,6 +44,7 @@ mixin template PopMixin(){
     auto name = r.name;
     auto slot = slots[r.slot];
 
+    //Valueにはconstやimmutableな値は代入できない
     auto value = valueStack.pop();
 
     if(name in slot.globalVar){

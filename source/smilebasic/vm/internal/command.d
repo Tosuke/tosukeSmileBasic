@@ -49,7 +49,7 @@ mixin template CommandMixin(){
   ///単項演算子
   void unaryOp(string op)(){
     auto a = valueStack.pop;
-    valueStack.push(mixin(op~"(a)"));
+    valueStack.push((mixin("&"~op))(a));
   }
 
 
@@ -58,7 +58,7 @@ mixin template CommandMixin(){
     auto a = valueStack.pop;
     auto b = valueStack.pop;
 
-    valueStack.push(mixin(op~"(a, b)"));
+    valueStack.push((mixin("&"~op))(a, b));
   }
 
 
@@ -89,7 +89,7 @@ mixin template CommandMixin(){
       temp ~= v.toStringValue;
     }
     import std.stdio : write;
-    temp.data.write;
+    write(temp.data);
   }
 
 

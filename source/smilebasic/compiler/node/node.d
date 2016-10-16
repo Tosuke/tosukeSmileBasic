@@ -32,7 +32,7 @@ abstract class Node{
 			}
 		}
 	}
-
+	
 	///ノードの名前
 	public string name;
 

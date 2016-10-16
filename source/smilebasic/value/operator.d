@@ -165,4 +165,10 @@ mixin template OperatorMixin(){
 		}
 		assert(0);
 	}
+
+
+	///怒られるので
+	auto toHash() const{
+		return data.toHash;
+	}
 }

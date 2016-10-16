@@ -10,6 +10,7 @@ import std.algorithm, std.range, std.array;
 unittest{
 	auto a = Value("aaa"w);
 	assert(a[1] == Value("a"w));
+	//Valueにはconstやimmutableな値は代入できない
 	Value b = a;
 
 	a[1] = Value("bbb"w);

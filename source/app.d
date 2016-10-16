@@ -8,15 +8,13 @@ import tosuke.smilebasic.error;
 
 void main(){
 	try{
-		auto slot = slot(
-			`
+		auto slot = slot(`
 				@aaa
 				print @hogehoge
 				
 				dim a[10]
 				print a
-			`
-		);
+			`);
 		slot.source.writeln;
 		slot.compile;
 

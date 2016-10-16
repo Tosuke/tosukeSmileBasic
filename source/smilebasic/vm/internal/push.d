@@ -56,7 +56,7 @@ mixin template PushMixin(){
   void pushGlobalVar16(){
     auto id = take().to!uint;
 
-    auto v = currentSlot.globalVar[id];
+    const v = currentSlot.globalVar[id];
     if(v.isUndefined){
       throw new UseUndefinedVariableError();
     }

@@ -16,7 +16,7 @@ void main(string[] args){
   string source = "";
   string dest = "";
 
-  auto info = getopt(args, "source", &source, "dest", &dest);
+  const info = getopt(args, "source", &source, "dest", &dest);
 
   if(info.helpWanted || source == "" || dest == ""){
     "HINT:--source (source.peg) --dest (dest.d)".writeln;

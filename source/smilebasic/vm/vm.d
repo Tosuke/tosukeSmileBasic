@@ -20,9 +20,9 @@ class VM{
   private{
     ///スロット
     Slot[] slots;
-    Slot currentSlot() @property { return slots[currentSlotNumber]; }
+    Slot currentSlot() @property const { return cast(Slot)(slots[currentSlotNumber]); }
 
-    VMCode[] currentCode() @property { return currentSlot.vmcode;}
+    VMCode[] currentCode() @property const { return currentSlot.vmcode;}
 
     ///プログラムカウンタ
     uint pc;

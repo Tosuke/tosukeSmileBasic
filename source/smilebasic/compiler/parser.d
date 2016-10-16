@@ -126,6 +126,7 @@ class Parser{
 
 		//Literals
 		Node decimalInteger(ParseTree tree) const {
+			//Valueにはconstやimmutableな値を代入できない
 			auto k = tree.matches.front.to!double;
 			Value v;
 			if(k > int.max){
@@ -136,6 +137,7 @@ class Parser{
 			return new ValueNode(v);
 		}
 		Node decimalFloater(ParseTree tree) const {
+			//Valueにはconstやimmutableな値を代入できない
 			auto k = tree.matches.front.to!double;
 			return new ValueNode(k);
 		}
