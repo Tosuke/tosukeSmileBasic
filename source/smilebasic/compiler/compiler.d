@@ -95,23 +95,26 @@ mixin template VariableDefinition(){
   private void variableResolute(ref OperationList list){
     foreach(ref op; list){
       try{
-        if(cast(DefineScalarVariable)op){
-          //単純変数を定義
-          op = define(op.to!DefineScalarVariable);
-
-        }else if(cast(DefineArrayVariable)op){
-          //配列変数を定義
-          op = define(op.to!DefineArrayVariable);
-
-        }else if(cast(PushScalarVariable)op){
-          //単純変数の名前解決(式として利用時)
-          op = resolute(op.to!PushScalarVariable);
-
-        }else if(cast(PopScalarVariable)op){
-          //単純変数の名前解決(代入文として利用時)
-          op = resolute(op.to!PopScalarVariable);
-
-        }
+        op = (o){
+          if(cast(DefineScalarVariable)o){
+            //単純変数を定義
+            return define(o.to!DefineScalarVariable);
+          }
+          if(cast(DefineArrayVariable)o){
+            //配列変数を定義
+            return define(o.to!DefineArrayVariable);
+          }
+          if(cast(PushScalarVariable)o){
+            //単純変数の名前解決(式)
+            return resolute(o.to!PushScalarVariable);
+          }
+          if(cast(PopScalarVariable)o){
+            //単純変数の名前解決(代入文)
+            return resolute(op.to!PopScalarVariable);
+          }
+          return o;
+        }(op);
+        
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
@@ -239,11 +242,13 @@ mixin template LabelDefinition(){
     uint count = 0; //命令のVM上の位置
     foreach(ref op; list){
       try{
-        if(cast(DefineLabel)op){
-          //ラベルを定義
-          op = define(op.to!DefineLabel, count);
-
-        }
+        op = (o){
+          if(cast(DefineLabel)o){
+            //ラベルの定義
+            return define(o.to!DefineLabel, count);
+          }
+          return o;
+        }(op);
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
@@ -257,10 +262,13 @@ mixin template LabelDefinition(){
   private void labelResolution(ref OperationList list){
     foreach(ref op; list){
       try{
-        if(cast(GotoWithLabelCommand)op){
-          //gotoのラベルを解決
-          op = resolute(op.to!GotoWithLabelCommand);
-        }
+        op = (o){
+          if(cast(GotoWithLabelCommand)o){
+            //gotoのラベルを解決
+            return resolute(o.to!GotoWithLabelCommand);
+          }
+          return o;
+        }(op);
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
@@ -315,11 +323,17 @@ mixin template StructionResolution(){
       count += op.codeSize;
 
       try{
-        if(cast(IfThenCommand)op){
-          op = ifResolute(list[i+1..$], count);
-        }else if(cast(EndifCommand)op){
-          throw new EndifWithoutIfError();
-        }
+        op = (o){
+          if(cast(IfThenCommand)o){
+            //if文
+            return ifResolute(list[i+1..$], count);
+          }
+          if(cast(EndifCommand)o){
+            //endif文
+            throw new EndifWithoutIfError;
+          }
+          return o;
+        }(op);
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
@@ -333,9 +347,16 @@ mixin template StructionResolution(){
       count += op.codeSize;
 
       try{
-        if(cast(IfThenCommand)op){
-          op = ifResolute(list[i+1..$], count);
-        }else if(cast(EndifCommand)op){
+        op = (o){
+          if(cast(IfThenCommand)o){
+            //if文
+            return ifResolute(list[i+1..$], count); 
+          }
+          return o;
+        }(op);
+
+        if(cast(EndifCommand)op){
+          //endif文
           op = new EmptyOperation();
           return new GotoNotIfCommand(count);
         }      
