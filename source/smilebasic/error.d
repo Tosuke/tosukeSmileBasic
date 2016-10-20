@@ -70,17 +70,7 @@ class SyntaxError : SmileBasicError{
 
 ///型が期待するものと異なることにより発生するエラー
 class TypeMismatchError : SmileBasicError{
-  
-  ///詳細を含まず発生させる
-  this(){
-    super("Type mismatch");
-  }
-
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Type mismatch", detail);
-  }
+  mixin ErrorMixin!"Type mismatch";
 }
 
 
@@ -130,31 +120,13 @@ abstract class DuplicateSymbolError : SmileBasicError{
 
 ///変数定義の衝突
 class DuplicateVariableError : DuplicateSymbolError{
-
-  ///詳細を含まず発生させる
-  this(){
-    super("Duplicate variable");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Duplicate variable", detail);
-  }
+  mixin ErrorMixin!"Duplicate variable";
 }
 
 
 ///ラベル定義の衝突
 class DuplicateLabelError : DuplicateSymbolError{
-
-  ///詳細を含まず発生させる
-  this(){
-    super("Duplicate label");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Duplicate label", detail);
-  }
+  mixin ErrorMixin!"Duplicate label";
 }
 
 
@@ -175,16 +147,7 @@ abstract class UndefinedSymbolError : SmileBasicError{
 
 ///存在しない変数
 class UndefinedVariableError : UndefinedSymbolError{
-
-  ///詳細を含まず発生させる
-  this(){
-    super("Undefined variable");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Undefined variable", detail);
-  }
+  mixin ErrorMixin!"Undefined variable";
 }
 
 ///存在しない変数
@@ -197,16 +160,7 @@ auto undefinedVariableError(wstring var){
 
 ///存在しないラベル
 class UndefinedLabelError : UndefinedSymbolError{
-
-  ///詳細を含まず発生させる
-  this(){
-    super("Undefined label");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Undefined label", detail);
-  }
+  mixin ErrorMixin!"Undefined label";
 }
 
 ///存在しないラベル
@@ -219,16 +173,7 @@ auto undefinedLabelError(wstring var){
 
 ///範囲外の数値が指定された
 class OutOfRangeError : SmileBasicError{
-
-  ///詳細を含まず発生させる
-  this(){
-    super("Out of range");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Out of range", detail);
-  }
+  mixin ErrorMixin!"Out of range";
 }
 
 
@@ -248,45 +193,32 @@ auto invalidIndexError(){
 
 ///未初期化の変数
 class UseUndefinedVariableError : SmileBasicError{
-  
-  ///詳細を含まず発生させる
-  this(){
-    super("Undefined variable used");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("Undefined variable used", detail);
-  }
+  mixin ErrorMixin!"Undefined variable used";
 }
 
 
 ///thenがあるのにendifがない
 class ThenWithoutEndifError : SmileBasicError{
-  
-  ///詳細を含まず発生させる
-  this(){
-    super("THEN without ENDIF");
-  }
-
-  ///詳細を含んで発生させる
-  this(string detail){
-    super("THEN without ENDIF", detail);
-  }
+  mixin ErrorMixin!"THEN without ENDIF";
 }
 
 
 ///endifがあるのにifがない
 class EndifWithoutIfError : SmileBasicError{
-  
+  mixin ErrorMixin!"ENDIF without IF";
+}
+
+///エラーのテンプレート
+private mixin template ErrorMixin(string msg){
+
   ///詳細を含まず発生させる
   this(){
-    super("ENDIF without IF");
+    super(msg);
   }
 
   ///詳細を含んで発生させる
   this(string detail){
-    super("ENDIF without IF", detail);
+    super(msg, detail);
   }
 }
 
