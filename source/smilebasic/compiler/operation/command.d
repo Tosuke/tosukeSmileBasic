@@ -334,6 +334,51 @@ class IfThenCommand : Command{
 }
 
 
+///elseやelseifの前に呼ばれ、endifへジャンプする
+class GotoEndifCommand : Command{
+
+  ///初期化
+  this(){
+    super(CommandType.If);
+  }
+
+  override string toString() const {
+    return `Command(Goto Endif)`;
+  }
+
+  override int codeSize() const {
+    //goto addr
+    return 1 + 2;
+  }
+
+  override VMCode[] code() const {
+    throw new InternalError();
+  }
+}
+
+
+///else文
+class ElseCommand : Command{
+
+  ///初期化
+  this(){
+    super(CommandType.If);
+  }
+
+  override string toString() const {
+    return `Command(Else)`;
+  }
+
+  override int codeSize() const {
+    return 0;
+  }
+
+  override VMCode[] code() const {
+    return [];
+  }
+}
+
+
 ///endif文
 class EndifCommand : Command{
 

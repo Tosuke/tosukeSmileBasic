@@ -7,7 +7,7 @@ Parser:
                 assignStatement /
                 gotoStatement /
                 labelStatement /
-                ifThenStatement / endifStatement /
+                ifThenStatement / elseStatement / endifStatement /
                 commandStatement
 
   commentStatement < :"'" :(.+)
@@ -21,6 +21,7 @@ Parser:
   labelStatement < label
 
   ifThenStatement < :"if"i expr :"then"i (!endifStatement statement)* endifStatement?
+  elseStatement < "else"i (!endifStatement statement)*
   endifStatement < "endif"i
   
   commandStatement < commandIdentifier expr (commandDelimiter expr)*  commandDelimiter? / commandIdentifier

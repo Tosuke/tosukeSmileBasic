@@ -328,6 +328,10 @@ mixin template StructionResolution(){
             //if文
             return ifResolute(list[i+1..$], count);
           }
+          if(cast(ElseCommand)o){
+            //else文の部品
+            throw new ElseWithoutIfError;
+          }
           if(cast(EndifCommand)o){
             //endif文
             throw new EndifWithoutIfError;
@@ -343,6 +347,9 @@ mixin template StructionResolution(){
 
   ///if文
   private Operation ifResolute(OperationList list, uint count){
+    uint endifAddr;
+    Operation operation = null;
+
     foreach(i, ref op; list[]){
       count += op.codeSize;
 
@@ -350,22 +357,64 @@ mixin template StructionResolution(){
         op = (o){
           if(cast(IfThenCommand)o){
             //if文
-            return ifResolute(list[i+1..$], count); 
+            return ifResolute(list[i+1..$], count);
           }
           return o;
         }(op);
 
+        if(cast(ElseCommand)op){
+          //else文
+          op = new EmptyOperation;
+          operation =  new GotoNotIfCommand(count);
+        }
         if(cast(EndifCommand)op){
           //endif文
-          op = new EmptyOperation();
-          return new GotoNotIfCommand(count);
-        }      
+          op = new EmptyOperation;
+          endifAddr = count;
+
+          foreach(ref ope; list[]){
+            ope = (o){
+              if(cast(GotoEndifCommand)o){
+                //endifへ移動
+                return new GotoCommand(endifAddr);
+              }
+              return o;
+            }(ope);
+          }
+
+          if(operation is null){
+            operation = new GotoNotIfCommand(endifAddr);
+          }
+          break;
+        }
+      }catch(SmileBasicError e){
+        e.line = op.line;
+      }
+    }
+
+    if(operation is null){
+      throw new ThenWithoutEndifError;
+    }else{
+      return operation;
+    }
+  }
+
+  ///endifへ移動
+  private Operation gotoEndifResolute(OperationList list, uint count){
+    foreach(i, ref op; list[]){
+      count += op.codeSize;
+
+      try{
+        if(cast(EndifCommand)op){
+          //endif文
+          return new GotoCommand(count);
+        }
       }catch(SmileBasicError e){
         e.line = op.line;
         throw e;
       }
     }
-    
-    throw new ThenWithoutEndifError();
+
+    throw new ThenWithoutEndifError;
   }
 }

@@ -208,6 +208,13 @@ class EndifWithoutIfError : SmileBasicError{
   mixin ErrorMixin!"ENDIF without IF";
 }
 
+
+///elseがあるのにifがない
+class ElseWithoutIfError : SmileBasicError{
+  mixin ErrorMixin!"ELSE without IF";
+}
+
+
 ///エラーのテンプレート
 private mixin template ErrorMixin(string msg){
 

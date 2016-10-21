@@ -9,12 +9,14 @@ import tosuke.smilebasic.error;
 void main(){
 	try{
 		auto slot = slot(`
-				a% = 1
+				a% = 0
 				if a%==1 then
 					?"hage"
+				else
+					?"not hage"
 				endif
 
-				if a%==1 then ?"hoge"
+				if a%==1 then ?"hoge" endif
 			`);
 		slot.compile;
 

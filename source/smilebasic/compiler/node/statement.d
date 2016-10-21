@@ -184,6 +184,41 @@ class IfThenStatementNode : Node{
 	}
 }
 
+
+///else文
+class ElseStatementNode : Node{
+
+	///初期化
+	this(){
+		super("Else",[
+			new class() Node{
+				this(){super("Goto Endif");}
+				override Operation operation() const {
+					return new GotoEndifCommand();
+				}
+				override NodeType type() const {return NodeType.Forward;}
+			},
+
+			new class() Node{
+				this(){super("Else");}
+				override Operation operation() const {
+					return new ElseCommand();
+				}
+				override NodeType type() const {return NodeType.Forward;}
+			}
+			
+		]);
+	}
+
+	override Operation operation() const {
+		return new EmptyOperation();
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
+	}
+}
+
 ///endif文
 class EndifStatementNode : Node{
 
