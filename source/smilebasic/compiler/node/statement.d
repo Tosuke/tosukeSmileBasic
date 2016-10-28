@@ -126,8 +126,21 @@ class LabelStatement : Node{
 }
 
 
+///goto
+abstract class GotoStatementNode : Node{
+
+	///初期化
+	this(string _name, Node[] c = []){
+		super(_name, c);
+	}
+
+	abstract override Operation operation() const;
+	abstract override NodeType type() const;
+}
+
+
 ///ラベルでgoto
-class GotoStatementWithLabelNode : Node{
+class GotoStatementWithLabelNode : GotoStatementNode{
 
 	///初期化
 	this(wstring _name){
@@ -150,7 +163,7 @@ class GotoStatementWithLabelNode : Node{
 
 
 ///文字列でgoto
-class GotoStatementWithStringNode : Node{
+class GotoStatementWithStringNode : GotoStatementNode{
 
 	///初期化
 	this(ExpressionNode name){
@@ -168,7 +181,7 @@ class GotoStatementWithStringNode : Node{
 
 
 ///if~then文
-class IfThenStatementNode : Node{
+deprecated class IfThenStatementNode : Node{
 
 	///初期化
 	this(ExpressionNode cond){
@@ -181,6 +194,68 @@ class IfThenStatementNode : Node{
 
 	override NodeType type() const {
 		return NodeType.Reverse;
+	}
+}
+
+
+///if文
+class IfStatementNode : Node{
+
+	///初期化
+	this(ExpressionNode cond, Node node){
+		node = (n){
+
+			///膳	
+			class ThenNode : Node{
+				this(Node[] c = []){
+					super("Then", c);
+				}
+
+				override Operation operation() const {
+					return new IfThenCommand;
+				}
+
+				override NodeType type() const {
+					return NodeType.Forward;
+				}
+			}
+			
+			//if~then
+			if(cast(ThenStatementNode)n){
+				return new ThenNode(n.children);
+			}
+
+			//その他
+			return new ThenNode([n.to!Node, new EndifStatementNode]);
+		}(node);
+
+		super("If", [cond.to!Node, node]);
+	}
+
+	override Operation operation() const {
+		return new EmptyOperation;
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
+	}
+}
+
+
+///then文
+class ThenStatementNode : Node{
+
+	///初期化
+	this(Node[] c = []){
+		super("Then", c);
+	}
+
+	override Operation operation() const {
+		return new EmptyOperation;
+	}
+
+	override NodeType type() const {
+		return NodeType.Forward;
 	}
 }
 

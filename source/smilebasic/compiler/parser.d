@@ -280,6 +280,26 @@ class Parser{
 			}
 		}
 
+		///if文
+		Node ifStatement(ParseTree tree) const {
+			auto cond = node(tree.children[0]).to!ExpressionNode;
+			auto node = node(tree.children[1]);
+
+			return new IfStatementNode(cond, node);
+		}
+
+		///then文
+		Node thenStatement(ParseTree tree) const {
+			auto temp =  tree.children
+									.map!(a => node(a))
+									.array;
+			if(temp.length >= 1 && !cast(EndifStatementNode)temp[$-1]){
+				temp ~= new EndifStatementNode;
+			}
+			
+			return new ThenStatementNode(temp);
+		}
+
 		///else文
 		Node elseStatement(ParseTree tree) const {
 			if(tree.children.length <= 1){

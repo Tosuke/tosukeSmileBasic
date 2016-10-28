@@ -3,7 +3,7 @@
 	"authors": [
 		"tosuke"
 	],
-	"description": "A minimal D application.",
+	"description": "An emulator of SmileBasic V3.x",
 	"copyright": "Copyright © 2016, tosuke",
 	"license": "MIT",
 

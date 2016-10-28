@@ -398,23 +398,4 @@ mixin template StructionResolution(){
       return operation;
     }
   }
-
-  ///endifへ移動
-  private Operation gotoEndifResolute(OperationList list, uint count){
-    foreach(i, ref op; list[]){
-      count += op.codeSize;
-
-      try{
-        if(cast(EndifCommand)op){
-          //endif文
-          return new GotoCommand(count);
-        }
-      }catch(SmileBasicError e){
-        e.line = op.line;
-        throw e;
-      }
-    }
-
-    throw new ThenWithoutEndifError;
-  }
 }
