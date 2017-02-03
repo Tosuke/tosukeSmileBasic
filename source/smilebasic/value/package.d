@@ -1,6 +1,6 @@
 module tosuke.smilebasic.value;
 
-public{
+public {
   import tosuke.smilebasic.value.value;
   import tosuke.smilebasic.value.operator;
   import tosuke.smilebasic.value.array;

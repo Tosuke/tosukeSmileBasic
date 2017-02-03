@@ -9,19 +9,15 @@ import std.array;
 import std.conv;
 import std.algorithm, std.string;
 
-
 ///ソースコードからSlotを生成する
-Slot slot(string source){
+Slot slot(string source) {
   auto slot = new Slot;
-  slot.source =  source
-                .split("\n")
-                .array;
+  slot.source = source.split("\n").array;
   return slot;
 }
 
-
 ///ソースコードとそれから生成されるデータをまとめるクラス
-public class Slot{
+public class Slot {
 
 public:
   ///ソースコード
@@ -31,16 +27,14 @@ public:
   ///VMアドレスとソースコードの対応表
   CodeMap codemap;
 
-
   ///グローバル変数
   SymbolTable!Value globalVar;
 
   ///グローバルなラベル
   SymbolTable!Pointer globalLabel;
 
-
   ///初期化
-  this(){
+  this() {
     globalVar = SymbolTable!Value(() => new DuplicateVariableError());
     globalLabel = SymbolTable!Pointer(() => new DuplicateLabelError());
   }

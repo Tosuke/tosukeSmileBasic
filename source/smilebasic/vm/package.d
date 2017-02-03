@@ -1,6 +1,6 @@
 module tosuke.smilebasic.vm;
 
-public{
+public {
   import tosuke.smilebasic.vm.vm;
   import tosuke.smilebasic.vm.slot;
   import tosuke.smilebasic.vm.code;

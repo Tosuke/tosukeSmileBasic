@@ -1,29 +1,33 @@
 {
-	"name": "tosukesmilebasic",
-	"authors": [
-		"tosuke"
-	],
-	"description": "An emulator of SmileBasic V3.x",
-	"copyright": "Copyright © 2016, tosuke",
-	"license": "MIT",
-
-	"dependencies":{
-		"pegged":"*"
-	},
-	"targetPath":"bin",
-	"workingDirectory":"bin",
-	"stringImportPaths":["source/grammar"],
-	"excludedSourceFiles":["source/grammar/grammar.d"],
-
-	"configurations":[
-		{
-			"name":"debug",
-			"targetType":"executable"
-		},
-		{
-			"name":"update",
-			"preBuildCommands":["dub run --single peg2d.d -- --source source/grammar/grammar.peg --dest source/grammar/grammar.d"],
-			"targetType":"executable"
-		}
-	]
+  "name": "tosukesmilebasic",
+  "authors": [
+    "tosuke"
+  ],
+  "description": "An emulator of SmileBasic V3.x",
+  "copyright": "Copyright © 2016, tosuke",
+  "license": "MIT",
+  "dependencies": {
+    "pegged": "*"
+  },
+  "targetPath": "bin",
+  "workingDirectory": "bin",
+  "stringImportPaths": [
+    "source/grammar"
+  ],
+  "excludedSourceFiles": [
+    "source/grammar/grammar.d"
+  ],
+  "configurations": [
+    {
+      "name": "debug",
+      "targetType": "executable"
+    },
+    {
+      "name": "update",
+      "preBuildCommands": [
+        "dub run --single peg2d.d -- --source source/grammar/grammar.peg --dest source/grammar/grammar.d"
+      ],
+      "targetType": "executable"
+    }
+  ]
 }

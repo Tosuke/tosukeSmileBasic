@@ -1,10 +1,10 @@
 module tosuke.smilebasic.vm.internal.command;
 
 ///コマンドの実装
-mixin template CommandMixin(){
+mixin template CommandMixin() {
 
   ///初期化
-  private void initCommandTable(){
+  private void initCommandTable() {
     //UnaryOps
     codeTable[0x0000] = &unaryOp!"negOp";
     codeTable[0x1000] = &unaryOp!"notOp";
@@ -48,59 +48,55 @@ mixin template CommandMixin(){
     codeTable[0x4100] = &gotoNotIfAddr;
   }
 
-
   ///単項演算子
-  void unaryOp(string op)(){
+  void unaryOp(string op)() {
     auto a = valueStack.pop;
-    valueStack.push((mixin("&"~op))(a));
+    valueStack.push((mixin("&" ~ op))(a));
   }
 
-
   ///二項演算子
-  void binaryOp(string op)(){
+  void binaryOp(string op)() {
     auto a = valueStack.pop;
     auto b = valueStack.pop;
 
-    valueStack.push((mixin("&"~op))(a, b));
+    valueStack.push((mixin("&" ~ op))(a, b));
   }
 
-
   ///配列アクセス演算子
-  void indexOp(){
+  void indexOp() {
     auto arr = valueStack.pop();
-    
+
     immutable num = take();
     auto ind = new int[num];
-    foreach(ref a; ind){
+    foreach (ref a; ind) {
       a = valueStack.pop().toInteger;
     }
-    
+
     auto v = arr.index(ind);
     valueStack.push(v);
   }
 
-
   ///コンソールへ出力
-  void printCommand(){
+  void printCommand() {
     immutable argNum = take();
     import std.array : Appender;
     import std.conv : to;
 
     Appender!wstring temp;
-    foreach(a; 0..argNum){
+    foreach (a; 0 .. argNum) {
       auto v = valueStack.pop();
       temp ~= v.toStringValue;
     }
     import std.stdio : write;
+
     write(temp.data);
   }
 
-
   ///配列のメモリ確保
-  void createArray(T)(){
+  void createArray(T)() {
     immutable num = take();
     auto index = new int[num];
-    foreach(ref a; index){
+    foreach (ref a; index) {
       a = valueStack.pop().toInteger;
     }
 
@@ -108,43 +104,42 @@ mixin template CommandMixin(){
     valueStack.push(Value(arr));
   }
 
-
   ///アドレス指定goto
-  void gotoAddr(){
+  void gotoAddr() {
     auto k = take(2);
     immutable addr = k[0] << 16 | k[1];
     gotoBase(addr);
   }
 
-
   ///文字列指定goto
-  void gotoStr(){
+  void gotoStr() {
     const rawName = valueStack.pop().get!wstring;
 
     auto r = getSymbol(rawName);
 
     auto s = slots[r.slot];
-    if(inGlobal){
+    if (inGlobal) {
       //グローバル
-      if(r.name in s.globalLabel){
+      if (r.name in s.globalLabel) {
         auto p = s.globalLabel[r.name];
-      }else{
+      }
+      else {
         throw undefinedLabelError(rawName);
       }
-    }else{
+    }
+    else {
       //ローカル
       assert(0);
     }
   }
 
-
   ///falseならgoto
-  void gotoNotIfAddr(){
+  void gotoNotIfAddr() {
     auto k = take(2);
     immutable addr = k[0] << 16 | k[1];
-    
+
     auto b = valueStack.pop().toBoolean;
-    if(b == 0){
+    if (b == 0) {
       gotoBase(addr);
     }
   }

@@ -1,6 +1,6 @@
 module tosuke.smilebasic.compiler;
 
-public{
+public {
   import tosuke.smilebasic.compiler.compiler;
 
   import tosuke.smilebasic.compiler.parser;
@@ -13,7 +13,7 @@ public{
   import tosuke.smilebasic.compiler.gencode;
 
   import tosuke.smilebasic.compiler.symboltable;
-  
+
   import tosuke.smilebasic.vm.code;
   import tosuke.smilebasic.vm.types : Pointer;
 }

@@ -13,15 +13,18 @@ import tosuke.smilebasic.vm.internal.command;
 import tosuke.smilebasic.vm.internal.push;
 import tosuke.smilebasic.vm.internal.pop;
 
-
 ///仮想マシン
-class VM{
-  private{
+class VM {
+  private {
     ///スロット
     Slot[] slots;
-    Slot currentSlot() @property const { return cast(Slot)(slots[currentSlotNumber]); }
+    Slot currentSlot() @property const {
+      return cast(Slot)(slots[currentSlotNumber]);
+    }
 
-    VMCode[] currentCode() @property const { return currentSlot.vmcode;}
+    VMCode[] currentCode() @property const {
+      return currentSlot.vmcode;
+    }
 
     ///プログラムカウンタ
     uint pc;
@@ -37,64 +40,63 @@ class VM{
     bool inGlobal = true;
   }
 
-  
   ///初期化
-  this(){
+  this() {
     slots = new Slot[5];
-    foreach(ref a; slots) a = new Slot();
+    foreach (ref a; slots)
+      a = new Slot();
 
     initCodeTable;
   }
 
-
   ///スロットをvmに関連付ける
   void set(int slotNum, Slot slot)
-  in{
+  in {
     assert(0 <= slotNum && slotNum <= 4);
-  }body{
+  }
+  body {
     slots[slotNum] = slot;
   }
 
-
   ///指定スロットを実行する
   void run(int slotNum)
-  in{
+  in {
     assert(0 <= slotNum && slotNum <= 4);
-  }body{
+  }
+  body {
     currentSlotNumber = slotNum;
     pc = 0;
 
-    while(pc < currentCode.length){
+    while (pc < currentCode.length) {
       auto pcBak = pc;
       VMCode code = take();
-      try{
+      try {
         codeTable[code]();
-      }catch(SmileBasicError e){
+      }
+      catch (SmileBasicError e) {
         auto codemap = currentSlot.codemap;
         e.line = codemap.search(pcBak);
         throw e;
       }
-      
+
     }
   }
 
 private:
   ///PCを1つ進め、値を得る
-  private VMCode take(){
+  private VMCode take() {
     return currentCode[pc++];
   }
 
-
   ///任意の個数PCを進め、値を得る
-  private VMCode[] take(uint a){
+  private VMCode[] take(uint a) {
     pc += a;
-    return a == 1 ? [currentCode[pc-a]] : currentCode[pc-a..pc];
+    return a == 1 ? [currentCode[pc - a]] : currentCode[pc - a .. pc];
   }
 
-
   //初期化
-  private void initCodeTable(){
-    codeTable[] = (){ assert(0, "Invalid Bytecode"); };
+  private void initCodeTable() {
+    codeTable[] = () { assert(0, "Invalid Bytecode"); };
 
     initCommandTable;
     initPushTable;
@@ -118,11 +120,12 @@ private:
 
     auto regex = ctRegex!`^((?P<slot>\d+):)(?P<name>.+)`w;
     auto match = rawName.matchFirst(regex);
-    if(!match.empty){
+    if (!match.empty) {
       num = match["slot"].to!int;
-      if(0 <= num && num < slots.length){
+      if (0 <= num && num < slots.length) {
         name = match["name"].toLower;
-      }else{
+      }
+      else {
         num = currentSlotNumber;
       }
     }
@@ -135,7 +138,7 @@ private:
   }
 
   ///任意アドレス・スロットにgotoする
-  void gotoBase(uint addr, int slot = -1){
+  void gotoBase(uint addr, int slot = -1) {
     pc = addr;
     currentSlotNumber = slot == -1 ? currentSlotNumber : slot;
   }

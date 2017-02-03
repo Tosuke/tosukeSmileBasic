@@ -4,35 +4,28 @@ import tosuke.smilebasic.compiler;
 import std.conv : to;
 
 ///ASTから中間表現コードを生成する
-OperationList genList(Node node){
+OperationList genList(Node node) {
   import std.array : Appender;
 
   Appender!OperationList temp;
 
-  final switch(node.type){
-    case NodeType.Forward:
-      temp ~= (a){
-        a.line = node.line;
-        return a;
-      }(node.operation);
-      
-      foreach(a; node.children){
-        temp ~= genList(a)[];
-      }
-      break;
-      
-    case NodeType.Reverse:
-      foreach_reverse(a; node.children){
-        temp ~= genList(a)[];
-      }
+  final switch (node.type) {
+  case NodeType.Forward:
+    temp ~= (a) { a.line = node.line; return a; }(node.operation);
 
-      temp ~= (a){
-        a.line = node.line;
-        return a;
-      }(node.operation);
-      break;
+    foreach (a; node.children) {
+      temp ~= genList(a)[];
+    }
+    break;
+
+  case NodeType.Reverse:
+    foreach_reverse (a; node.children) {
+      temp ~= genList(a)[];
+    }
+
+    temp ~= (a) { a.line = node.line; return a; }(node.operation);
+    break;
   }
-
 
   return temp.data;
 }

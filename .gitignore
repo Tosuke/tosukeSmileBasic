@@ -5,6 +5,7 @@ __dummy.html
 *.obj
 .atom-build.json
 dub.selections.json
+.vscode
 
 test.*
 bin

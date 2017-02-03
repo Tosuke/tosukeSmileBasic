@@ -9,7 +9,7 @@ import std.conv : to;
 
 //Pop
 ///どこにPopするか
-enum PopType{
+enum PopType {
   ///どこにもしない(値を捨てる)
   None,
   ///変数
@@ -18,23 +18,26 @@ enum PopType{
   Value
 }
 
-
 ///値をPopする
-abstract class Pop : Operation{
+abstract class Pop : Operation {
 
   ///初期化
-  this(PopType _type){
+  this(PopType _type) {
     popType = _type;
     super(OperationType.Pop);
   }
 
   ///どこにPopするか
   private PopType type_;
-  @property{
+  @property {
     ///ditto
-    public PopType popType() const {return type_;}
+    public PopType popType() const {
+      return type_;
+    }
     ///ditto
-    private void popType(PopType a){type_ = a;}
+    private void popType(PopType a) {
+      type_ = a;
+    }
   }
 
   abstract override string toString() const;
@@ -42,49 +45,51 @@ abstract class Pop : Operation{
   abstract override VMCode[] code() const;
 }
 
-
 ///どこにもPopしない(値を捨てる)
-class PopNone : Pop{
+class PopNone : Pop {
 
   ///初期化
-  this(){
+  this() {
     super(PopType.None);
   }
 
-  override string toString() const{
+  override string toString() const {
     return `Pop(none)`;
   }
 
-  override int codeSize() const{
+  override int codeSize() const {
     return 1;
   }
 
-  override VMCode[] code() const{
+  override VMCode[] code() const {
     return [0x0002];
   }
 }
 
-
 ///単純変数にPopする(名前未解決)
-class PopScalarVariable : Pop{
+class PopScalarVariable : Pop {
 
   ///初期化
-  this(wstring _name){
+  this(wstring _name) {
     super(PopType.Variable);
     name = _name;
   }
 
   ///Popする変数の名前
   private wstring name_;
-  @property{
+  @property {
     ///ditto
-    public wstring name() const {return name_;}
+    public wstring name() const {
+      return name_;
+    }
     ///ditto
-    private void name(wstring a){name_ = a;}
+    private void name(wstring a) {
+      name_ = a;
+    }
   }
 
-  override string toString() const{
-    return `Pop(var)(`~name.to!string~`)`;
+  override string toString() const {
+    return `Pop(var)(` ~ name.to!string ~ `)`;
   }
 
   override int codeSize() const {
@@ -96,30 +101,34 @@ class PopScalarVariable : Pop{
   }
 }
 
-
 ///グローバルな単純変数にPopする
-class PopGlobalScalarVariable : Pop{
+class PopGlobalScalarVariable : Pop {
 
   ///初期化
-  this(uint _id){
+  this(uint _id) {
     super(PopType.Variable);
     id = _id;
   }
 
   ///Popする変数のid
   private uint id_;
-  @property{
+  @property {
     ///ditto
-    public uint id() const {return id_;}
+    public uint id() const {
+      return id_;
+    }
     ///ditto
-    private void id(uint a){id_ = a;}
+    private void id(uint a) {
+      id_ = a;
+    }
   }
 
-  override string toString() const{
-    if(id <= 0xffff){
-      return `Pop(gvar16)(`~id.to!string~`)`;
-    }else{
-      return `Pop(gvar32)(`~id.to!string~`)`;
+  override string toString() const {
+    if (id <= 0xffff) {
+      return `Pop(gvar16)(` ~ id.to!string ~ `)`;
+    }
+    else {
+      return `Pop(gvar32)(` ~ id.to!string ~ `)`;
     }
   }
 
@@ -128,22 +137,22 @@ class PopGlobalScalarVariable : Pop{
   }
 
   override VMCode[] code() const {
-    if(id <= 0xffff){
+    if (id <= 0xffff) {
       //Pop(gvar16)
       return [0x0012, id & 0xffff];
-    }else{
+    }
+    else {
       //Pop(gvar32)
       return [0x0022, (id >>> 16) & 0xffff, id & 0xffff];
     }
   }
 }
 
-
 ///文字列で指定された変数に対してPopする
-class PopVariableString : Pop{
+class PopVariableString : Pop {
 
   ///初期化
-  this(){
+  this() {
     super(PopType.Variable);
   }
 
@@ -160,12 +169,11 @@ class PopVariableString : Pop{
   }
 }
 
-
 ///スタック上の配列にインデックスを指定してPopする(その配列は暗黙的にPop noneされる)
-class PopIndexValue : Pop{
+class PopIndexValue : Pop {
 
   ///初期化
-  this(ushort _indexNum){
+  this(ushort _indexNum) {
     indexNum = _indexNum;
     super(PopType.Value);
   }

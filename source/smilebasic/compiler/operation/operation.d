@@ -12,16 +12,15 @@ import std.container.dlist;
 ///中間表現コードの列
 alias OperationList = Operation[];
 
-
 ///中間表現コードの種別
-enum OperationType{
+enum OperationType {
   ///値をPushする
   Push,
   ///値をPopする
   Pop,
   ///命令を実行する
-  Command, 
-  
+  Command,
+
   ///何もしない
   Empty,
 
@@ -31,22 +30,25 @@ enum OperationType{
   DefineLabel
 }
 
-
 ///中間表現コード
-abstract class Operation{
+abstract class Operation {
 
   ///初期化
-  this(OperationType _type){
+  this(OperationType _type) {
     type = _type;
   }
 
   ///中間表現コードの種別
   private OperationType type_;
-  @property{
+  @property {
     ///ditto
-    public OperationType type() const {return type_;}
+    public OperationType type() const {
+      return type_;
+    }
     ///ditto
-    private void type(OperationType o){type_ = o;}
+    private void type(OperationType o) {
+      type_ = o;
+    }
   }
 
   ///行番号
@@ -54,7 +56,7 @@ abstract class Operation{
 
   ///文字列化
   abstract override string toString() const;
-  
+
   ///VMコード化したときの長さ
   abstract int codeSize() const;
 
@@ -62,15 +64,22 @@ abstract class Operation{
   abstract VMCode[] code() const;
 }
 
-
 ///何もしない
-class EmptyOperation : Operation{
+class EmptyOperation : Operation {
   ///初期化
-  this(){
+  this() {
     super(OperationType.Empty);
   }
 
-  override string toString() const {return "";}
-  override int codeSize() const {return 0;}
-  override VMCode[] code() const {return [];}
+  override string toString() const {
+    return "";
+  }
+
+  override int codeSize() const {
+    return 0;
+  }
+
+  override VMCode[] code() const {
+    return [];
+  }
 }
